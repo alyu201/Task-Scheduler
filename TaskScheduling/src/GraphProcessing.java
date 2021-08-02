@@ -1,10 +1,14 @@
+import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.DefaultGraph;
 import org.graphstream.stream.file.FileSource;
 import org.graphstream.stream.file.FileSourceFactory;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Iterator;
+import java.io.OutputStreamWriter;
 
 /**
 This class is used for processing input dot file and output dot file.
@@ -25,10 +29,12 @@ public class GraphProcessing {
         try {
             fileSource.readAll(filePath);
             System.out.println(graph);
-            System.out.println(graph.getEdgeCount());
-            Iterator i = graph.iterator();
-            while (i.hasNext()) {
-                System.out.println(i.next());
+            for (Node node : graph) {
+                System.out.println(node);
+                for(Edge edge:node)
+                {
+                    System.out.println(edge);
+                }
             }
 
         } catch (IOException e) {
@@ -42,6 +48,18 @@ public class GraphProcessing {
      * This method will write the graph that is currently in the system to a dot file.
      */
     public void outputProcessing(String filePath) throws IOException {
-        graph.write(filePath);
+        try(BufferedWriter out=new BufferedWriter(new OutputStreamWriter(new FileOutputStream("output.dot")))){
+            out.write("digraph {");
+            out.newLine();
+//            for(Edge e:d.getEdges()){
+//                out.write(e.v+" -> "+e.w);
+//                out.newLine();
+//            }
+            out.write("}");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
+
 }

@@ -1,3 +1,7 @@
+package Model;
+
+import Model.GraphProcessing;
+
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;

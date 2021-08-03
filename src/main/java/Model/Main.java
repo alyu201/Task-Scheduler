@@ -1,21 +1,21 @@
 package Model;
 
-import Model.GraphProcessing;
-
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        // TODO: 8/3/2021  Check number of argument must be at least 2
-        // TODO: 8/3/2021 Creat Exceptions
+    public static void main(String[] args) {
 
         try {
+            //Check if the input argument at least 2
+            if (args.length<2){
+                throw new InvalidInputArgumentException("Input arguments must at least specify a .dot file and a number of processors");
+            }
             //Process the input dot file
             String filePath = Paths.get(args[0]).toAbsolutePath().toString();
             if (!filePath.contains(".dot")){
-                throw new InvalidInputFilenameException("The input filename needs a .dot extension.");
+                throw new InvalidInputArgumentException("The input filename needs a .dot extension.");
             }
             GraphProcessing graph = new GraphProcessing();
             graph.inputProcessing(filePath);
@@ -40,6 +40,13 @@ public class Main {
 
     }
 
+    /**
+     * This method is responsible for processing all the optional arguments such as
+     * -p for number of cores; -v for visualization; - o for output filename.
+     * @param args
+     * @param graph
+     * @throws IOException
+     */
     public static void processingOptions(String[] args, GraphProcessing graph) throws IOException {
         int numberArg = args.length;
         ArrayList<String> arguments = new ArrayList<>();
@@ -65,16 +72,31 @@ public class Main {
         }
     }
 
+    /**
+     * This method is responsible for initiating parallelization when
+     * the client specify number of cores to work in parallel.
+     * @param numCores
+     */
     public static void coreArgProcedure(int numCores){
         System.out.println("the number of core is "+numCores);
         // TODO: 8/3/2021 implementation for parallelization required
     }
 
-    public static void visualArgProcedure(){
+    /**
+     * This method is responsible for initiating the visualization if specified by the user.
+     * @throws IOException
+     */
+    public static void visualArgProcedure() throws IOException {
         System.out.println("require visualization");
-        // TODO: 8/3/2021 implementation for visualization required
+        Visualiser.start();
     }
 
+    /**
+     * This method is responsible for output a .dot file using graph that is in the system.
+     * @param outputFilename
+     * @param graph
+     * @throws IOException
+     */
     public static void outputArgProcedure(String outputFilename, GraphProcessing graph) throws IOException {
         graph.outputProcessing(outputFilename);
     }

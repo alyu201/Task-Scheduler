@@ -68,6 +68,8 @@ public class State {
         return _underestimate;
     }
 
+
+    //TODO: This calculation might be wrong because it seems like start time is based off one processor only, but there are communication cost from other processors
     /**
      * Retrieve the next starting time for a given processor.
      * @return int of the next starting time for the given processor.

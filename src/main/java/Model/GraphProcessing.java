@@ -72,11 +72,9 @@ public class GraphProcessing {
     /**
      * This method will write the graph that is currently in the system to a dot file.
      * This graph will have the dummyRoot removed.
+     * @author Kelvin
      */
     public void outputProcessing(String filePath) throws IOException {
-
-        //This is needed to remove the dummyRoot and its edges from the graph
-        Node dummyNodeToRemove = graph.removeNode("dummyRoot");
 
         try(BufferedWriter out=new BufferedWriter(new OutputStreamWriter(new FileOutputStream("output.dot")))){
             out.write("digraph {");

@@ -1,9 +1,10 @@
 package Model;
 
+import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.DefaultGraph;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,7 +15,6 @@ public class AlgorithmTest {
 
     @BeforeEach
     void setUp() {
-        System.out.println("hih");
         _graphA = new DefaultGraph("graphA");
         _graphA.addNode("A");
         _graphA.addNode("B");

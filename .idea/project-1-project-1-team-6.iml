@@ -39,5 +39,7 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-common:1.4.20" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.jetbrains:annotations:13.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.4.20" level="project" />
+    <orderEntry type="library" name="Maven: com.github.graphstream:gs-core:2.0-alpha" level="project" />
+    <orderEntry type="library" name="Maven: com.github.graphstream:gs-ui-javafx:2.0-alpha" level="project" />
   </component>
 </module>

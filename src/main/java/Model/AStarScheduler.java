@@ -5,7 +5,9 @@ package Model;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.PriorityQueue;
 
 /**
@@ -19,9 +21,10 @@ public class AStarScheduler {
 
 
     //TODO: Update with the actual classes
-    public AStarScheduler (Graph _taskGraph, int numProcessors) {
+    public AStarScheduler (Graph taskGraph, int numProcessors) {
         _numProcessors = numProcessors;
         _openList = new PriorityQueue<State>(100, new StateComparator());
+        _taskGraph = taskGraph;
     }
 
     /**
@@ -32,7 +35,9 @@ public class AStarScheduler {
 
         //TODO: If there is memory problem, can make just one "StateUtility" class having the numProcessors stored and spits out State objects
 
-        State emptyState = new State(null, 0, );
+        //TODO: The child task for the empty state is probably wrong
+        Node rootNode = _taskGraph.getNode("A");
+        State emptyState = new State(null, 0, rootNode, 1, 0);
         _openList.add(emptyState);
 
         while (!_openList.isEmpty()) {
@@ -76,9 +81,9 @@ public class AStarScheduler {
             for(int i = 1; i <= _numProcessors; i++) {
                 //TODO: Might not need a startTime parameter for State constructor because the parentState is passed in already
                 int startTime = parentState.getNextStartTime(i);
-                //int maxUnderestimate = Math.max(startTime + task.bottomLevel, parentState.getUnderestimate())
+                int maxUnderestimate = Math.max(startTime + task.getAttribute("bottomLevel", Integer.class), parentState.getUnderestimate());
 
-                child = new State(parentState, /*maxUnderestimate*/, task, i, startTime);
+                child = new State(parentState, maxUnderestimate, task, i, startTime);
                 _openList.add(child);
             }
         }
@@ -90,8 +95,32 @@ public class AStarScheduler {
      * @return A list of schedulable tasks (nodes)
      */
     private List<Node> getSchedulableTasks(State state) {
+        HashMap<Node, Integer> allTasks = new HashMap<Node, Integer>();
 
-        return null;
+        //Stores a mapping for all the tasks and and their number of prerequisite tasks
+        _taskGraph.nodes().map(task -> allTasks.put(task, task.getInDegree()));
+
+        HashMap<Integer, HashMap<Integer, Node>> schedule = state.getState();
+
+        //TODO: Might need to change data structure
+        List<Node> scheduledTasks = new ArrayList<Node>();
+
+        //Go through all scheduled tasks and reduce the count for prerequisite tasks of their children.
+        for (int i: schedule.keySet()) {
+            HashMap<Integer, Node> processorTasks = schedule.get(i);
+            for (int j: processorTasks.keySet()) {
+                Node task = processorTasks.get(j);
+
+                task.leavingEdges().map(edge -> allTasks.put(edge.getNode1(), allTasks.get(edge.getNode1()) - 1));
+
+                scheduledTasks.add(task);
+            }
+        }
+
+        //Remove tasks that have already been scheduled and tasks that still have prerequisite tasks > 0
+        allTasks.entrySet().removeIf(e -> (scheduledTasks.contains(e.getKey()) && e.getValue() > 0));
+
+        return new ArrayList<Node>(allTasks.keySet());
     }
 
 }

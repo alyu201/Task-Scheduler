@@ -7,25 +7,34 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 
 /**
  * Main application that takes in input for preprocessing and initialising visualiser
  */
 public class Visualiser extends Application {
 
-    private static Scene scene;
+    private static Stage _primaryStage;
+    private static Scene _scene;
 
     @Override
-    public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("../View/primary"), 640, 480);
-        stage.setScene(scene);
-        stage.show();
+    public void start(Stage primaryStage) throws IOException {
+        _primaryStage = primaryStage;
+        _scene = new Scene(loadFXML("../View/primary"));
+        primaryStage.setScene(_scene);
+        primaryStage.setTitle("Visualiser");
+        primaryStage.show();
     }
 
     public static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
+        _scene.setRoot(loadFXML(fxml));
+    }
+
+    public static Parent getRoot() {
+        return _scene.getRoot();
+    }
+
+    public static void setScene(Scene scene) {
+        _primaryStage.setScene(scene);
     }
 
     private static Parent loadFXML(String fxml) throws IOException {

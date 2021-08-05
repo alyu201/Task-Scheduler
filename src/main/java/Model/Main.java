@@ -28,6 +28,8 @@ public class Main {
 
             System.out.println("the program ends");
 
+            System.exit(0);
+
         }catch(Exception e){
             System.out.println(e);
         }

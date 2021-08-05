@@ -6,8 +6,6 @@ import org.graphstream.graph.implementations.DefaultGraph;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -16,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 
 class StateTest {
-
     private static State _parent;
     private static State _child;
     private static State _final;
@@ -38,39 +35,22 @@ class StateTest {
         nodeB.setAttribute("weight", 3);
         nodeC.setAttribute("weight", 1);
 
-        _parent = new State(null,7,nodeA,1,0);
+        State _empty = new State(2);
+        _parent = new State(_empty,7,nodeA,1,0);
         _child = new State(_parent,6,nodeB,2,0);
         _final = new State(_child,5,nodeC,1,2);
     }
 
     @Test
-    void getParentClone() {
-        HashMap<Integer,HashMap<Integer,Node>> clone = State.clone(_parent);
-        assertTrue(_parent.getState() != clone);
-    }
-
-    @Test
-    void getChildClone() {
-        HashMap<Integer,HashMap<Integer,Node>> clone = State.clone(_child);
-        assertTrue(_child.getState() != clone);
-    }
-
-    @Test
-    void getFinalClone() {
-        HashMap<Integer,HashMap<Integer,Node>> clone = State.clone(_final);
-        assertTrue(_final.getState() != clone);
-    }
-
-    @Test
     void getDifferentParentChild() {
         assertNotEquals(_parent,_child);
-        assertTrue(_parent != _child);
+        assertNotSame(_parent, _child);
     }
 
     @Test
     void getDifferentChildFinal() {
         assertNotEquals(_child, _final);
-        assertTrue(_child != _final);
+        assertNotSame(_child, _final);
     }
 
     @Test
@@ -94,7 +74,10 @@ class StateTest {
     @Test
     void getParentNextStartTime() {
         int nextStartTime = _parent.getNextStartTime(1);
+        int nextStartTime2 = _parent.getNextStartTime(2);
         assertEquals(2,nextStartTime);
+        assertEquals(0,nextStartTime2);
+
     }
 
     @Test

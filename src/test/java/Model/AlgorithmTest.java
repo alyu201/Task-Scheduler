@@ -6,6 +6,10 @@ import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.DefaultGraph;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -24,13 +28,13 @@ public class AlgorithmTest {
         Node graphANodeB = _graphA.getNode("B");
         Node graphANodeC = _graphA.getNode("C");
 
-        graphANodeA.setAttribute("weight", 2);
-        graphANodeB.setAttribute("weight", 3);
-        graphANodeC.setAttribute("weight", 1);
+        graphANodeA.setAttribute("Weight", 2);
+        graphANodeB.setAttribute("Weight", 3);
+        graphANodeC.setAttribute("Weight", 1);
 
-        graphANodeA.setAttribute("bottomLevel", 6);
-        graphANodeB.setAttribute("bottomLevel", 4);
-        graphANodeC.setAttribute("bottomLevel", 1);
+        graphANodeA.setAttribute("BottomLevel", 6);
+        graphANodeB.setAttribute("BottomLevel", 4);
+        graphANodeC.setAttribute("BottomLevel", 1);
 
 
         _graphA.addEdge("AB", graphANodeA, graphANodeB, true);
@@ -47,15 +51,15 @@ public class AlgorithmTest {
         Node graphBNodeC = _graphB.getNode("C");
         Node graphBNodeD = _graphB.getNode("D");
 
-        graphBNodeA.setAttribute("weight", 2);
-        graphBNodeB.setAttribute("weight", 2);
-        graphBNodeC.setAttribute("weight", 3);
-        graphBNodeD.setAttribute("weight", 2);
+        graphBNodeA.setAttribute("Weight", 2);
+        graphBNodeB.setAttribute("Weight", 2);
+        graphBNodeC.setAttribute("Weight", 3);
+        graphBNodeD.setAttribute("Weight", 2);
 
-        graphBNodeA.setAttribute("bottomLevel", 7);
-        graphBNodeB.setAttribute("bottomLevel", 4);
-        graphBNodeC.setAttribute("bottomLevel", 5);
-        graphBNodeD.setAttribute("bottomLevel", 2);
+        graphBNodeA.setAttribute("BottomLevel", 7);
+        graphBNodeB.setAttribute("BottomLevel", 4);
+        graphBNodeC.setAttribute("BottomLevel", 5);
+        graphBNodeD.setAttribute("BottomLevel", 2);
 
         _graphB.addEdge("AB", graphBNodeA, graphBNodeB, true);
         _graphB.addEdge("AC", graphBNodeA, graphBNodeC,true);
@@ -72,5 +76,27 @@ public class AlgorithmTest {
 
         assertEquals("", schedule);
     }
+
+//    @Test
+//    public void TestSimpleChildStateGeneration() {
+//        AStarScheduler scheduler = new AStarScheduler(_graphA, 1);
+//        State initialState = new State(null, 6, _graphA.getNode("A"), 0, 0);
+//
+//        List<Node> tasks = new ArrayList<>();
+//        tasks.add(_graphA.getNode("B"));
+//
+//        assertEquals("[{0={0=A, 2=B}}]", scheduler.addChildStates(initialState, tasks));
+//    }
+//
+//    @Test
+//    public void TestMoreChildStateGeneration() {
+//        AStarScheduler scheduler = new AStarScheduler(_graphA, 3);
+//        State initialState = new State(null, 6, _graphA.getNode("A"), 0, 0);
+//
+//        List<Node> tasks = new ArrayList<>();
+//        tasks.add(_graphA.getNode("B"));
+//
+//        assertEquals("[{0={0=A, 2=B}}]", scheduler.addChildStates(initialState, tasks));
+//    }
 
 }

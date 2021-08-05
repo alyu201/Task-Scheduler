@@ -62,11 +62,7 @@ public class GraphProcessing {
             //Calculating all the bottomLevels of all nodes by starting at the dummyRootNode
             //Note that the dummyRoot's bottom level is
             // already calculated and set as an attribute in this method too
-            int dummyRootBL = calBottomLevel(dummyRootNode);
-            System.out.println("dummyRootBL: " + dummyRootBL);
-
-            printGraph();
-
+            int dummyRootBL = calBottomLevels(dummyRootNode);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -97,30 +93,13 @@ public class GraphProcessing {
     }
 
     /**
-     * This method prints out the graph.
-     * It is for testing purposes only, will be removed in a later commit.
-     * @author Megan
-     */
-    private void printGraph() {
-        //This is to print out the graph
-        for (Node node : graph) {
-            System.out.println(node.toString() + node.getAttribute("Weight") + "    " + node.enteringEdges());
-
-            for(Edge edge:node)
-            {
-                System.out.println(edge + "\t Weight: " + edge.getAttribute("Weight"));
-            }
-        }
-    }
-
-    /**
      * This method will first be given the dummyRootNode and recursion will be used to
      * calculate the bottom level of all the nodes of the graph.
      * Returns the bottom level of the dummyRootNode - even though by then the
      * dummyRootNode's bottom level would have already been set as an attribute.
      * @author Megan
      */
-    private int calBottomLevel(Node node) {
+    private int calBottomLevels(Node node) {
 
         int currentNodeWeight = (Double.valueOf(node.getAttribute("Weight").toString())).intValue();
         int numberOfChildren = node.getOutDegree();
@@ -138,7 +117,7 @@ public class GraphProcessing {
         for (int i = 0; i < numberOfChildren; i++) {
             Edge edge = node.getLeavingEdge(i);
             Node currentChild = edge.getTargetNode();
-            int currentChildBL = calBottomLevel(currentChild);
+            int currentChildBL = calBottomLevels(currentChild);
 
             if (largestChildBLSoFar < currentChildBL) {
                 largestChildBLSoFar = currentChildBL;

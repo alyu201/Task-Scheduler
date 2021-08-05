@@ -16,8 +16,8 @@ This class is used for processing input dot file and output dot file.
  @author kelvi and Megan
  */
 public class GraphProcessing {
-    private Graph graph = new DefaultGraph("graph");
 
+    private Graph graph = new DefaultGraph("graph");
 
     /**
      * This method takes a path to a dot file and uses the GraphStream library to convert the file content to a graph.
@@ -59,6 +59,12 @@ public class GraphProcessing {
                 edge.setAttribute("Weight", 0);
             }
 
+            //Calculating all the bottomLevels of all nodes by starting at the dummyRootNode
+            //Note that the dummyRoot's bottom level is
+            // already calculated and set as an attribute in this method too
+            int dummyRootBL = calBottomLevel(dummyRootNode);
+            System.out.println("dummyRootBL: " + dummyRootBL);
+
             printGraph();
 
 
@@ -71,8 +77,8 @@ public class GraphProcessing {
 
     /**
      * This method will write the graph that is currently in the system to a dot file.
-     * This graph will have the dummyRoot removed.
-     * @author Kelvin
+     * This graph will have the dummyRoot and its edges removed.
+     * @author: Kelvin
      */
     public void outputProcessing(String filePath) throws IOException {
 
@@ -105,6 +111,44 @@ public class GraphProcessing {
                 System.out.println(edge + "\t Weight: " + edge.getAttribute("Weight"));
             }
         }
+    }
+
+    /**
+     * This method will first be given the dummyRootNode and recursion will be used to
+     * calculate the bottom level of all the nodes of the graph.
+     * Returns the bottom level of the dummyRootNode - even though by then the
+     * dummyRootNode's bottom level would have already been set as an attribute.
+     * @author Megan
+     */
+    private int calBottomLevel(Node node) {
+
+        int currentNodeWeight = (Double.valueOf(node.getAttribute("Weight").toString())).intValue();
+        int numberOfChildren = node.getOutDegree();
+
+        // If this is a leaf, save and return its weight
+        if (numberOfChildren == 0) {
+            node.setAttribute("BottomLevel", currentNodeWeight);
+            return currentNodeWeight;
+        }
+
+        int largestChildBLSoFar = 0;
+
+        //For each of its children, calculate their bottom level recursively.
+        //Keep track of the largest bottom level among all the children's bottom levels.
+        for (int i = 0; i < numberOfChildren; i++) {
+            Edge edge = node.getLeavingEdge(i);
+            Node currentChild = edge.getTargetNode();
+            int currentChildBL = calBottomLevel(currentChild);
+
+            if (largestChildBLSoFar < currentChildBL) {
+                largestChildBLSoFar = currentChildBL;
+            }
+        }
+
+        // Save and return the largestChild's bottom level PLUS the currentNodeWeight
+        int bottomLevel = largestChildBLSoFar + currentNodeWeight;
+        node.setAttribute("BottomLevel", bottomLevel);
+        return bottomLevel;
     }
 
 }

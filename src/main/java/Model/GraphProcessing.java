@@ -64,6 +64,7 @@ public class GraphProcessing {
             // already calculated and set as an attribute in this method too
             int dummyRootBL = calBottomLevels(dummyRootNode);
 
+
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -78,13 +79,32 @@ public class GraphProcessing {
      */
     public void outputProcessing(String filePath) throws IOException {
 
-        try(BufferedWriter out=new BufferedWriter(new OutputStreamWriter(new FileOutputStream("output.dot")))){
-            out.write("digraph {");
+        String outputFilename = filePath.concat(".dot");
+        try(BufferedWriter out=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilename)))){
+            out.write("digraph \""+filePath+"\" "+"{");
+
             out.newLine();
-//            for(Edge e:d.getEdges()){
-//                out.write(e.v+" -> "+e.w);
-//                out.newLine();
-//            }
+            //writing nodes one by one to the file
+            for (Node node : graph) {
+                String nodeWeight = node.getAttribute("Weight").toString();
+                out.write(node.toString()+" ["+"Weight="+nodeWeight+"];");
+                out.newLine();
+
+                //writing out going edges one by one to the file
+                node.leavingEdges().forEach(edge -> {
+                    String edgeUnformatted = edge.toString();
+                    int subStart=edgeUnformatted.indexOf("[")+1;
+                    int subEnd=edgeUnformatted.length()-1;
+                    String edgeFormatted = edgeUnformatted.substring(subStart,subEnd);
+                    String edgeWeight = edge.getAttribute("Weight").toString();
+                    try {
+                        out.write(edgeFormatted+" ["+"Weight="+edgeWeight+"];");
+                        out.newLine();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
             out.write("}");
         } catch (IOException e) {
             e.printStackTrace();

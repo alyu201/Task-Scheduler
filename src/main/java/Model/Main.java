@@ -22,13 +22,13 @@ public class Main {
 
             //Process the number of processor argument
             int numberOfProcess = Integer.parseInt(args[1]);
-            System.out.println(numberOfProcess);
 
             //Process the other arguments
             processingOptions(args, graph);
 
-            //Example output a dot file
-            graph.outputProcessing(filePath);
+            System.out.println("the program ends");
+
+            System.exit(0);
 
         }catch(Exception e){
             System.out.println(e);

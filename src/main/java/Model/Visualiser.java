@@ -9,7 +9,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 /**
- * Main application that takes in input for preprocessing and initialising visualiser
+ * Visualisation application that takes in input for preprocessing and initialising visualiser
+ * @author alyu
  */
 public class Visualiser extends Application {
 
@@ -19,7 +20,7 @@ public class Visualiser extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         _primaryStage = primaryStage;
-        _scene = new Scene(loadFXML("../View/primary"));
+        _scene = new Scene(loadFXML("/View/primary"));
         primaryStage.setScene(_scene);
         primaryStage.setTitle("Visualiser");
         primaryStage.show();

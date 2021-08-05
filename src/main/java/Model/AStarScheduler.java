@@ -5,10 +5,9 @@ package Model;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.sql.Array;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This class is responsible for scheduling a number of tasks represented as a DAG (Directed
@@ -74,19 +73,50 @@ public class AStarScheduler {
      * @param parentState The parent state
      * @param tasks The list of tasks that are to be scheduled in the child states.
      */
-    private void addChildStates (State parentState, List<Node> tasks) {
+    public void addChildStates (State parentState, List<Node> tasks) {
         State child;
+        HashMap<Integer, HashMap<Integer, Node>> processorSchedules = parentState.getState();
 
         for (Node task: tasks) {
-            for(int i = 1; i <= _numProcessors; i++) {
-                //TODO: Might not need a startTime parameter for State constructor because the parentState is passed in already
-                int startTime = parentState.getNextStartTime(i);
-                int maxUnderestimate = Math.max(startTime + task.getAttribute("bottomLevel", Integer.class), parentState.getUnderestimate());
+            List<Node> prerequisiteTasks = task.enteringEdges().map(e -> e.getNode0()).collect(Collectors.toList());
 
-                child = new State(parentState, maxUnderestimate, task, i, startTime);
+            Node[] prerequisiteNodePos = new Node[_numProcessors];
+            int[] startingTimes = new int[_numProcessors];
+
+            for (int i: processorSchedules.keySet()) {
+                HashMap<Integer, Node> schedule = processorSchedules.get(i);
+
+                for (int startTime: schedule.keySet()) {
+                    if (prerequisiteTasks.contains(schedule.get(startTime))) {
+                        int currentStartTime = startingTimes[i];
+                        int prereqStartTime = startTime + schedule.get(startTime).getAttribute("Weight", Integer.class);
+
+                        if (prereqStartTime > currentStartTime) {
+                            startingTimes[i] = prereqStartTime;
+                            prerequisiteNodePos[i] = schedule.get(startTime);
+                        }
+                    }
+                }
+
+            }
+
+            //TODO: Find all the prerequisite tasks and figure out the the max start time, after that, add communication cost if needed when scheduling on a processor
+            for(int i = 0; i < _numProcessors; i++) {
+                int nextStartTime = parentState.getNextStartTime(i);
+                for (int j = 0; j < _numProcessors; j++) {
+                    if (i != j && prerequisiteNodePos[j] != null) {
+                        int communicationCost = prerequisiteNodePos[j].getEdgeToward(task).getAttribute("Weight", Integer.class);
+                        nextStartTime = Math.max(nextStartTime, startingTimes[j] + communicationCost);
+                    }
+                }
+
+                int maxUnderestimate = Math.max(nextStartTime + task.getAttribute("BottomLevel", Integer.class), parentState.getUnderestimate());
+
+                child = new State(parentState, maxUnderestimate, task, i, nextStartTime);
                 _openList.add(child);
             }
         }
+//        return _openList;
     }
 
     /**
@@ -98,7 +128,7 @@ public class AStarScheduler {
         HashMap<Node, Integer> allTasks = new HashMap<Node, Integer>();
 
         //Stores a mapping for all the tasks and and their number of prerequisite tasks
-        _taskGraph.nodes().map(task -> allTasks.put(task, task.getInDegree()));
+        _taskGraph.nodes().forEach(task -> allTasks.put(task, task.getInDegree()));
 
         HashMap<Integer, HashMap<Integer, Node>> schedule = state.getState();
 
@@ -111,7 +141,7 @@ public class AStarScheduler {
             for (int j: processorTasks.keySet()) {
                 Node task = processorTasks.get(j);
 
-                task.leavingEdges().map(edge -> allTasks.put(edge.getNode1(), allTasks.get(edge.getNode1()) - 1));
+                task.leavingEdges().forEach(edge -> allTasks.put(edge.getNode1(), allTasks.get(edge.getNode1()) - 1));
 
                 scheduledTasks.add(task);
             }

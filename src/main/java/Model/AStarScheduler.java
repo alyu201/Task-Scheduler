@@ -150,7 +150,7 @@ public class AStarScheduler {
         }
 
         //Remove tasks that have already been scheduled and tasks that still have prerequisite tasks > 0
-        allTasks.entrySet().removeIf(e -> (scheduledTasks.contains(e.getKey()) && e.getValue() > 0));
+        allTasks.entrySet().removeIf(e -> (scheduledTasks.contains(e.getKey()) || e.getValue() > 0));
         return new ArrayList<Node>(allTasks.keySet());
     }
 

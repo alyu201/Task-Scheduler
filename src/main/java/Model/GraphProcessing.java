@@ -16,14 +16,15 @@ import java.util.HashMap;
 import java.util.Set;
 
 /**
-This class is used for processing input dot file and output dot file.
- @author kelvi and Megan
+ * This class is used for processing input dot file and output dot file.
+ *
+ * @author kelvi and Megan
  */
 public class GraphProcessing {
 
 
     // static variable single_instance of type Singleton
-    private static GraphProcessing single_instance=null;
+    private static GraphProcessing single_instance = null;
     private Graph graph;
 
 
@@ -31,17 +32,14 @@ public class GraphProcessing {
     public String s;
 
     // private constructor restricted to this class itself
-    private GraphProcessing()
-    {
+    private GraphProcessing() {
         graph = new DefaultGraph("graph");
     }
 
     // static method to create instance of Singleton class
-    public static GraphProcessing Graphprocessing()
-    {
+    public static GraphProcessing Graphprocessing() {
         // To ensure only one instance is created
-        if (single_instance == null)
-        {
+        if (single_instance == null) {
             single_instance = new GraphProcessing();
         }
         return single_instance;
@@ -50,11 +48,12 @@ public class GraphProcessing {
     /**
      * This method takes a path to a dot file and uses the GraphStream library to convert the file content to a graph.
      * A dummy root will also be added to this graph in case there are multiple roots.
+     *
      * @throws IOException
      * @author Kelvin and Megan
      */
     public void inputProcessing(String filePath) throws IOException {
-      
+
         FileSource fileSource = FileSourceFactory.sourceFor(filePath);
 
         //Keep a list of the original root nodes of the graph
@@ -81,7 +80,7 @@ public class GraphProcessing {
 
 
             //Adding edges of weight 0 from the dummyRootNode to each of the listOfOriginalRoots
-            for(Node originalRoot : listOfOriginalRoots) {
+            for (Node originalRoot : listOfOriginalRoots) {
                 String edgeName = "(" + dummyRootNode.toString() + ";" + originalRoot.toString() + ")";
                 Edge edge = graph.addEdge(edgeName, dummyRootNode, originalRoot, true);
                 edge.setAttribute("Weight", 0);
@@ -103,13 +102,14 @@ public class GraphProcessing {
     /**
      * This method will write the graph that is currently in the system to a dot file.
      * This graph will have the dummyRoot and its edges removed.
+     *
      * @author: Kelvin
      */
     public void outputProcessing(String filePath, State state) throws IOException {
 
         String outputFilename = filePath.concat(".dot");
-        try(BufferedWriter out=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilename)))){
-            out.write("digraph \""+filePath+"\" "+"{");
+        try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilename)))) {
+            out.write("digraph \"" + filePath + "\" " + "{");
 
             out.newLine();
 
@@ -117,45 +117,28 @@ public class GraphProcessing {
             Set<Integer> key = state.procKeys();
             //writing nodes one by one to the file
             for (Node node : graph) {
-                if (node.getId().equals("dummyRoot")){
+                if (node.getId().equals("dummyRoot")) {
                     break;
                 }
 
-                String startingTime="hello";
-                String process="hi";
-
                 //getting the start time and process scheduled on
-//                for (Integer processor: key){
-//                    HashMap<Integer, Node> partialSchedule = schedule.get(processor);
-//                    if (partialSchedule.containsValue(node)){
-//                        for(Integer nodeKey:partialSchedule.keySet()){
-//                            Node tempNode = partialSchedule.get(nodeKey);
-//                            if (tempNode.equals(node)){
-//                                startingTime = nodeKey.toString();
-//                                process = processor.toString();
-//                                break;
-//                            }
-//                        }
-//                    }
-//                }
-                String[] temp = nodeDetail(schedule,key,node);
-                startingTime=temp[0];
-                process=temp[1];
+                String[] temp = nodeDetail(schedule, key, node);
+                String startingTime = temp[0];
+                String process = temp[1];
 
                 String nodeWeight = node.getAttribute("Weight").toString();
-                out.write(node.toString()+" ["+"Weight="+nodeWeight+ ", Start="+ startingTime +", Processor="+process+"];");
+                out.write(node.toString() + " [" + "Weight=" + nodeWeight + ", Start=" + startingTime + ", Processor=" + process + "];");
                 out.newLine();
-
-
+                
                 //writing out going edges one by one to the file
                 node.leavingEdges().forEach(edge -> {
                     String edgeUnformatted = edge.toString();
-                    int subStart=edgeUnformatted.indexOf("[")+1;
-                    int subEnd=edgeUnformatted.length()-1;
-                    String edgeFormatted = edgeUnformatted.substring(subStart,subEnd);
+                    int subStart = edgeUnformatted.indexOf("[") + 1;
+                    int subEnd = edgeUnformatted.length() - 1;
+                    String edgeFormatted = edgeUnformatted.substring(subStart, subEnd);
                     String edgeWeight = edge.getAttribute("Weight").toString();
                     try {
-                        out.write(edgeFormatted+" ["+"Weight="+edgeWeight+"];");
+                        out.write(edgeFormatted + " [" + "Weight=" + edgeWeight + "];");
                         out.newLine();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -172,17 +155,17 @@ public class GraphProcessing {
     /**
      * This method is an helper function that gets the starting time and processor of a task scheduled
      */
-    public String[] nodeDetail(HashMap<Integer, HashMap<Integer, Node>> schedule, Set<Integer> key, Node node){
+    public String[] nodeDetail(HashMap<Integer, HashMap<Integer, Node>> schedule, Set<Integer> key, Node node) {
         //getting the start time and process scheduled on
-        String[] output= new String[2];
-        for (Integer processor: key){
+        String[] output = new String[2];
+        for (Integer processor : key) {
             HashMap<Integer, Node> partialSchedule = schedule.get(processor);
-            if (partialSchedule.containsValue(node)){
-                for(Integer nodeKey:partialSchedule.keySet()){
+            if (partialSchedule.containsValue(node)) {
+                for (Integer nodeKey : partialSchedule.keySet()) {
                     Node tempNode = partialSchedule.get(nodeKey);
-                    if (tempNode.equals(node)){
-                        output[0]=nodeKey.toString();
-                        output[1]=processor.toString();
+                    if (tempNode.equals(node)) {
+                        output[0] = nodeKey.toString();
+                        output[1] = processor.toString();
                         break;
                     }
                 }
@@ -196,6 +179,7 @@ public class GraphProcessing {
      * calculate the bottom level of all the nodes of the graph.
      * Returns the bottom level of the dummyRootNode - even though by then the
      * dummyRootNode's bottom level would have already been set as an attribute.
+     *
      * @author Megan
      */
     private int calBottomLevels(Node node) {

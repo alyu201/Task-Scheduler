@@ -72,7 +72,7 @@ public class AStarScheduler {
      * @param parentState The parent state
      * @param tasks The list of tasks that are to be scheduled in tathe child states.
      */
-    public PriorityQueue<State> addChildStates (State parentState, List<Node> tasks) {
+    private void addChildStates (State parentState, List<Node> tasks) {
         State child;
 
         Set<Integer> processors = parentState.procKeys();
@@ -118,7 +118,6 @@ public class AStarScheduler {
                 _openList.add(child);
             }
         }
-        return _openList;
     }
 
     /**

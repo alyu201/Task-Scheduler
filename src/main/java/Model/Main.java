@@ -17,7 +17,7 @@ public class Main {
             if (!filePath.contains(".dot")){
                 throw new InvalidInputArgumentException("The input filename needs a .dot extension.");
             }
-            GraphProcessing graph = new GraphProcessing();
+            GraphProcessing graph = GraphProcessing.Graphprocessing();
             graph.inputProcessing(filePath);
 
             //Process the number of processor argument
@@ -93,6 +93,7 @@ public class Main {
      * @throws IOException
      */
     public static void outputArgProcedure(String outputFilename, GraphProcessing graph) throws IOException {
-        graph.outputProcessing(outputFilename);
+        State state = new State(2);
+        graph.outputProcessing(outputFilename,state);
     }
 }

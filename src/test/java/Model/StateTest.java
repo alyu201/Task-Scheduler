@@ -6,6 +6,8 @@ import org.graphstream.graph.implementations.DefaultGraph;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -99,5 +101,13 @@ class StateTest {
         int nextStartTime2 = _final.getNextStartTime(2);
         assertEquals(5,nextStartTime1);
         assertEquals(3,nextStartTime2);
+    }
+
+    @Test
+    void testOutputFunction() throws IOException {
+        GraphProcessing graph = GraphProcessing.Graphprocessing();
+        graph.inputProcessing("input.dot");
+        graph.outputProcessing("example",_final);
+        System.out.println(_final);
     }
 }

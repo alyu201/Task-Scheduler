@@ -1,2 +1,7 @@
+Model\State.class
+Controller\PrimaryController.class
 Model\GraphProcessing.class
+Controller\SecondaryController.class
+Model\Visualiser.class
+Model\InvalidInputArgumentException.class
 Model\Main.class

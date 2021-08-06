@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class StateTest {
     private static State _parent;
     private static State _child;
+    private static State _child2;
     private static State _final;
 
     /**
@@ -28,17 +29,21 @@ class StateTest {
         graph.addNode("A");
         graph.addNode("B");
         graph.addNode("C");
+        graph.addNode("D");
         Node nodeA = graph.getNode("A");
         Node nodeB = graph.getNode("B");
         Node nodeC = graph.getNode("C");
+        Node nodeD = graph.getNode("D");
         nodeA.setAttribute("weight", 2);
         nodeB.setAttribute("weight", 3);
         nodeC.setAttribute("weight", 1);
+        nodeD.setAttribute("weight", 2);
 
         State _empty = new State(2);
         _parent = new State(_empty,7,nodeA,1,0);
         _child = new State(_parent,6,nodeB,2,0);
-        _final = new State(_child,5,nodeC,1,2);
+        _child2 = new State(_child,5,nodeC,1,2);
+        _final = new State(_child2,5,nodeD,1,3);
     }
 
     @Test
@@ -92,7 +97,7 @@ class StateTest {
     void getFinalNextStartTime() {
         int nextStartTime1 = _final.getNextStartTime(1);
         int nextStartTime2 = _final.getNextStartTime(2);
-        assertEquals(3,nextStartTime1);
+        assertEquals(5,nextStartTime1);
         assertEquals(3,nextStartTime2);
     }
 }

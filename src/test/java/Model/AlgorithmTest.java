@@ -66,37 +66,69 @@ public class AlgorithmTest {
         _graphB.addEdge("BD", graphBNodeB, graphBNodeD,true);
         _graphB.addEdge("CD", graphBNodeC, graphBNodeD,true);
 
+        _graphB.getEdge("AB").setAttribute("Weight", 2);
+        _graphB.getEdge("AC").setAttribute("Weight", 1);
+        _graphB.getEdge("BD").setAttribute("Weight", 2);
+        _graphB.getEdge("CD").setAttribute("Weight", 1);
+
     }
 
     @Test
-    public void TestGraphAOneProcessor() {
-        AStarScheduler scheduler = new AStarScheduler(_graphA, 1);
+    public void TestEmptyStateGenerateOneChildState() {
+        int numProcessors = 1;
 
-        State schedule = scheduler.generateSchedule();
+        AStarScheduler scheduler = new AStarScheduler(_graphA, numProcessors);
+        State initialState = new State(numProcessors);
 
-        assertEquals("", schedule);
+        List<Node> tasks = new ArrayList<>();
+        tasks.add(_graphA.getNode("A"));
+
+        assertEquals("[{1={0=A}}]", scheduler.addChildStates(initialState, tasks).toString());
     }
 
-//    @Test
-//    public void TestSimpleChildStateGeneration() {
-//        AStarScheduler scheduler = new AStarScheduler(_graphA, 1);
-//        State initialState = new State(null, 6, _graphA.getNode("A"), 0, 0);
-//
-//        List<Node> tasks = new ArrayList<>();
-//        tasks.add(_graphA.getNode("B"));
-//
-//        assertEquals("[{0={0=A, 2=B}}]", scheduler.addChildStates(initialState, tasks));
-//    }
-//
-//    @Test
-//    public void TestMoreChildStateGeneration() {
-//        AStarScheduler scheduler = new AStarScheduler(_graphA, 3);
-//        State initialState = new State(null, 6, _graphA.getNode("A"), 0, 0);
-//
-//        List<Node> tasks = new ArrayList<>();
-//        tasks.add(_graphA.getNode("B"));
-//
-//        assertEquals("[{0={0=A, 2=B}}]", scheduler.addChildStates(initialState, tasks));
-//    }
+    @Test
+    public void TestEmptyStateGenerateMultipleChildMultipleProcessor() {
+        int numProcessors = 3;
+
+        AStarScheduler scheduler = new AStarScheduler(_graphA, numProcessors);
+        State initialState = new State(numProcessors);
+
+        List<Node> tasks = new ArrayList<>();
+        tasks.add(_graphA.getNode("A"));
+
+        assertEquals("[{1={0=A}, 2={}, 3={}}, {1={}, 2={0=A}, 3={}}, {1={}, 2={}, 3={0=A}}]", scheduler.addChildStates(initialState, tasks).toString());
+    }
+
+    @Test
+    public void TestOneProcessorGenerateTwoStates() {
+        int numProcessors = 1;
+
+        AStarScheduler scheduler = new AStarScheduler(_graphA, numProcessors);
+        State emptyState = new State(numProcessors);
+
+        List<Node> tasks = new ArrayList<>();
+        tasks.add(_graphA.getNode("B"));
+        tasks.add( _graphB.getNode("C"));
+
+        State firstState = new State(emptyState, 7, _graphA.getNode("A"), 1, 0);
+
+        assertEquals("[{1={0=A, 2=B}}, {1={0=A, 2=C}}]", scheduler.addChildStates(firstState, tasks).toString());
+    }
+
+    @Test
+    public void TestTwoProcessorGenerateTwoStates() {
+        int numProcessors = 2;
+
+        AStarScheduler scheduler = new AStarScheduler(_graphA, numProcessors);
+        State emptyState = new State(numProcessors);
+
+        List<Node> tasks = new ArrayList<>();
+        tasks.add(_graphB.getNode("B"));
+        tasks.add( _graphB.getNode("C"));
+
+        State firstState = new State(emptyState, 7, _graphB.getNode("A"), 1, 0);
+
+        assertEquals("[{1={0=A, 2=B}, 2={}}, {1={0=A}, 2={4=B}}, {1={0=A, 2=C}, 2={}}, {1={0=A}, 2={3=C}}]", scheduler.addChildStates(firstState, tasks).toString());
+    }
 
 }

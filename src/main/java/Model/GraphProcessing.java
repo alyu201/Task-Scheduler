@@ -12,6 +12,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
 
 /**
 This class is used for processing input dot file and output dot file.
@@ -19,7 +21,31 @@ This class is used for processing input dot file and output dot file.
  */
 public class GraphProcessing {
 
-    private Graph graph = new DefaultGraph("graph");
+
+    // static variable single_instance of type Singleton
+    private static GraphProcessing single_instance=null;
+    private Graph graph;
+
+
+    // variable of type String
+    public String s;
+
+    // private constructor restricted to this class itself
+    private GraphProcessing()
+    {
+        graph = new DefaultGraph("graph");
+    }
+
+    // static method to create instance of Singleton class
+    public static GraphProcessing Graphprocessing()
+    {
+        // To ensure only one instance is created
+        if (single_instance == null)
+        {
+            single_instance = new GraphProcessing();
+        }
+        return single_instance;
+    }
 
     /**
      * This method takes a path to a dot file and uses the GraphStream library to convert the file content to a graph.
@@ -79,18 +105,47 @@ public class GraphProcessing {
      * This graph will have the dummyRoot and its edges removed.
      * @author: Kelvin
      */
-    public void outputProcessing(String filePath) throws IOException {
+    public void outputProcessing(String filePath, State state) throws IOException {
 
         String outputFilename = filePath.concat(".dot");
         try(BufferedWriter out=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilename)))){
             out.write("digraph \""+filePath+"\" "+"{");
 
             out.newLine();
+
+            HashMap<Integer, HashMap<Integer, Node>> schedule = state.getState();
+            Set<Integer> key = state.procKeys();
             //writing nodes one by one to the file
             for (Node node : graph) {
+                if (node.getId().equals("dummyRoot")){
+                    break;
+                }
+
+                String startingTime="hello";
+                String process="hi";
+
+                //getting the start time and process scheduled on
+//                for (Integer processor: key){
+//                    HashMap<Integer, Node> partialSchedule = schedule.get(processor);
+//                    if (partialSchedule.containsValue(node)){
+//                        for(Integer nodeKey:partialSchedule.keySet()){
+//                            Node tempNode = partialSchedule.get(nodeKey);
+//                            if (tempNode.equals(node)){
+//                                startingTime = nodeKey.toString();
+//                                process = processor.toString();
+//                                break;
+//                            }
+//                        }
+//                    }
+//                }
+                String[] temp = nodeDetail(schedule,key,node);
+                startingTime=temp[0];
+                process=temp[1];
+
                 String nodeWeight = node.getAttribute("Weight").toString();
-                out.write(node.toString()+" ["+"Weight="+nodeWeight+"];");
+                out.write(node.toString()+" ["+"Weight="+nodeWeight+ ", Start="+ startingTime +", Processor="+process+"];");
                 out.newLine();
+
 
                 //writing out going edges one by one to the file
                 node.leavingEdges().forEach(edge -> {
@@ -112,6 +167,28 @@ public class GraphProcessing {
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * This method is an helper function that gets the starting time and processor of a task scheduled
+     */
+    public String[] nodeDetail(HashMap<Integer, HashMap<Integer, Node>> schedule, Set<Integer> key, Node node){
+        //getting the start time and process scheduled on
+        String[] output= new String[2];
+        for (Integer processor: key){
+            HashMap<Integer, Node> partialSchedule = schedule.get(processor);
+            if (partialSchedule.containsValue(node)){
+                for(Integer nodeKey:partialSchedule.keySet()){
+                    Node tempNode = partialSchedule.get(nodeKey);
+                    if (tempNode.equals(node)){
+                        output[0]=nodeKey.toString();
+                        output[1]=processor.toString();
+                        break;
+                    }
+                }
+            }
+        }
+        return output;
     }
 
     /**

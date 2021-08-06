@@ -132,4 +132,13 @@ public class State {
     public HashMap<Integer,Node> getSchedule(int processor) {
         return _state.get(processor);
     }
+
+    /**
+     * This method gets the _state attribute.
+     * @return _state attribute
+     */
+    public HashMap<Integer, HashMap<Integer, Node>> getState() {
+        return _state;
+    }
+
 }

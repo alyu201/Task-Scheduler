@@ -152,4 +152,8 @@ public class GraphProcessing {
         return bottomLevel;
     }
 
+    public Graph getGraph() {
+        return graph;
+    }
+
 }

@@ -1,10 +1,13 @@
 package Model;
 
+import org.graphstream.graph.Graph;
+
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class Main {
+    private static Graph _graph;
     public static void main(String[] args) {
 
         try {
@@ -19,6 +22,7 @@ public class Main {
             }
             GraphProcessing graph = new GraphProcessing();
             graph.inputProcessing(filePath);
+            _graph = graph.getGraph();
 
             //Process the number of processor argument
             int numberOfProcess = Integer.parseInt(args[1]);
@@ -57,7 +61,7 @@ public class Main {
         }
 
         if (arguments.contains("-v")){
-            visualArgProcedure();
+            visualArgProcedure(_graph);
         }
 
         if (arguments.contains("-o")){
@@ -81,9 +85,13 @@ public class Main {
      * This method is responsible for initiating the visualization if specified by the user.
      * @throws IOException
      */
-    public static void visualArgProcedure() throws IOException {
+    public static void visualArgProcedure(Graph graph) throws IOException {
         System.out.println("require visualization");
-        Visualiser.start();
+        try {
+            Visualiser.start(graph);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

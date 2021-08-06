@@ -4,17 +4,23 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+/**
+ * This is the Main class of the project, an entry point to the project.
+ * This class responisble for input argument processing.
+ *
+ * @author Kelvin
+ */
 public class Main {
     public static void main(String[] args) {
 
         try {
-            //Check if the input argument at least 2
-            if (args.length<2){
+            //through an exception if a dot file and number of processors not provided.
+            if (args.length < 2) {
                 throw new InvalidInputArgumentException("Input arguments must at least specify a .dot file and a number of processors");
             }
             //Process the input dot file
             String filePath = Paths.get(args[0]).toAbsolutePath().toString();
-            if (!filePath.contains(".dot")){
+            if (!filePath.contains(".dot")) {
                 throw new InvalidInputArgumentException("The input filename needs a .dot extension.");
             }
             GraphProcessing graph = GraphProcessing.Graphprocessing();
@@ -26,11 +32,10 @@ public class Main {
             //Process the other arguments
             processingOptions(args, graph);
 
-            System.out.println("the program ends");
-
+            System.out.println("The Program Ends");
             System.exit(0);
 
-        }catch(Exception e){
+        } catch (Exception e) {
             System.out.println(e);
         }
     }
@@ -38,47 +43,51 @@ public class Main {
     /**
      * This method is responsible for processing all the optional arguments such as
      * -p for number of cores; -v for visualization; - o for output filename.
-     * @param args
-     * @param graph
+     *
      * @throws IOException
      */
     public static void processingOptions(String[] args, GraphProcessing graph) throws IOException {
         int numberArg = args.length;
         ArrayList<String> arguments = new ArrayList<>();
-        while (numberArg>2){
+        while (numberArg > 2) {
             numberArg--;
             arguments.add(args[numberArg]);
         }
 
-        if (arguments.contains("-p")){
+        //process -p argument
+        if (arguments.contains("-p")) {
             int indexOfp = arguments.indexOf("-p");
-            int numCore = Integer.parseInt(arguments.get(indexOfp-1));
+            int numCore = Integer.parseInt(arguments.get(indexOfp - 1));
             coreArgProcedure(numCore);
         }
 
-        if (arguments.contains("-v")){
+        //process -v argument
+        if (arguments.contains("-v")) {
             visualArgProcedure();
         }
 
-        if (arguments.contains("-o")){
+        //process -o argument
+        if (arguments.contains("-o")) {
             int indexOfo = arguments.indexOf("-o");
-            String outputFilename = arguments.get(indexOfo-1);
-            outputArgProcedure(outputFilename,graph);
+            String outputFilename = arguments.get(indexOfo - 1);
+            outputArgProcedure(outputFilename, graph);
         }
     }
 
     /**
      * This method is responsible for initiating parallelization when
      * the client specify number of cores to work in parallel.
+     *
      * @param numCores
      */
-    public static void coreArgProcedure(int numCores){
-        System.out.println("the number of core is "+numCores);
+    public static void coreArgProcedure(int numCores) {
+        System.out.println("the number of core is " + numCores);
         // TODO: 8/3/2021 implementation for parallelization required
     }
 
     /**
      * This method is responsible for initiating the visualization if specified by the user.
+     *
      * @throws IOException
      */
     public static void visualArgProcedure() throws IOException {
@@ -88,12 +97,13 @@ public class Main {
 
     /**
      * This method is responsible for output a .dot file using graph that is in the system.
+     *
      * @param outputFilename
      * @param graph
      * @throws IOException
      */
     public static void outputArgProcedure(String outputFilename, GraphProcessing graph) throws IOException {
         State state = new State(2);
-        graph.outputProcessing(outputFilename,state);
+        graph.outputProcessing(outputFilename, state);
     }
 }

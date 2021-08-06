@@ -2,6 +2,7 @@ package Model;
 
 // TODO: Should this class or visualisation classes implement Thread for concurrency
 
+import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 
@@ -34,9 +35,7 @@ public class AStarScheduler {
 
         //TODO: If there is memory problem, can make just one "StateUtility" class having the numProcessors stored and spits out State objects
 
-        //TODO: The child task for the empty state is probably wrong
-        Node rootNode = _taskGraph.getNode("A");
-        State emptyState = new State(null, 0, rootNode, 1, 0);
+        State emptyState = new State(_numProcessors);
         _openList.add(emptyState);
 
         while (!_openList.isEmpty()) {
@@ -58,12 +57,12 @@ public class AStarScheduler {
      * @return The number of tasks allocated
      */
     private int getTaskCountInState (State state) {
-        HashMap<Integer, HashMap<Integer, Node>> processorSchedules= state.getState();
+        Set<Integer> processors = state.procKeys();
 
         int numTaskAllocated = 0;
 
-        for(int i: processorSchedules.keySet()) {
-            numTaskAllocated += processorSchedules.get(i).size();
+        for(int p: processors) {
+            numTaskAllocated += state.getSchedule(p).size();
         }
         return numTaskAllocated;
     }
@@ -71,42 +70,45 @@ public class AStarScheduler {
     /**
      * Create a set of child state from a parent state
      * @param parentState The parent state
-     * @param tasks The list of tasks that are to be scheduled in the child states.
+     * @param tasks The list of tasks that are to be scheduled in tathe child states.
      */
-    public void addChildStates (State parentState, List<Node> tasks) {
+    public PriorityQueue<State> addChildStates (State parentState, List<Node> tasks) {
         State child;
-        HashMap<Integer, HashMap<Integer, Node>> processorSchedules = parentState.getState();
+
+        Set<Integer> processors = parentState.procKeys();
 
         for (Node task: tasks) {
             List<Node> prerequisiteTasks = task.enteringEdges().map(e -> e.getNode0()).collect(Collectors.toList());
+            List<String> prerequisiteTasksId = prerequisiteTasks.stream().map(n -> n.getId()).collect(Collectors.toList());
 
+            //TODO: The processor number in State starts indexing from 1
             Node[] prerequisiteNodePos = new Node[_numProcessors];
             int[] startingTimes = new int[_numProcessors];
 
-            for (int i: processorSchedules.keySet()) {
-                HashMap<Integer, Node> schedule = processorSchedules.get(i);
+            for (int i: processors) {
+                HashMap<Integer, Node> schedule = parentState.getSchedule(i);
 
                 for (int startTime: schedule.keySet()) {
-                    if (prerequisiteTasks.contains(schedule.get(startTime))) {
-                        int currentStartTime = startingTimes[i];
+                    if (prerequisiteTasksId.contains(schedule.get(startTime).getId())) {
+
+                        //Processor indexing starts from 1
+                        int currentStartTime = startingTimes[i - 1];
                         int prereqStartTime = startTime + schedule.get(startTime).getAttribute("Weight", Integer.class);
 
                         if (prereqStartTime > currentStartTime) {
-                            startingTimes[i] = prereqStartTime;
-                            prerequisiteNodePos[i] = schedule.get(startTime);
+                            startingTimes[i - 1] = prereqStartTime;
+                            prerequisiteNodePos[i - 1] = schedule.get(startTime);
                         }
                     }
                 }
-
             }
 
-            //TODO: Find all the prerequisite tasks and figure out the the max start time, after that, add communication cost if needed when scheduling on a processor
-            for(int i = 0; i < _numProcessors; i++) {
+            for(int i: processors) {
                 int nextStartTime = parentState.getNextStartTime(i);
-                for (int j = 0; j < _numProcessors; j++) {
-                    if (i != j && prerequisiteNodePos[j] != null) {
-                        int communicationCost = prerequisiteNodePos[j].getEdgeToward(task).getAttribute("Weight", Integer.class);
-                        nextStartTime = Math.max(nextStartTime, startingTimes[j] + communicationCost);
+                for (int j: processors) {
+                    if (i != j && prerequisiteNodePos[j - 1] != null) {
+                        int communicationCost = prerequisiteNodePos[j - 1].getEdgeToward(task).getAttribute("Weight", Integer.class);
+                        nextStartTime = Math.max(nextStartTime, startingTimes[j - 1] + communicationCost);
                     }
                 }
 
@@ -116,7 +118,7 @@ public class AStarScheduler {
                 _openList.add(child);
             }
         }
-//        return _openList;
+        return _openList;
     }
 
     /**
@@ -130,14 +132,14 @@ public class AStarScheduler {
         //Stores a mapping for all the tasks and and their number of prerequisite tasks
         _taskGraph.nodes().forEach(task -> allTasks.put(task, task.getInDegree()));
 
-        HashMap<Integer, HashMap<Integer, Node>> schedule = state.getState();
+        Set<Integer> processors = state.procKeys();
 
         //TODO: Might need to change data structure
         List<Node> scheduledTasks = new ArrayList<Node>();
 
         //Go through all scheduled tasks and reduce the count for prerequisite tasks of their children.
-        for (int i: schedule.keySet()) {
-            HashMap<Integer, Node> processorTasks = schedule.get(i);
+        for (int i: processors) {
+            HashMap<Integer, Node> processorTasks = state.getSchedule(i);
             for (int j: processorTasks.keySet()) {
                 Node task = processorTasks.get(j);
 
@@ -149,7 +151,6 @@ public class AStarScheduler {
 
         //Remove tasks that have already been scheduled and tasks that still have prerequisite tasks > 0
         allTasks.entrySet().removeIf(e -> (scheduledTasks.contains(e.getKey()) && e.getValue() > 0));
-
         return new ArrayList<Node>(allTasks.keySet());
     }
 

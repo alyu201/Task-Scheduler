@@ -57,9 +57,9 @@ public class State {
         HashMap<Integer,HashMap<Integer,Node>> clone = new HashMap<>();
         initialise(clone);
         for (int proc : state.procKeys()) {
+            HashMap<Integer,Node> schedule = new HashMap<>();
             for (int time : state.getSchedule(proc).keySet()) {
                 Node task = state.getSchedule(proc).get(time);
-                HashMap<Integer,Node> schedule = new HashMap<>();
                 schedule.put(time,task);
                 clone.put(proc,schedule);
             }

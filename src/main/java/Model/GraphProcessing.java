@@ -16,16 +16,15 @@ import java.util.HashMap;
 import java.util.Set;
 
 /**
- * This class is used for processing input dot file and output dot file.
- *
+ * This class is a singleton class that is used for processing input dot file and output dot file.
  * @author kelvi and Megan
  */
 public class GraphProcessing {
 
 
     // static variable single_instance of type Singleton
-    private static GraphProcessing single_instance = null;
-    private Graph graph;
+    private static GraphProcessing _single_instance = null;
+    private Graph _graph;
 
 
     // variable of type String
@@ -33,16 +32,16 @@ public class GraphProcessing {
 
     // private constructor restricted to this class itself
     private GraphProcessing() {
-        graph = new DefaultGraph("graph");
+        _graph = new DefaultGraph("graph");
     }
 
     // static method to create instance of Singleton class
     public static GraphProcessing Graphprocessing() {
         // To ensure only one instance is created
-        if (single_instance == null) {
-            single_instance = new GraphProcessing();
+        if (_single_instance == null) {
+            _single_instance = new GraphProcessing();
         }
-        return single_instance;
+        return _single_instance;
     }
 
     /**
@@ -60,13 +59,13 @@ public class GraphProcessing {
         ArrayList<Node> listOfOriginalRoots = new ArrayList<Node>();
 
         //Add a sink to listen to all the graph events that come from the input dot file
-        fileSource.addSink(this.graph);
+        fileSource.addSink(this._graph);
 
         try {
             fileSource.readAll(filePath);
 
             //This for loop is to find the root node(s) ONLY
-            for (Node node : graph) {
+            for (Node node : _graph) {
                 //If we found the original root nodes, add it to the listOfOriginalRoots
                 if (node.getInDegree() == 0) {
                     listOfOriginalRoots.add(node);
@@ -75,14 +74,14 @@ public class GraphProcessing {
 
             //Adding a dummy node to the graph and setting its weight to 0.
             //Note: This dummyRootNode will NOT be in the listOfOriginalRoots.
-            Node dummyRootNode = graph.addNode("dummyRoot");
+            Node dummyRootNode = _graph.addNode("dummyRoot");
             dummyRootNode.setAttribute("Weight", 0);
 
 
             //Adding edges of weight 0 from the dummyRootNode to each of the listOfOriginalRoots
             for (Node originalRoot : listOfOriginalRoots) {
                 String edgeName = "(" + dummyRootNode.toString() + ";" + originalRoot.toString() + ")";
-                Edge edge = graph.addEdge(edgeName, dummyRootNode, originalRoot, true);
+                Edge edge = _graph.addEdge(edgeName, dummyRootNode, originalRoot, true);
                 edge.setAttribute("Weight", 0);
             }
 
@@ -95,7 +94,7 @@ public class GraphProcessing {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            fileSource.removeSink(graph);
+            fileSource.removeSink(_graph);
         }
     }
 
@@ -103,20 +102,19 @@ public class GraphProcessing {
      * This method will write the graph that is currently in the system to a dot file.
      * This graph will have the dummyRoot and its edges removed.
      *
-     * @author: Kelvin
+     * @author Kelvin
      */
     public void outputProcessing(String filePath, State state) throws IOException {
 
         String outputFilename = filePath.concat(".dot");
         try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilename)))) {
             out.write("digraph \"" + filePath + "\" " + "{");
-
             out.newLine();
 
             HashMap<Integer, HashMap<Integer, Node>> schedule = state.getState();
             Set<Integer> key = state.procKeys();
             //writing nodes one by one to the file
-            for (Node node : graph) {
+            for (Node node : _graph) {
                 if (node.getId().equals("dummyRoot")) {
                     break;
                 }
@@ -154,6 +152,7 @@ public class GraphProcessing {
 
     /**
      * This method is an helper function that gets the starting time and processor of a task scheduled
+     * @author kelvin
      */
     public String[] nodeDetail(HashMap<Integer, HashMap<Integer, Node>> schedule, Set<Integer> key, Node node) {
         //getting the start time and process scheduled on

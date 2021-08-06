@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PriorityQueue;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -128,7 +129,18 @@ public class AlgorithmTest {
 
         State firstState = new State(emptyState, 7, _graphB.getNode("A"), 1, 0);
 
-        assertEquals("[{1={0=A, 2=B}, 2={}}, {1={0=A}, 2={4=B}}, {1={0=A, 2=C}, 2={}}, {1={0=A}, 2={3=C}}]", scheduler.addChildStates(firstState, tasks).toString());
+        PriorityQueue<State> childStates = scheduler.addChildStates(firstState, tasks);
+        assertEquals("[{1={0=A, 2=B}, 2={}}, {1={0=A}, 2={4=B}}, {1={0=A, 2=C}, 2={}}, {1={0=A}, 2={3=C}}]", childStates.toString());
+    }
+
+    @Test
+    public void TestAlgorithmGraphBOneProcessor() {
+        int numProcessors = 1;
+
+        AStarScheduler scheduler = new AStarScheduler(_graphB, numProcessors);
+        State finalState = scheduler.generateSchedule();
+
+        assertEquals("", finalState);
     }
 
 }

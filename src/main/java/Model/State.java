@@ -104,7 +104,7 @@ public class State {
 
         for (int key : procSchedule.keySet()) {
             Node node = procSchedule.get(key);
-            int weight = (int) node.getAttribute("Weight");
+            int weight = Double.valueOf(node.getAttribute("Weight").toString()).intValue();
             nextStartTime += weight;
         }
         return nextStartTime;

@@ -78,22 +78,24 @@ public class AStarScheduler {
         Set<Integer> processors = parentState.procKeys();
 
         for (Node task: tasks) {
+            //getting the prerequisite task details
             List<Node> prerequisiteTasks = task.enteringEdges().map(e -> e.getNode0()).collect(Collectors.toList());
             List<String> prerequisiteTasksId = prerequisiteTasks.stream().map(n -> n.getId()).collect(Collectors.toList());
 
             //TODO: The processor number in State starts indexing from 1
             Node[] prerequisiteNodePos = new Node[_numProcessors];
             int[] startingTimes = new int[_numProcessors];
-
             for (int i: processors) {
                 HashMap<Integer, Node> schedule = parentState.getSchedule(i);
 
+                //if current schedule has prerequisite tasks, change the start time to after the finishing time of the prerequisites.
                 for (int startTime: schedule.keySet()) {
+                    //change start time to prerequisite task finishing time
                     if (prerequisiteTasksId.contains(schedule.get(startTime).getId())) {
 
                         //Processor indexing starts from 1
                         int currentStartTime = startingTimes[i - 1];
-                        int prereqStartTime = startTime + schedule.get(startTime).getAttribute("Weight", Integer.class);
+                        int prereqStartTime = startTime + Double.valueOf(schedule.get(startTime).getAttribute("Weight").toString()).intValue();
 
                         if (prereqStartTime > currentStartTime) {
                             startingTimes[i - 1] = prereqStartTime;
@@ -103,11 +105,12 @@ public class AStarScheduler {
                 }
             }
 
+            //adding communication time
             for(int i: processors) {
                 int nextStartTime = parentState.getNextStartTime(i);
                 for (int j: processors) {
                     if (i != j && prerequisiteNodePos[j - 1] != null) {
-                        int communicationCost = prerequisiteNodePos[j - 1].getEdgeToward(task).getAttribute("Weight", Integer.class);
+                        int communicationCost = Double.valueOf(prerequisiteNodePos[j - 1].getEdgeToward(task).getAttribute("Weight").toString()).intValue();
                         nextStartTime = Math.max(nextStartTime, startingTimes[j - 1] + communicationCost);
                     }
                 }

@@ -1,6 +1,5 @@
 package Model;
 
-import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.DefaultGraph;

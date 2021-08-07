@@ -1,5 +1,7 @@
 package Model;
 
+import org.graphstream.graph.Graph;
+
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -23,20 +25,23 @@ public class Main {
             if (!filePath.contains(".dot")) {
                 throw new InvalidInputArgumentException("The input filename needs a .dot extension.");
             }
-            GraphProcessing graph = GraphProcessing.Graphprocessing();
-            graph.inputProcessing(filePath);
+            GraphProcessing graphProcessing = GraphProcessing.Graphprocessing();
+            graphProcessing.inputProcessing(filePath);
+            Graph graph = graphProcessing.getGraph();
 
-            //Process the number of processor argument
+            //Process the number of processor argument, then start scheduling
             int numberOfProcess = Integer.parseInt(args[1]);
+            AStarScheduler aStarScheduler = new AStarScheduler(graph, numberOfProcess);
+            State state = aStarScheduler.generateSchedule();
 
             //Process the other arguments
-            processingOptions(args, graph);
+            processingOptions(args, graphProcessing,state);
 
             System.out.println("The Program Ends");
             System.exit(0);
 
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
 
@@ -46,7 +51,7 @@ public class Main {
      *
      * @throws IOException
      */
-    public static void processingOptions(String[] args, GraphProcessing graph) throws IOException {
+    public static void processingOptions(String[] args, GraphProcessing graphProcessing, State state) throws IOException {
         int numberArg = args.length;
         ArrayList<String> arguments = new ArrayList<>();
         while (numberArg > 2) {
@@ -63,14 +68,18 @@ public class Main {
 
         //process -v argument
         if (arguments.contains("-v")) {
-            visualArgProcedure();
+            System.out.println("We are still working on visualization!");
+            //todo visualArgProcedure();
         }
 
         //process -o argument
         if (arguments.contains("-o")) {
             int indexOfo = arguments.indexOf("-o");
             String outputFilename = arguments.get(indexOfo - 1);
-            outputArgProcedure(outputFilename, graph);
+            outputArgProcedure(outputFilename, graphProcessing,state);
+        }else{
+            String outputFilename = args[0].substring(0,args[0].length()-4)+"-output";
+            outputArgProcedure(outputFilename, graphProcessing,state);
         }
     }
 
@@ -99,11 +108,10 @@ public class Main {
      * This method is responsible for output a .dot file using graph that is in the system.
      *
      * @param outputFilename
-     * @param graph
+     * @param graphProcessing
      * @throws IOException
      */
-    public static void outputArgProcedure(String outputFilename, GraphProcessing graph) throws IOException {
-        State state = new State(2);
-        graph.outputProcessing(outputFilename, state);
+    public static void outputArgProcedure(String outputFilename, GraphProcessing graphProcessing, State state) throws IOException {
+        graphProcessing.outputProcessing(outputFilename, state);
     }
 }

@@ -27,15 +27,17 @@ public class GraphProcessing {
     private Graph _graph;
 
 
-    // variable of type String
-    public String s;
-
-    // private constructor restricted to this class itself
+    /**
+     *private constructor restricted to this class itself
+      */
     private GraphProcessing() {
         _graph = new DefaultGraph("graph");
     }
 
-    // static method to create instance of Singleton class
+
+    /**
+     * static method to create instance of GraphProcessing class
+     */
     public static GraphProcessing Graphprocessing() {
         // To ensure only one instance is created
         if (_single_instance == null) {
@@ -45,23 +47,32 @@ public class GraphProcessing {
     }
 
     /**
+     * This method returns a graph when invoked.
+     */
+    public Graph getGraph(){
+        return _graph;
+    }
+
+
+    /**
      * This method takes a path to a dot file and uses the GraphStream library to convert the file content to a graph.
      * A dummy root will also be added to this graph in case there are multiple roots.
      *
      * @throws IOException
      * @author Kelvin and Megan
      */
-    public void inputProcessing(String filePath) throws IOException {
+    public void inputProcessing(String filePath) throws IOException{
 
-        FileSource fileSource = FileSourceFactory.sourceFor(filePath);
+
 
         //Keep a list of the original root nodes of the graph
         ArrayList<Node> listOfOriginalRoots = new ArrayList<Node>();
 
-        //Add a sink to listen to all the graph events that come from the input dot file
-        fileSource.addSink(this._graph);
-
         try {
+            FileSource fileSource = FileSourceFactory.sourceFor(filePath);
+
+            //Add a sink to listen to all the graph events that come from the input dot file
+            fileSource.addSink(this._graph);
             fileSource.readAll(filePath);
 
             //This for loop is to find the root node(s) ONLY
@@ -90,11 +101,11 @@ public class GraphProcessing {
             // already calculated and set as an attribute in this method too
             int dummyRootBL = calBottomLevels(dummyRootNode);
 
+            fileSource.removeSink(_graph);
+
 
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            fileSource.removeSink(_graph);
         }
     }
 

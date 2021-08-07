@@ -88,6 +88,8 @@ public class State {
         return _underestimate;
     }
 
+
+    //TODO: This calculation might be wrong because it seems like start time is based off one processor only, but there are communication cost from other processors
     /**
      * Retrieve the next starting time for a given processor.
      * @param processor The processor from which the next starting time should be calculated.
@@ -102,7 +104,7 @@ public class State {
 
         for (int key : procSchedule.keySet()) {
             Node node = procSchedule.get(key);
-            int weight = (int) node.getAttribute("weight");
+            int weight = Double.valueOf(node.getAttribute("Weight").toString()).intValue();
             nextStartTime += weight;
         }
         return nextStartTime;

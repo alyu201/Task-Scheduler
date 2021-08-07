@@ -103,11 +103,4 @@ class StateTest {
         assertEquals(3,nextStartTime2);
     }
 
-    @Test
-    void testOutputFunction() throws IOException {
-        GraphProcessing graph = GraphProcessing.Graphprocessing();
-        graph.inputProcessing("input.dot");
-        graph.outputProcessing("example",_final);
-        System.out.println(_final);
-    }
 }

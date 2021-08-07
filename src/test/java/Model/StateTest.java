@@ -36,10 +36,10 @@ class StateTest {
         Node nodeB = graph.getNode("B");
         Node nodeC = graph.getNode("C");
         Node nodeD = graph.getNode("D");
-        nodeA.setAttribute("weight", 2);
-        nodeB.setAttribute("weight", 3);
-        nodeC.setAttribute("weight", 1);
-        nodeD.setAttribute("weight", 2);
+        nodeA.setAttribute("Weight", 2);
+        nodeB.setAttribute("Weight", 3);
+        nodeC.setAttribute("Weight", 1);
+        nodeD.setAttribute("Weight", 2);
 
         State _empty = new State(2);
         _parent = new State(_empty,7,nodeA,1,0);

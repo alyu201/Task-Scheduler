@@ -39,11 +39,11 @@ class StateTest2 {
         Node nodeC = graph.getNode("C");
         Node nodeD = graph.getNode("D");
         Node nodeE = graph.getNode("E");
-        nodeA.setAttribute("weight", 3);
-        nodeB.setAttribute("weight", 4);
-        nodeC.setAttribute("weight", 5);
-        nodeD.setAttribute("weight", 6);
-        nodeE.setAttribute("weight", 1);
+        nodeA.setAttribute("Weight", 3);
+        nodeB.setAttribute("Weight", 4);
+        nodeC.setAttribute("Weight", 5);
+        nodeD.setAttribute("Weight", 6);
+        nodeE.setAttribute("Weight", 1);
 
         State _empty = new State(3);
         _s1 = new State(_empty,12,nodeA,1,0);

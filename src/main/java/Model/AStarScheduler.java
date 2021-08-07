@@ -23,7 +23,7 @@ public class AStarScheduler {
     //TODO: Update with the actual classes
     public AStarScheduler (Graph taskGraph, int numProcessors) {
         _numProcessors = numProcessors;
-        _openList = new PriorityQueue<State>(100, new StateComparator());
+        _openList = new PriorityQueue<State>(200, new StateComparator());
         _taskGraph = taskGraph;
     }
 

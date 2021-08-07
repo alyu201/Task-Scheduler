@@ -69,7 +69,7 @@ public class Main {
         //process -v argument
         if (arguments.contains("-v")) {
             System.out.println("We are still working on visualization!");
-            //visualArgProcedure();
+            //todo visualArgProcedure();
         }
 
         //process -o argument
@@ -78,7 +78,8 @@ public class Main {
             String outputFilename = arguments.get(indexOfo - 1);
             outputArgProcedure(outputFilename, graphProcessing,state);
         }else{
-            outputArgProcedure("INPUT-output", graphProcessing,state);
+            String outputFilename = args[0].substring(0,args[0].length()-4)+"-output";
+            outputArgProcedure(outputFilename, graphProcessing,state);
         }
     }
 

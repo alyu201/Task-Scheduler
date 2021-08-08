@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 /**
  * This class is responsible for scheduling a number of tasks represented as a DAG (Directed
  * acyclic graph) into a number of processors.
- * author: schi314
+ * author: Sherman Chin
  */
 public class AStarScheduler {
     private Graph _taskGraph;

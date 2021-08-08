@@ -10,7 +10,12 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-
+/**
+ This test class tests one task graph with 2 detached trees and 2 roots to test whether it is able to
+ handle multiple roots and detached trees.
+ A detached graph means that there are two separate trees inside the graph.
+ @author Megan
+ */
 public class MultipleRootsDetachedAlgorithmTest {
     private Graph _graphA;
 
@@ -69,7 +74,7 @@ public class MultipleRootsDetachedAlgorithmTest {
     }
 
     /**
-     * These tests are meant to test for the A* algorithm so that an optimal solution is produced
+     * Testing the A* algorithm to produce an optimal solution
      */
     @Test
     public void TestAlgorithmGraphAFourProcessorUnderestimate() {

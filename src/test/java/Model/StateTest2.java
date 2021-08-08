@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  StateTest class contains unit test cases for State class.
- @author alyu
+ @author Megan
  */
 
 class StateTest2 {
@@ -39,11 +39,11 @@ class StateTest2 {
         Node nodeC = graph.getNode("C");
         Node nodeD = graph.getNode("D");
         Node nodeE = graph.getNode("E");
-        nodeA.setAttribute("Weight", 3);
-        nodeB.setAttribute("Weight", 4);
-        nodeC.setAttribute("Weight", 5);
-        nodeD.setAttribute("Weight", 6);
-        nodeE.setAttribute("Weight", 1);
+        nodeA.setAttribute("weight", 3);
+        nodeB.setAttribute("weight", 4);
+        nodeC.setAttribute("weight", 5);
+        nodeD.setAttribute("weight", 6);
+        nodeE.setAttribute("weight", 1);
 
         State _empty = new State(3);
         _s1 = new State(_empty,12,nodeA,1,0);
@@ -161,7 +161,9 @@ class StateTest2 {
 
 
 
-
+    /**
+     * Printing the final output state when given an input dot file.
+     */
     @Test
     void testOutputFunction() throws IOException {
         GraphProcessing graph = GraphProcessing.Graphprocessing();

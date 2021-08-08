@@ -9,7 +9,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
+/**
+ This test class tests one task graph with 2 roots to test whether it is able to handle multiple roots.
+ This graph is also quite broad as there exists one level with 6 nodes in it to test whether the algorithm
+ can handle broad trees or not.
+ @author Megan
+ */
 public class MultipleRootsBroadAlgorithmTest {
     private Graph _graphA;
 
@@ -74,7 +79,7 @@ public class MultipleRootsBroadAlgorithmTest {
     }
 
     /**
-     * These tests are meant to test for the A* algorithm so that an optimal solution is produced
+     * Testing the A* algorithm to produce an optimal solution
      */
     @Test
     public void TestAlgorithmGraphATwoProcessorUnderestimate() {

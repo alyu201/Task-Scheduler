@@ -12,7 +12,11 @@ import java.util.PriorityQueue;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
+/**
+ * This class contains test cases for the A* algorithm implementation, as well as providing simple task graph
+ * for the A* algorithm.
+ * author: Sherman Chin
+ */
 public class AlgorithmTest {
     private Graph _graphA;
     private Graph _graphB;

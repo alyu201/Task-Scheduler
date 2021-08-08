@@ -8,10 +8,14 @@ import java.util.ArrayList;
 
 /**
  * This is the Main class of the project, an entry point to the project.
- * This class responisble for input argument processing.
+ * This class responsible for input argument processing.
+ * This class handles the displaying and controlling functions of the
+ * visual representation of the algorithm scene.
+ * It loads the appropriate the FXML file, and contains the required action handlers.
+ * @author Kelvin Shen
  *
- * @author Kelvin
  */
+
 public class Main {
     public static void main(String[] args) {
 

@@ -6,9 +6,10 @@ import java.util.Set;
 import org.graphstream.graph.Node;
 
 /**
- State class represents a state produced at a particular time in the task scheduling process. This object stores the
- maximum underestimate and methods for retrieving the state information.
- @author alyu
+ * This class represents a state produced at a particular time
+ * in the task scheduling process. This object stores the maximum
+ * underestimate and methods for retrieving the state information.
+ * @author Amy Lyu
  */
 
 public class State {

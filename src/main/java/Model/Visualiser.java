@@ -9,8 +9,12 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 /**
- * Main application that takes in input for preprocessing and initialising visualiser
+ * This class handles the displaying and controlling functions of the
+ * main scene. It loads the appropriate FXML file, and contains
+ * the required action handlers.
+ * @author Amy Lyu
  */
+
 public class Visualiser extends Application {
 
     private static Stage _primaryStage;

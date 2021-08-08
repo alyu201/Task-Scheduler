@@ -17,8 +17,10 @@ import java.util.Set;
 
 /**
  * This class is a singleton class that is used for processing input dot file and output dot file.
- * @author kelvi and Megan
+ * @author Kelvin Shen and Megan Lim
+ *
  */
+
 public class GraphProcessing {
 
 
@@ -59,7 +61,7 @@ public class GraphProcessing {
      * A dummy root will also be added to this graph in case there are multiple roots.
      *
      * @throws IOException
-     * @author Kelvin and Megan
+     * @author Kelvin Shen and Megan Lim
      */
     public void inputProcessing(String filePath) throws IOException{
 
@@ -112,8 +114,8 @@ public class GraphProcessing {
     /**
      * This method will write the graph that is currently in the system to a dot file.
      * This graph will have the dummyRoot and its edges removed.
+     * @author Kelvin Shen
      *
-     * @author Kelvin
      */
     public void outputProcessing(String filePath, State state) throws IOException {
 
@@ -162,7 +164,7 @@ public class GraphProcessing {
     }
 
     /**
-     * This method is an helper function that gets the starting time and processor of a task scheduled
+     * This method is a helper function that gets the starting time and processor of a task scheduled
      * @author kelvin
      */
     public String[] nodeDetail(HashMap<Integer, HashMap<Integer, Node>> schedule, Set<Integer> key, Node node) {
@@ -189,8 +191,8 @@ public class GraphProcessing {
      * calculate the bottom level of all the nodes of the graph.
      * Returns the bottom level of the dummyRootNode - even though by then the
      * dummyRootNode's bottom level would have already been set as an attribute.
+     * @author Megan Lim
      *
-     * @author Megan
      */
     private int calBottomLevels(Node node) {
 

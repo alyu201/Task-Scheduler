@@ -13,6 +13,15 @@ import org.graphstream.ui.view.GraphRenderer;
 
 import java.io.IOException;
 
+/**
+ * This class handles the displaying and controlling functions of the
+ * visual representation of the algorithm scene.
+ * It loads the appropriate the FXML file,
+ * and contains the required action handlers.
+ * @author Amy Lyu
+ *
+ */
+
 public class PrimaryController {
 
     @FXML

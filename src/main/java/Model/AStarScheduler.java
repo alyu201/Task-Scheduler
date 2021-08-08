@@ -2,22 +2,26 @@ package Model;
 
 // TODO: Should this class or visualisation classes implement Thread for concurrency
 
-import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 
-import java.sql.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * This class is responsible for scheduling a number of tasks represented as a DAG (Directed
  * acyclic graph) into a number of processors.
+ * author: schi314
  */
 public class AStarScheduler {
     private Graph _taskGraph;
     private int _numProcessors;
     private PriorityQueue<State> _openList;
+
+    /**
+     * This variable keeps track of the dummy root so that it can only be scheduled once
+     */
+    private boolean _dummyRootScheduled;
 
 
     //TODO: Update with the actual classes
@@ -25,6 +29,7 @@ public class AStarScheduler {
         _numProcessors = numProcessors;
         _openList = new PriorityQueue<State>(200, new StateComparator());
         _taskGraph = taskGraph;
+        _dummyRootScheduled = false;
     }
 
     /**
@@ -33,15 +38,13 @@ public class AStarScheduler {
      */
     public State generateSchedule() {
 
-        //TODO: If there is memory problem, can make just one "StateUtility" class having the numProcessors stored and spits out State objects
-
         State emptyState = new State(_numProcessors);
         _openList.add(emptyState);
 
         while (!_openList.isEmpty()) {
             State state = _openList.poll();
 
-            if (getTaskCountInState(state) == _taskGraph.getNodeCount()) {
+            if (goalStateReached(state)) {
                 return state;
             }
 
@@ -52,19 +55,26 @@ public class AStarScheduler {
     }
 
     /**
-     * Provides the number of tasks has been allocated in a state.
-     * @param state The state to be evaluated
-     * @return The number of tasks allocated
+     * This method determines if a state has reached the goal
+     * @param state The state to be checked
+     * @return True if is goal state, false otherwise
      */
-    private int getTaskCountInState (State state) {
+    private boolean goalStateReached(State state) {
+        HashSet<String> requiredTaskIds = _taskGraph.nodes().filter(n -> !(n.getId().equals("dummyRoot"))).map(n -> n.getId()).collect(Collectors.toCollection(HashSet:: new));
+        HashSet<String> completedTaskIds = new HashSet<String>();
         Set<Integer> processors = state.procKeys();
 
-        int numTaskAllocated = 0;
+        for (int i: processors) {
+            HashMap<Integer, Node> schedule = state.getSchedule(i);
 
-        for(int p: processors) {
-            numTaskAllocated += state.getSchedule(p).size();
+            for (Node n: schedule.values()) {
+                String taskId = n.getId();
+                completedTaskIds.add(taskId);
+            }
         }
-        return numTaskAllocated;
+
+        boolean allTasksCompleted = requiredTaskIds.equals(completedTaskIds);
+        return allTasksCompleted;
     }
 
     /**
@@ -104,10 +114,10 @@ public class AStarScheduler {
                     }
                 }
             }
-
             //adding communication time
             for(int i: processors) {
                 int nextStartTime = parentState.getNextStartTime(i);
+
                 for (int j: processors) {
                     if (i != j && prerequisiteNodePos[j - 1] != null) {
                         int communicationCost = Double.valueOf(prerequisiteNodePos[j - 1].getEdgeToward(task).getAttribute("Weight").toString()).intValue();
@@ -134,6 +144,13 @@ public class AStarScheduler {
         //Stores a mapping for all the tasks and and their number of prerequisite tasks
         _taskGraph.nodes().forEach(task -> allTasks.put(task, task.getInDegree()));
 
+        Node dummyRootNode = _taskGraph.getNode("dummyRoot");
+
+        if (_dummyRootScheduled) {
+            allTasks.remove(dummyRootNode);
+            dummyRootNode.leavingEdges().forEach(edge -> allTasks.put(edge.getNode1(), allTasks.get(edge.getNode1()) - 1));
+        }
+
         Set<Integer> processors = state.procKeys();
 
         //TODO: Might need to change data structure
@@ -146,14 +163,20 @@ public class AStarScheduler {
                 Node task = processorTasks.get(j);
 
                 task.leavingEdges().forEach(edge -> allTasks.put(edge.getNode1(), allTasks.get(edge.getNode1()) - 1));
-
                 scheduledTasks.add(task);
             }
         }
 
         //Remove tasks that have already been scheduled and tasks that still have prerequisite tasks > 0
         allTasks.entrySet().removeIf(e -> (scheduledTasks.contains(e.getKey()) || e.getValue() > 0));
-        return new ArrayList<Node>(allTasks.keySet());
+
+        List<Node> schedulableTasks = new ArrayList<Node>(allTasks.keySet());
+
+        if (schedulableTasks.contains(_taskGraph.getNode("dummyRoot"))) {
+            _dummyRootScheduled = true;
+        }
+
+        return schedulableTasks;
     }
 
 }

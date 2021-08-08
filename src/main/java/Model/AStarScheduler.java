@@ -114,9 +114,23 @@ public class AStarScheduler {
                     }
                 }
             }
+
+            //This boolean determines if a task has already been scheduled in a processor, and prevents the task to be
+            //scheduled in another processor with same outcome. E.g. Schedule A: {1={0=A}, 2={}} is the same as
+            //Schedule B: {1={}, 2={A}}
+            boolean taskScheduled = false;
+
             //adding communication time
             for(int i: processors) {
+                if (taskScheduled) {
+                    continue;
+                }
+
                 int nextStartTime = parentState.getNextStartTime(i);
+
+                if (nextStartTime == 0) {
+                    taskScheduled = true;
+                }
 
                 for (int j: processors) {
                     if (i != j && prerequisiteNodePos[j - 1] != null) {

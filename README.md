@@ -1,12 +1,11 @@
-# Milestone 1
-
-## Task scheduler
+# Task scheduler
 This program creates a valid schedule that puts tasks into processors.
 Both the input and output dot files contain a task graph with nodes representing tasks and edges representing the communication costs between tasks.
 The output will additionally contain the processor number that the node/task should run in.
 
 ## How to access file
-* scheduler.jar is located in the 'target' folder
+* Please download the `scheduler.jar` file from the Milestone 1, `v1.0` release.
+* Alternatively, download the file from the 'target' folder.
 
 ## How to run file
 * To run the jar file, ensure that the desired input.dot file is in the same folder level as the scheduler.jar.

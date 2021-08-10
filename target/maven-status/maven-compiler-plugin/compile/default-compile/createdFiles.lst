@@ -1,5 +1,7 @@
 Model\State.class
 Controller\PrimaryController.class
+Model\AStarScheduler.class
+Model\StateComparator.class
 Model\GraphProcessing.class
 Controller\SecondaryController.class
 Model\Visualiser.class

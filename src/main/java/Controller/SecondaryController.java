@@ -5,6 +5,12 @@ import javafx.fxml.FXML;
 
 import java.io.IOException;
 
+/**
+ * This class handles all the elements in the secondary scene.
+ * @author Amy Lyu
+ *
+ */
+
 public class SecondaryController {
 
     @FXML

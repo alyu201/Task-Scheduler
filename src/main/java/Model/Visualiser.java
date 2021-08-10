@@ -11,9 +11,12 @@ import org.graphstream.graph.Graph;
 import java.io.IOException;
 
 /**
- * Visualisation application that takes in input for preprocessing and initialising visualiser
- * @author alyu
+ * This class handles the displaying and controlling functions of the
+ * main scene. It loads the appropriate FXML file, and contains
+ * the required action handlers.
+ * @author Amy Lyu
  */
+
 public class Visualiser extends Application {
 
     private static Stage _primaryStage;

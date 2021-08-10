@@ -6,6 +6,8 @@ import org.graphstream.graph.implementations.DefaultGraph;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -34,10 +36,10 @@ class StateTest {
         Node nodeB = graph.getNode("B");
         Node nodeC = graph.getNode("C");
         Node nodeD = graph.getNode("D");
-        nodeA.setAttribute("weight", 2);
-        nodeB.setAttribute("weight", 3);
-        nodeC.setAttribute("weight", 1);
-        nodeD.setAttribute("weight", 2);
+        nodeA.setAttribute("Weight", 2);
+        nodeB.setAttribute("Weight", 3);
+        nodeC.setAttribute("Weight", 1);
+        nodeD.setAttribute("Weight", 2);
 
         State _empty = new State(2);
         _parent = new State(_empty,7,nodeA,1,0);
@@ -100,4 +102,5 @@ class StateTest {
         assertEquals(5,nextStartTime1);
         assertEquals(3,nextStartTime2);
     }
+
 }

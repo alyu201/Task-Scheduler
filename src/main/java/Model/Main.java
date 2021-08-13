@@ -33,6 +33,7 @@ public class Main {
             GraphProcessing graphProcessing = GraphProcessing.Graphprocessing();
             graphProcessing.inputProcessing(filePath);
             Graph graph = graphProcessing.getGraph();
+            _graph = graph;
 
             //Process the number of processor argument, then start scheduling
             int numberOfProcess = Integer.parseInt(args[1]);
@@ -75,6 +76,7 @@ public class Main {
         if (arguments.contains("-v")) {
             System.out.println("We are still working on visualization!");
             //todo visualArgProcedure();
+            visualArgProcedure(_graph);
         }
 
         //process -o argument

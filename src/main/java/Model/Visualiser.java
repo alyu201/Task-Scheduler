@@ -1,6 +1,6 @@
 package Model;
 
-import Controller.PrimaryController;
+import Controller.MainController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -26,12 +26,12 @@ public class Visualiser extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         _primaryStage = primaryStage;
-        FXMLLoader loader = new FXMLLoader(Visualiser.class.getResource("/View/primary.fxml"));
+        FXMLLoader loader = new FXMLLoader(Visualiser.class.getResource("/View/MainScene.fxml"));
         _scene = new Scene(loader.load());
         primaryStage.setScene(_scene);
         primaryStage.setTitle("Visualiser");
         primaryStage.setResizable(false);
-        PrimaryController controller = loader.getController();
+        MainController controller = loader.getController();
         controller.initialize(_graph);
         primaryStage.show();
     }
@@ -54,7 +54,6 @@ public class Visualiser extends Application {
     }
 
     public static void start(Graph graph) throws IOException {
-        System.setProperty("org.graphstream.ui", "javafx");
         _graph = graph;
         launch();
     }

@@ -48,6 +48,9 @@ class StateTest {
         _final = new State(_child2,5,nodeD,1,3);
     }
 
+    /**
+     * Tests for implicit call to clone()
+     */
     @Test
     void getDifferentParentChild() {
         assertNotEquals(_parent,_child);
@@ -55,11 +58,14 @@ class StateTest {
     }
 
     @Test
-    void getDifferentChildFinal() {
-        assertNotEquals(_child, _final);
-        assertNotSame(_child, _final);
+    void getDifferentChild2Final() {
+        assertNotEquals(_child2, _final);
+        assertNotSame(_child2, _final);
     }
 
+    /**
+     * Tests for state underestimates
+     */
     @Test
     void getParentUnderestimate() {
         int actUnderestimate = _parent.getUnderestimate();
@@ -78,6 +84,9 @@ class StateTest {
         assertEquals(5,actUnderestimate);
     }
 
+    /**
+     * Tests for next start times
+     */
     @Test
     void getParentNextStartTime() {
         int nextStartTime = _parent.getNextStartTime(1);
@@ -96,11 +105,46 @@ class StateTest {
     }
 
     @Test
+    void getChild2NextStartTime() {
+        int nextStartTime1 = _child2.getNextStartTime(1);
+        int nextStartTime2 = _child2.getNextStartTime(2);
+        assertEquals(3,nextStartTime1);
+        assertEquals(3,nextStartTime2);
+    }
+
+    @Test
     void getFinalNextStartTime() {
         int nextStartTime1 = _final.getNextStartTime(1);
         int nextStartTime2 = _final.getNextStartTime(2);
         assertEquals(5,nextStartTime1);
         assertEquals(3,nextStartTime2);
+    }
+
+    /**
+     * Test for retrieving all processor states
+     */
+    @Test
+    void getAllParentSchedules() {
+        System.out.println(_parent.getAllSchedules().toString());
+        assertEquals("[{0=A}, {}]", _parent.getAllSchedules().toString());
+    }
+
+    @Test
+    void getAllChildSchedules() {
+        System.out.println(_child.getAllSchedules().toString());
+        assertEquals("[{0=A}, {0=B}]", _child.getAllSchedules().toString());
+    }
+
+    @Test
+    void getAllChild2Schedules() {
+        System.out.println(_child2.getAllSchedules().toString());
+        assertEquals("[{0=A, 2=C}, {0=B}]", _child2.getAllSchedules().toString());
+    }
+
+    @Test
+    void getAllFinalSchedules() {
+        System.out.println(_final.getAllSchedules().toString());
+        assertEquals("[{0=A, 2=C, 3=D}, {0=B}]", _final.getAllSchedules().toString());
     }
 
 }

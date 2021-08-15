@@ -38,7 +38,7 @@ public class AStarScheduler {
      */
     public State generateSchedule() {
 
-        State emptyState = new State(_numProcessors);
+        State emptyState = new ModelState(_numProcessors);
         _openList.add(emptyState);
 
         while (!_openList.isEmpty()) {
@@ -141,7 +141,7 @@ public class AStarScheduler {
 
                 int maxUnderestimate = Math.max(nextStartTime + task.getAttribute("BottomLevel", Integer.class), parentState.getUnderestimate());
 
-                child = new State(parentState, maxUnderestimate, task, i, nextStartTime);
+                child = new ModelState(parentState, maxUnderestimate, task, i, nextStartTime);
                 _openList.add(child);
             }
         }

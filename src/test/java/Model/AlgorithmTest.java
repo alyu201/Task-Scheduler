@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -163,7 +164,7 @@ public class AlgorithmTest {
      * These tests are meant to test for the A* algorithm so that an optimal solution is produced
      */
     @Test
-    public void TestAlgorithmGraphBOneProcessor() {
+    public void TestAlgorithmGraphBOneProcessor() throws ExecutionException, InterruptedException {
         int numProcessors = 1;
 
         AStarScheduler scheduler = new AStarScheduler(_graphB, numProcessors);
@@ -175,7 +176,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void TestAlgorithmGraphBTwoProcessorSchedule() {
+    public void TestAlgorithmGraphBTwoProcessorSchedule() throws ExecutionException, InterruptedException {
         int numProcessors = 2;
 
         AStarScheduler scheduler = new AStarScheduler(_graphB, numProcessors);
@@ -185,7 +186,7 @@ public class AlgorithmTest {
     }
 
     @Test
-    public void TestAlgorithmGraphBTwoProcessorUnderestimate() {
+    public void TestAlgorithmGraphBTwoProcessorUnderestimate() throws ExecutionException, InterruptedException {
         int numProcessors = 2;
 
         AStarScheduler scheduler = new AStarScheduler(_graphB, numProcessors);

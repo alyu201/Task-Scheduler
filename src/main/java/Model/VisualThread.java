@@ -1,11 +1,13 @@
 package Model;
 
-
-import org.graphstream.graph.Graph;
-import org.graphstream.graph.implementations.DefaultGraph;
-
 import java.io.IOException;
 
+/**
+ * This class is responsible for starting the JavaFX application on a new thread.
+ * This is a singleton class, which means that other parts of the program
+ * can change the state of the thread by get the singleton instance.
+ * @author kelvin
+ */
 public class VisualThread extends Thread{
     // static variable single_instance of type Singleton
     private static VisualThread _single_instance = null;
@@ -15,9 +17,8 @@ public class VisualThread extends Thread{
      */
     private VisualThread() { }
 
-
     /**
-     * static method to create instance of GraphProcessing class
+     * static method to create instance of VisualThread class
      */
     public static VisualThread VisualThread() {
         // To ensure only one instance is created
@@ -27,10 +28,12 @@ public class VisualThread extends Thread{
         return _single_instance;
     }
 
+    /**
+     * This method is responsible for starting the JavaFx application.
+     */
+    @Override
     public void run(){
-        System.out.println("The new thread's id is "+ currentThread().getId());
         try {
-            System.out.println("here");
             Visualiser.start();
         } catch (IOException e) {
             e.printStackTrace();

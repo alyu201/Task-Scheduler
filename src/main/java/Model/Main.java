@@ -5,6 +5,7 @@ import org.graphstream.graph.Graph;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
 
 /**
  * This is the Main class of the project, an entry point to the project.
@@ -28,7 +29,7 @@ public class Main {
             if (args.length < 2) {
                 throw new InvalidInputArgumentException("Input arguments must at least specify a .dot file and a number of processors");
             }
-            
+
             //Process the input dot file
             String filePath = Paths.get(args[0]).toAbsolutePath().toString();
             if (!filePath.contains(".dot")) {
@@ -48,6 +49,7 @@ public class Main {
             int numberOfProcess = Integer.parseInt(args[1]);
             AStarScheduler aStarScheduler = new AStarScheduler(graph, numberOfProcess);
             State state = aStarScheduler.generateSchedule();
+
 
             //End of program procedure
             VisualThread.VisualThread().join();
@@ -77,6 +79,7 @@ public class Main {
         if (arguments.contains("-p")) {
             int indexOfp = arguments.indexOf("-p");
             NUMPROCESSORS = Integer.parseInt(arguments.get(indexOfp - 1));
+            System.out.print("the number of processes is "+ NUMPROCESSORS);
         }
 
         //process -v argument

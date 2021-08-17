@@ -6,17 +6,22 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 /**
  * This class is responsible for scheduling a number of tasks represented as a DAG (Directed
  * acyclic graph) into a number of processors.
- * author: Sherman Chin
+ * author: Sherman Chin and Kelvin Shen
  */
 public class AStarScheduler {
     private Graph _taskGraph;
     private int _numProcessors;
     private PriorityQueue<State> _openList;
+    private ExecutorService _executorService;
 
     /**
      * This variable keeps track of the dummy root so that it can only be scheduled once
@@ -30,13 +35,15 @@ public class AStarScheduler {
         _openList = new PriorityQueue<State>(200, new StateComparator());
         _taskGraph = taskGraph;
         _dummyRootScheduled = false;
+        _executorService = Executors.newFixedThreadPool(Main.NUMPROCESSORS);
+
     }
 
     /**
      * Create an optimal schedule using A* algorithm
      * @return The state of the processors with schedules
      */
-    public State generateSchedule() {
+    public State generateSchedule() throws ExecutionException, InterruptedException {
 
         State emptyState = new ModelState(_numProcessors);
         _openList.add(emptyState);
@@ -45,12 +52,14 @@ public class AStarScheduler {
             State state = _openList.poll();
 
             if (goalStateReached(state)) {
+                _executorService.shutdown();
                 return state;
             }
 
             List<Node> schedulableTasks = getSchedulableTasks(state);
             addChildStates(state, schedulableTasks);
         }
+        _executorService.shutdown();
         return null;
     }
 
@@ -73,78 +82,29 @@ public class AStarScheduler {
             }
         }
 
-        boolean allTasksCompleted = requiredTaskIds.equals(completedTaskIds);
-        return allTasksCompleted;
+        return requiredTaskIds.equals(completedTaskIds);
     }
 
     /**
-     * Create a set of child state from a parent state
+     * Create a set of child state from a parent state.
+     * This method uses the ExecutorService to add the child state in parallel.
      * @param parentState The parent state
      * @param tasks The list of tasks that are to be scheduled in tathe child states.
      */
-    private void addChildStates (State parentState, List<Node> tasks) {
-        State child;
+    private void addChildStates (State parentState, List<Node> tasks) throws ExecutionException, InterruptedException {
+        Set<Future> futures = new HashSet<>();
 
-        Set<Integer> processors = parentState.procKeys();
-
+        //for each task, add it to the openlist on a different thread
         for (Node task: tasks) {
-            //getting the prerequisite task details
-            List<Node> prerequisiteTasks = task.enteringEdges().map(e -> e.getNode0()).collect(Collectors.toList());
-            List<String> prerequisiteTasksId = prerequisiteTasks.stream().map(n -> n.getId()).collect(Collectors.toList());
-
-            //TODO: The processor number in State starts indexing from 1
-            Node[] prerequisiteNodePos = new Node[_numProcessors];
-            int[] startingTimes = new int[_numProcessors];
-            for (int i: processors) {
-                HashMap<Integer, Node> schedule = parentState.getSchedule(i);
-
-                //if current schedule has prerequisite tasks, change the start time to after the finishing time of the prerequisites.
-                for (int startTime: schedule.keySet()) {
-                    //change start time to prerequisite task finishing time
-                    if (prerequisiteTasksId.contains(schedule.get(startTime).getId())) {
-
-                        //Processor indexing starts from 1
-                        int currentStartTime = startingTimes[i - 1];
-                        int prereqStartTime = startTime + Double.valueOf(schedule.get(startTime).getAttribute("Weight").toString()).intValue();
-
-                        if (prereqStartTime > currentStartTime) {
-                            startingTimes[i - 1] = prereqStartTime;
-                            prerequisiteNodePos[i - 1] = schedule.get(startTime);
-                        }
-                    }
-                }
-            }
-
-            //This boolean determines if a task has already been scheduled in a processor, and prevents the task to be
-            //scheduled in another processor with same outcome. E.g. Schedule A: {1={0=A}, 2={}} is the same as
-            //Schedule B: {1={}, 2={A}}
-            boolean taskScheduled = false;
-
-            //adding communication time
-            for(int i: processors) {
-                if (taskScheduled) {
-                    continue;
-                }
-
-                int nextStartTime = parentState.getNextStartTime(i);
-
-                if (nextStartTime == 0) {
-                    taskScheduled = true;
-                }
-
-                for (int j: processors) {
-                    if (i != j && prerequisiteNodePos[j - 1] != null) {
-                        int communicationCost = Double.valueOf(prerequisiteNodePos[j - 1].getEdgeToward(task).getAttribute("Weight").toString()).intValue();
-                        nextStartTime = Math.max(nextStartTime, startingTimes[j - 1] + communicationCost);
-                    }
-                }
-
-                int maxUnderestimate = Math.max(nextStartTime + task.getAttribute("BottomLevel", Integer.class), parentState.getUnderestimate());
-
-                child = new ModelState(parentState, maxUnderestimate, task, i, nextStartTime);
-                _openList.add(child);
-            }
+            StateAdditionThread stateAdditionThread = new StateAdditionThread(parentState, task, _openList);
+            futures.add(_executorService.submit(stateAdditionThread));
         }
+
+        //Wait for all the child thread to return
+        for (Future future:futures){
+            future.get();
+        }
+
     }
 
     /**

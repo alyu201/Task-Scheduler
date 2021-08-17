@@ -1,0 +1,26 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="project-1-project-1-team-6:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/project_1_project_1_team_6_jar</output-path>
+    <root id="archive" name="project-1-project-1-team-6.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/src/main/java/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="project-1-project-1-team-6" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-graphics/15.0.1/javafx-graphics-15.0.1-mac.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/graphstream/gs-ui-javafx/2.0-alpha/gs-ui-javafx-2.0-alpha.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/graphstream/pherd/1.0/pherd-1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-controls/15.0.1/javafx-controls-15.0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/graphstream/gs-core/2.0/gs-core-2.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.8.1/commons-lang3-3.8.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-controls/15.0.1/javafx-controls-15.0.1-mac.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-fxml/15.0.1/javafx-fxml-15.0.1-mac.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-graphics/15.0.1/javafx-graphics-15.0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-base/15.0.1/javafx-base-15.0.1-mac.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/graphstream/gs-core/2.0-alpha/gs-core-2.0-alpha.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/commons-io/commons-io/2.5/commons-io-2.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-fxml/15.0.1/javafx-fxml-15.0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/graphstream/mbox2/1.0/mbox2-1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-base/15.0.1/javafx-base-15.0.1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

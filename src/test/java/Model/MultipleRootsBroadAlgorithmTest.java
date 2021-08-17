@@ -7,6 +7,8 @@ import org.graphstream.graph.implementations.DefaultGraph;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.ExecutionException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -82,7 +84,7 @@ public class MultipleRootsBroadAlgorithmTest {
      * Testing the A* algorithm to produce an optimal solution
      */
     @Test
-    public void TestAlgorithmGraphATwoProcessorUnderestimate() {
+    public void TestAlgorithmGraphATwoProcessorUnderestimate() throws ExecutionException, InterruptedException {
         int numProcessors = 2;
 
         AStarScheduler scheduler = new AStarScheduler(_graphA, numProcessors);

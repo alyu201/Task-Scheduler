@@ -53,8 +53,7 @@ public class Visualiser extends Application {
         return fxmlLoader.load();
     }
 
-    public static void start(Graph graph) throws IOException {
-        _graph = graph;
+    public static void start() throws IOException {
         launch();
     }
 }

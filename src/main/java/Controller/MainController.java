@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.DefaultGraph;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.stream.Collectors;
 
 /**
@@ -37,14 +39,10 @@ public class MainController implements PropertyChangeListener {
     @FXML
     private AnchorPane graphPane;
     private Graph _graph = new DefaultGraph("Graph");
-    private int _nextIdx = 12;
 
     public void initialize(Graph graph) {
-        // TODO: zoom and pan options
-        // TODO: implement PropertyChangeListener
-        // TODO: try to get url to stylesheet file working
         String graphStyle = "node {"
-                + "size: 30px;"
+                + "size: 20px;"
                 + "fill-color: dimgray;"
                 + "text-size: 15;"
                 + "text-alignment: under;"
@@ -59,22 +57,26 @@ public class MainController implements PropertyChangeListener {
 
                 + "edge {"
                 + "fill-color: dimgray;"
+                + "text-size: 15;"
+                + "text-alignment: center;"
+                + "text-background-mode: rounded-box;"
+                + "text-offset: 0, 2;"
+                + "text-padding: 5;"
+                + "text-color: dimgray;"
                 + "}";
 
-        // Retrieve the nodes and edges of the input graph
-        HashSet<String> nodes = graph.nodes().filter(n -> !(n.getId().equals("dummyRoot"))).map(n -> n.getId()).collect(Collectors.toCollection(HashSet:: new));
-        HashSet<String> edges = graph.edges().filter(n -> !(n.getId().contains("dummyRoot"))).map(n -> n.getId()).collect(Collectors.toCollection(HashSet:: new));
-        System.out.println(nodes);
-        System.out.println(edges);
-
-        // Add nodes to new graph for display
-        for (String id : nodes) {
-            _graph.addNode(id);
-        }
+        _graph = Model.GraphProcessing.Graphprocessing().getGraph();
+        _graph.removeNode("dummyRoot");
 
         // Add node id as label
         for (Node node : _graph) {
             node.setAttribute("ui.label", node.getId());
+        }
+
+        Iterator edgesIterator = _graph.edges().iterator();
+        while (edgesIterator.hasNext()) {
+            Edge edge = (Edge) edgesIterator.next();
+            edge.setAttribute("ui.label", edge.getAttribute("Weight"));
         }
 
         // Setup graph display pane
@@ -85,16 +87,6 @@ public class MainController implements PropertyChangeListener {
         graphPane.getChildren().add(panel);
 
         _graph.setAttribute("ui.stylesheet", graphStyle);
-//        String resource = MainController.class.getResource("/Styles/MainSceneStylesheet.css").getPath();
-//        System.out.println(resource);
-//        _graph.setAttribute("ui.stylesheet", "url('file:///"+resource+"')");
-
-        // TODO: consider performance when tasks grow
-        // Add edges to graph for display (must be done after display pane setup
-        for (String id : edges) {
-            String[] nodeIds = id.substring(1, id.length()-1).split(";");
-            _graph.addEdge(id, nodeIds[0], nodeIds[1]);
-        }
     }
 
     @Override

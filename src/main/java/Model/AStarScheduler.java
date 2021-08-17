@@ -42,11 +42,10 @@ public class AStarScheduler {
         State emptyState = new State(_numProcessors);
         _openList.add(emptyState);
 
-//        TaskGraphUtil.removeDummyRootNode(_taskGraph);
+        TaskGraphUtil.removeDummyRootNode(_taskGraph);
 
         while (!_openList.isEmpty()) {
             State state = _openList.poll();
-
             if (goalStateReached(state)) {
                 return state;
             }
@@ -72,23 +71,6 @@ public class AStarScheduler {
         }
 
         return TaskGraphUtil.allTaskScheduled(_taskGraph, scheduledTasks);
-
-
-//        HashSet<String> requiredTaskIds = _taskGraph.nodes().filter(n -> !(n.getId().equals("dummyRoot"))).map(n -> n.getId()).collect(Collectors.toCollection(HashSet:: new));
-//        HashSet<String> completedTaskIds = new HashSet<String>();
-//        Set<Integer> processors = state.procKeys();
-//
-//        for (int i: processors) {
-//            HashMap<Integer, Node> schedule = state.getSchedule(i);
-//
-//            for (Node n: schedule.values()) {
-//                String taskId = n.getId();
-//                completedTaskIds.add(taskId);
-//            }
-//        }
-//
-//        boolean allTasksCompleted = requiredTaskIds.equals(completedTaskIds);
-//        return allTasksCompleted;
     }
 
     /**
@@ -107,23 +89,26 @@ public class AStarScheduler {
             List<String> prerequisiteTasksId = prerequisiteTasks.stream().map(n -> n.getId()).collect(Collectors.toList());
 
             //TODO: The processor number in State starts indexing from 1
-            Node[] prerequisiteNodePos = new Node[_numProcessors];
             int[] startingTimes = new int[_numProcessors];
+
             for (int i: processors) {
                 HashMap<Integer, Node> schedule = parentState.getSchedule(i);
 
                 //if current schedule has prerequisite tasks, change the start time to after the finishing time of the prerequisites.
                 for (int startTime: schedule.keySet()) {
+                    Node taskScheduled = schedule.get(startTime);
+
                     //change start time to prerequisite task finishing time
-                    if (prerequisiteTasksId.contains(schedule.get(startTime).getId())) {
+                    if (prerequisiteTasksId.contains(taskScheduled.getId())) {
 
                         //Processor indexing starts from 1
-                        int currentStartTime = startingTimes[i - 1];
-                        int prereqStartTime = startTime + Double.valueOf(schedule.get(startTime).getAttribute("Weight").toString()).intValue();
+                        int prereqTaskWeight = Double.valueOf(taskScheduled.getAttribute("Weight").toString()).intValue();
+                        int prereqTaskCommunicationCost = Double.valueOf(taskScheduled.getEdgeToward(task).getAttribute("Weight").toString()).intValue();
 
-                        if (prereqStartTime > currentStartTime) {
+                        int prereqStartTime = startTime + prereqTaskWeight + prereqTaskCommunicationCost;
+
+                        if (prereqStartTime > startingTimes[i - 1]) {
                             startingTimes[i - 1] = prereqStartTime;
-                            prerequisiteNodePos[i - 1] = schedule.get(startTime);
                         }
                     }
                 }
@@ -147,9 +132,8 @@ public class AStarScheduler {
                 }
 
                 for (int j: processors) {
-                    if (i != j && prerequisiteNodePos[j - 1] != null) {
-                        int communicationCost = Double.valueOf(prerequisiteNodePos[j - 1].getEdgeToward(task).getAttribute("Weight").toString()).intValue();
-                        nextStartTime = Math.max(nextStartTime, startingTimes[j - 1] + communicationCost);
+                    if (i != j) {
+                        nextStartTime = Math.max(nextStartTime, startingTimes[j - 1]);
                     }
                 }
 
@@ -178,45 +162,6 @@ public class AStarScheduler {
         List<Node> schedulableTasks = TaskGraphUtil.getNextSchedulableTasks(_taskGraph, scheduledTasks);
 
         return schedulableTasks;
-
-//        HashMap<Node, Integer> allTasks = new HashMap<Node, Integer>();
-//
-//        //Stores a mapping for all the tasks and and their number of prerequisite tasks
-//        _taskGraph.nodes().forEach(task -> allTasks.put(task, task.getInDegree()));
-//
-//        Node dummyRootNode = _taskGraph.getNode("dummyRoot");
-//
-//        if (_dummyRootScheduled) {
-//            allTasks.remove(dummyRootNode);
-//            dummyRootNode.leavingEdges().forEach(edge -> allTasks.put(edge.getNode1(), allTasks.get(edge.getNode1()) - 1));
-//        }
-//
-//        Set<Integer> processors = state.procKeys();
-//
-//        //TODO: Might need to change data structure
-//        List<Node> scheduledTasks = new ArrayList<Node>();
-//
-//        //Go through all scheduled tasks and reduce the count for prerequisite tasks of their children.
-//        for (int i: processors) {
-//            HashMap<Integer, Node> processorTasks = state.getSchedule(i);
-//            for (int j: processorTasks.keySet()) {
-//                Node task = processorTasks.get(j);
-//
-//                task.leavingEdges().forEach(edge -> allTasks.put(edge.getNode1(), allTasks.get(edge.getNode1()) - 1));
-//                scheduledTasks.add(task);
-//            }
-//        }
-//
-//        //Remove tasks that have already been scheduled and tasks that still have prerequisite tasks > 0
-//        allTasks.entrySet().removeIf(e -> (scheduledTasks.contains(e.getKey()) || e.getValue() > 0));
-//
-//        List<Node> schedulableTasks = new ArrayList<Node>(allTasks.keySet());
-//
-//        if (schedulableTasks.contains(_taskGraph.getNode("dummyRoot"))) {
-//            _dummyRootScheduled = true;
-//        }
-//
-//        return schedulableTasks;
     }
 
 }

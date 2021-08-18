@@ -21,31 +21,26 @@ public class Visualiser extends Application {
 
     private static Stage _primaryStage;
     private static Scene _scene;
-    private static Graph _graph;
+    private static MainController _controller;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
         _primaryStage = primaryStage;
+
         FXMLLoader loader = new FXMLLoader(Visualiser.class.getResource("/View/MainScene.fxml"));
         _scene = new Scene(loader.load());
+        _controller = loader.getController();
+
         primaryStage.setScene(_scene);
         primaryStage.setTitle("Visualiser");
         primaryStage.setResizable(false);
-        MainController controller = loader.getController();
-        controller.initialize(_graph);
+
+        _controller.initialize();
         primaryStage.show();
     }
 
     public static void setRoot(String fxml) throws IOException {
         _scene.setRoot(loadFXML(fxml));
-    }
-
-    public static Parent getRoot() {
-        return _scene.getRoot();
-    }
-
-    public static void setScene(Scene scene) {
-        _primaryStage.setScene(scene);
     }
 
     private static Parent loadFXML(String fxml) throws IOException {
@@ -55,5 +50,16 @@ public class Visualiser extends Application {
 
     public static void start() throws IOException {
         launch();
+    }
+
+    public static void update(State state) {
+        FXMLLoader loader = new FXMLLoader(Visualiser.class.getResource("/View/MainScene.fxml"));
+        try {
+            loader.load();
+            MainController ctrl = loader.getController();
+            ctrl.markNode(state);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

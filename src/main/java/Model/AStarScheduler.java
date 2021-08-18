@@ -2,7 +2,6 @@ package Model;
 
 // TODO: Should this class or visualisation classes implement Thread for concurrency
 
-import javafx.concurrent.Task;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 
@@ -18,6 +17,8 @@ public class AStarScheduler {
     private Graph _taskGraph;
     private int _numProcessors;
     private PriorityQueue<State> _openList;
+    private Set<State> _closedList;
+
 
     /**
      * This variable keeps track of the dummy root so that it can only be scheduled once
@@ -29,6 +30,7 @@ public class AStarScheduler {
     public AStarScheduler (Graph taskGraph, int numProcessors) {
         _numProcessors = numProcessors;
         _openList = new PriorityQueue<State>(200, new StateComparator());
+        _closedList = new HashSet<State>();
         _taskGraph = taskGraph;
         _dummyRootScheduled = false;
     }
@@ -52,6 +54,7 @@ public class AStarScheduler {
 
             List<Node> schedulableTasks = getNextTasks(state);
             addChildStates(state, schedulableTasks);
+            _closedList.add(state);
         }
         return null;
     }
@@ -85,8 +88,7 @@ public class AStarScheduler {
 
         for (Node task: tasks) {
             //getting the prerequisite task details
-            List<Node> prerequisiteTasks = task.enteringEdges().map(e -> e.getNode0()).collect(Collectors.toList());
-            List<String> prerequisiteTasksId = prerequisiteTasks.stream().map(n -> n.getId()).collect(Collectors.toList());
+            HashSet<Node> prerequisiteTasks = task.enteringEdges().map(e -> e.getNode0()).collect(Collectors.toCollection(HashSet:: new));
 
             //TODO: The processor number in State starts indexing from 1
             int[] startingTimes = new int[_numProcessors];
@@ -99,9 +101,7 @@ public class AStarScheduler {
                     Node taskScheduled = schedule.get(startTime);
 
                     //change start time to prerequisite task finishing time
-                    if (prerequisiteTasksId.contains(taskScheduled.getId())) {
-
-                        //Processor indexing starts from 1
+                    if (prerequisiteTasks.contains(taskScheduled)) {
                         int prereqTaskWeight = Double.valueOf(taskScheduled.getAttribute("Weight").toString()).intValue();
                         int prereqTaskCommunicationCost = Double.valueOf(taskScheduled.getEdgeToward(task).getAttribute("Weight").toString()).intValue();
 
@@ -140,7 +140,11 @@ public class AStarScheduler {
                 int maxUnderestimate = Math.max(nextStartTime + task.getAttribute("BottomLevel", Integer.class), parentState.getUnderestimate());
 
                 child = new State(parentState, maxUnderestimate, task, i, nextStartTime);
-                _openList.add(child);
+
+                if (!_closedList.contains(child)) {
+                    _openList.add(child);
+                }
+
             }
         }
     }

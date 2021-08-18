@@ -5,6 +5,7 @@ import org.graphstream.graph.Graph;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
 
 /**
  * This is the Main class of the project, an entry point to the project.
@@ -17,6 +18,12 @@ import java.util.ArrayList;
  */
 
 public class Main {
+    public static Boolean VISUALISATIONFLAG = false;
+    public static String OUTPUTNAME;
+    public static String INPUTNAME;
+    public static int INPUTPROCNUM;
+    public static int NUMPROCESSORS = 1;
+
     public static void main(String[] args) {
 
         try {
@@ -24,8 +31,10 @@ public class Main {
             if (args.length < 2) {
                 throw new InvalidInputArgumentException("Input arguments must at least specify a .dot file and a number of processors");
             }
+
             //Process the input dot file
-            String filePath = Paths.get(args[0]).toAbsolutePath().toString();
+            INPUTNAME = args[0];
+            String filePath = Paths.get(INPUTNAME).toAbsolutePath().toString();
             if (!filePath.contains(".dot")) {
                 throw new InvalidInputArgumentException("The input filename needs a .dot extension.");
             }
@@ -33,15 +42,23 @@ public class Main {
             graphProcessing.inputProcessing(filePath);
             Graph graph = graphProcessing.getGraph();
 
+            //Process the optional arguments
+            processingOptions(args, graphProcessing);
+
+            //User specified to have application program open
+            visualArgProcedure();
+
             //Process the number of processor argument, then start scheduling
             int numberOfProcess = Integer.parseInt(args[1]);
+            INPUTPROCNUM = numberOfProcess;
             AStarScheduler aStarScheduler = new AStarScheduler(graph, numberOfProcess);
             State state = aStarScheduler.generateSchedule();
 
-            //Process the other arguments
-            processingOptions(args, graphProcessing,state);
+            System.out.println("algorithm finished");
 
-            System.out.println("The Program Ends");
+            //End of program procedure
+            VisualThread.VisualThread().join();
+            outputArgProcedure(OUTPUTNAME, graphProcessing,state);
             System.exit(0);
 
         } catch (Exception e) {
@@ -55,7 +72,7 @@ public class Main {
      *
      * @throws IOException
      */
-    public static void processingOptions(String[] args, GraphProcessing graphProcessing, State state) throws IOException {
+    public static void processingOptions(String[] args, GraphProcessing graphProcessing) throws IOException, InterruptedException {
         int numberArg = args.length;
         ArrayList<String> arguments = new ArrayList<>();
         while (numberArg > 2) {
@@ -66,37 +83,25 @@ public class Main {
         //process -p argument
         if (arguments.contains("-p")) {
             int indexOfp = arguments.indexOf("-p");
-            int numCore = Integer.parseInt(arguments.get(indexOfp - 1));
-            coreArgProcedure(numCore);
+            NUMPROCESSORS = Integer.parseInt(arguments.get(indexOfp - 1));
+            System.out.print("the number of processes is "+ NUMPROCESSORS);
         }
 
         //process -v argument
         if (arguments.contains("-v")) {
-            System.out.println("We are still working on visualization!");
-            //todo visualArgProcedure();
+            VISUALISATIONFLAG = true;
         }
 
         //process -o argument
         if (arguments.contains("-o")) {
             int indexOfo = arguments.indexOf("-o");
-            String outputFilename = arguments.get(indexOfo - 1);
-            outputArgProcedure(outputFilename, graphProcessing,state);
+            OUTPUTNAME = arguments.get(indexOfo - 1);
         }else{
-            String outputFilename = args[0].substring(0,args[0].length()-4)+"-output";
-            outputArgProcedure(outputFilename, graphProcessing,state);
+            OUTPUTNAME = args[0].substring(0,args[0].length()-4)+"-output";
         }
     }
 
-    /**
-     * This method is responsible for initiating parallelization when
-     * the client specify number of cores to work in parallel.
-     *
-     * @param numCores
-     */
-    public static void coreArgProcedure(int numCores) {
-        System.out.println("the number of core is " + numCores);
-        // TODO: 8/3/2021 implementation for parallelization required
-    }
+
 
     /**
      * This method is responsible for initiating the visualization if specified by the user.
@@ -104,8 +109,10 @@ public class Main {
      * @throws IOException
      */
     public static void visualArgProcedure() throws IOException {
-        System.out.println("require visualization");
-        Visualiser.start();
+        if (VISUALISATIONFLAG) {
+            VisualThread visualThread = VisualThread.VisualThread();
+            visualThread.start();
+        }
     }
 
     /**

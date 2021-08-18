@@ -1,6 +1,8 @@
 package Model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import org.graphstream.graph.Node;
@@ -134,6 +136,19 @@ public class State {
      */
     public HashMap<Integer,Node> getSchedule(int processor) {
         return _state.get(processor);
+    }
+
+    /**
+     * Returns all the schedules in a state object.
+     * @return A List object containing all processor schedules.
+     */
+    public List<HashMap<Integer,Node>> getAllSchedules() {
+        List<HashMap<Integer,Node>> allSchedules = new ArrayList<>();
+        for (int processor: _state.keySet()) {
+            HashMap<Integer, Node> schedule = _state.get(processor);
+            allSchedules.add(schedule);
+        }
+        return allSchedules;
     }
 
     /**

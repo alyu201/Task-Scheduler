@@ -1,11 +1,14 @@
 package Model;
 
+import javafx.animation.AnimationTimer;
+import org.apache.commons.lang3.time.StopWatch;
 import org.graphstream.graph.Graph;
 
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
+import java.util.Timer;
+import java.util.concurrent.*;
 
 /**
  * This is the Main class of the project, an entry point to the project.
@@ -54,6 +57,7 @@ public class Main {
             AStarScheduler aStarScheduler = new AStarScheduler(graph, numberOfProcess);
             State state = aStarScheduler.generateSchedule();
 
+            Visualiser.stopElapsedTime();
             System.out.println("algorithm finished");
 
             //End of program procedure

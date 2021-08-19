@@ -4,9 +4,10 @@ import Model.Main;
 import Model.State;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
@@ -14,13 +15,8 @@ import org.graphstream.ui.fx_viewer.FxViewPanel;
 import org.graphstream.ui.fx_viewer.FxViewer;
 import org.graphstream.ui.javafx.FxGraphRenderer;
 import org.graphstream.ui.view.GraphRenderer;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -39,6 +35,8 @@ public class MainController {
     @FXML
     private AnchorPane ganttChartPane;
     @FXML
+    private LineChart<Number, Number> threadChart;
+    @FXML
     private Label inputNameLabel;
     @FXML
     private Label processorNumLabel;
@@ -46,18 +44,20 @@ public class MainController {
     private Label elapsedTimeLabel;
 
     private Graph _graph;
+    private XYChart.Series<Number,Number> _threadSeries = new XYChart.Series<>();
+    private int _counter = 0;
 
     public void initialize() {
         inputNameLabel.setText(Main.INPUTNAME);
         processorNumLabel.setText(String.valueOf(Main.INPUTPROCNUM));
 
         String graphStyle = "node {"
-                + "size: 23px;"
+                + "size: 25px;"
                 + "fill-color: dimgray;"
                 + "text-size: 15;"
-                + "text-alignment: under;"
+                + "text-alignment: at-right;"
                 + "text-background-mode: rounded-box;"
-                + "text-offset: 0, 1;"
+                + "text-offset: 8, -15;"
                 + "text-padding: 5;"
                 + "text-color: dimgray;"
                 + "}"
@@ -132,6 +132,7 @@ public class MainController {
         v.enableAutoLayout();
         FxViewPanel panel = (FxViewPanel)v.addDefaultView(false, renderer);
         graphPane.getChildren().add(panel);
+        threadChart.getData().add(_threadSeries);
     }
 
     public void markNode(State state) {
@@ -145,7 +146,9 @@ public class MainController {
                 }
             }
             String colour = colourMode;
-            Platform.runLater(() -> node.setAttribute("ui.class", colour));
+            Platform.runLater(() -> {
+                node.setAttribute("ui.class", colour);
+            });
         }
         sleep();
     }
@@ -160,7 +163,20 @@ public class MainController {
 
     public void incrementTimer(String time) {
         Platform.runLater(() -> {
-                elapsedTimeLabel.setText(time);
+            elapsedTimeLabel.setText(time);
         });
+    }
+
+    public void showThreadUsage(int threadCount) {
+        _counter++;
+        if (threadCount > 0) {
+            Platform.runLater(() -> {
+                if (_threadSeries.getData().size() > 20) {
+                    _threadSeries.getData().remove(0);
+                }
+                _threadSeries.getData().add(new XYChart.Data<>(_counter, threadCount));
+                _threadSeries.getNode().setStyle("-fx-stroke: #a3c2c2;");
+            });
+        }
     }
 }

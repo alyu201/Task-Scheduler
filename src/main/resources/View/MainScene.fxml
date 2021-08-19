@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.*?>
+<?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
@@ -11,8 +12,8 @@
       <AnchorPane HBox.hgrow="ALWAYS">
          <children>
             <TitledPane animated="false" collapsible="false" text="Mode: Sequential" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-              <content>
-                <AnchorPane style="-fx-background-color: white;">
+               <content>
+                  <AnchorPane style="-fx-background-color: white;">
                      <children>
                         <VBox alignment="CENTER" spacing="20.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <padding>
@@ -40,10 +41,11 @@
                                  <padding>
                                     <Insets bottom="30.0" top="20.0" />
                                  </padding></AnchorPane>
+                              <AnchorPane fx:id="threadProgressPane" />
                            </children>
                         </VBox>
                      </children></AnchorPane>
-              </content>
+               </content>
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
@@ -211,7 +213,28 @@
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>
                               </HBox>
-                              <HBox spacing="5.0">
+                              <VBox alignment="CENTER_LEFT">
+                                 <children>
+                                    <HBox alignment="CENTER_LEFT">
+                                       <children>
+                                          <Label text="Thread Usage:">
+                                             <font>
+                                                <Font name="System Bold" size="16.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </HBox>
+                                    <LineChart fx:id="threadChart" animated="false" createSymbols="false" legendVisible="false">
+                                      <xAxis>
+                                         <NumberAxis animated="false" forceZeroInRange="false" minorTickLength="1.0" side="LEFT" tickLabelsVisible="false" tickUnit="1.0" upperBound="20.0" />
+                                      </xAxis>
+                                      <yAxis>
+                                        <NumberAxis animated="false" autoRanging="false" forceZeroInRange="false" minorTickLength="1.0" side="LEFT" tickUnit="1.0" upperBound="6.0" />
+                                      </yAxis>
+                                    </LineChart>
+                                 </children>
+                              </VBox>
+                              <HBox alignment="CENTER_LEFT" spacing="5.0">
                                  <children>
                                     <Label text="Output Schedule:" wrapText="true">
                                        <font>
@@ -225,7 +248,7 @@
                               </HBox>
                               <AnchorPane fx:id="ganttChartPane" style="-fx-background-color: lightgrey;">
                                  <children>
-                                    <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="500.0" text="No content yet" textAlignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                    <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="300.0" text="No content yet" textAlignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                  </children>
                               </AnchorPane>
                            </children>

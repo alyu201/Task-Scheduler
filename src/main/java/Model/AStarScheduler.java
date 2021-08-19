@@ -2,14 +2,12 @@ package Model;
 
 // TODO: Should this class or visualisation classes implement Thread for concurrency
 
+import javafx.application.Platform;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 /**
@@ -49,12 +47,10 @@ public class AStarScheduler {
         _openList.add(emptyState);
         int i = 1;
         int freq = (int) (_taskGraph.nodes().count()) * _numProcessors;
+        Boolean showThreadCount = false;
 
         while (!_openList.isEmpty()) {
             State state = _openList.poll();
-            // Update GUI at a frequency of 1/(numOfTasks*numProc) whenever a state is popped off openList
-            if (i % freq == 0) { Visualiser.update(state); }
-            i++;
 
             if (goalStateReached(state)) {
                 _executorService.shutdown();
@@ -64,7 +60,16 @@ public class AStarScheduler {
             }
 
             List<Node> schedulableTasks = getSchedulableTasks(state);
-            addChildStates(state, schedulableTasks);
+            addChildStates(state, schedulableTasks, showThreadCount);
+
+            // Update GUI at a frequency of 1/(numOfTasks*numProc) whenever a state is popped off openList
+            if (i % freq == 0) {
+                Visualiser.update(state);
+                showThreadCount = true;
+            }
+            i++;
+
+            Visualiser.resetThreadCount();
         }
         _executorService.shutdown();
         return null;
@@ -98,13 +103,14 @@ public class AStarScheduler {
      * @param parentState The parent state
      * @param tasks The list of tasks that are to be scheduled in tathe child states.
      */
-    private void addChildStates (State parentState, List<Node> tasks) throws ExecutionException, InterruptedException {
+    private void addChildStates (State parentState, List<Node> tasks, Boolean threading) throws ExecutionException, InterruptedException {
         Set<Future> futures = new HashSet<>();
 
         //for each task, add it to the openlist on a different thread
         for (Node task: tasks) {
             StateAdditionThread stateAdditionThread = new StateAdditionThread(parentState, task, _openList);
             futures.add(_executorService.submit(stateAdditionThread));
+            Visualiser.incrThreadCount();
         }
 
         //Wait for all the child thread to return

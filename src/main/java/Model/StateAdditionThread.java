@@ -4,10 +4,7 @@ import org.graphstream.graph.Edge;
 import org.graphstream.graph.Element;
 import org.graphstream.graph.Node;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -17,13 +14,15 @@ import java.util.stream.Collectors;
  */
 public class StateAdditionThread implements Runnable{
     private PriorityQueue<State> _openList;
+    private Set<State> _closedList;
     private State _currentParentState;
     private Node _currentTask;
 
-    public StateAdditionThread(State parentState, Node task, PriorityQueue<State> priorityQueue){
+    public StateAdditionThread(State parentState, Node task, PriorityQueue<State> priorityQueue, Set<State> closedList){
         _currentParentState = parentState;
         _currentTask = task;
         _openList = priorityQueue;
+        _closedList = closedList;
     }
 
     /**
@@ -32,15 +31,12 @@ public class StateAdditionThread implements Runnable{
      */
     public void addIndividualTask(){
 
-        //TODO: The processor number in State starts indexing from 1
+        //The processor number in State starts indexing from 1
         Set<Integer> processors = _currentParentState.procKeys();
-
-        // prerequistieNodePos maintains a list of prerequisites, each is the last prerequisite on a schedule
-        Node[] prerequisiteNodePos = new Node[processors.size()];
 
         // startTimes maintains a list of start times for the task to start
         int[] startingTimes = new int[processors.size()];
-        this.scheduleAfterPrerequisite(_currentTask,prerequisiteNodePos,startingTimes);
+        this.scheduleAfterPrerequisite(_currentTask, startingTimes);
 
         //This boolean determines if a task has already been scheduled in a processor, and prevents the task to be
         //scheduled in another processor with same outcome. E.g. Schedule A: {1={0=A}, 2={}} is the same as
@@ -60,16 +56,19 @@ public class StateAdditionThread implements Runnable{
             }
 
             for (int j: processors) {
-                if (i != j && prerequisiteNodePos[j - 1] != null) {
-                    int communicationCost = Double.valueOf(prerequisiteNodePos[j - 1].getEdgeToward(_currentTask).getAttribute("Weight").toString()).intValue();
-                    nextStartTime = Math.max(nextStartTime, startingTimes[j - 1] + communicationCost);
+                if (i != j) {
+                    nextStartTime = Math.max(nextStartTime, startingTimes[j - 1]);
                 }
             }
 
             int maxUnderestimate = Math.max(nextStartTime + _currentTask.getAttribute("BottomLevel", Integer.class), _currentParentState.getUnderestimate());
 
             State child = new State(_currentParentState, maxUnderestimate, _currentTask, i, nextStartTime);
-            _openList.add(child);
+
+            if (!_closedList.contains(child)) {
+                _openList.add(child);
+            }
+
         }
     }
 
@@ -77,31 +76,30 @@ public class StateAdditionThread implements Runnable{
      * This method is a subcomponent of the addIndividualTask method.
      * It is responsible for generating two lists. One shows the
      * @param task
-     * @param prerequisiteNodePos
      * @param startingTimes
      */
-    private void scheduleAfterPrerequisite(Node task, Node[] prerequisiteNodePos, int[] startingTimes){
+    private void scheduleAfterPrerequisite(Node task, int[] startingTimes){
         Set<Integer> processors = _currentParentState.procKeys();
 
         //getting the prerequisite task details
-        List<Node> prerequisiteTasks = task.enteringEdges().map(Edge::getNode0).collect(Collectors.toList());
-        List<String> prerequisiteTasksId = prerequisiteTasks.stream().map(Element::getId).collect(Collectors.toList());
+        HashSet<Node> prerequisiteTasks = _currentTask.enteringEdges().map(e -> e.getNode0()).collect(Collectors.toCollection(HashSet:: new));
 
         for (int i: processors) {
             HashMap<Integer, Node> schedule = _currentParentState.getSchedule(i);
 
             //if current schedule has prerequisite tasks, change the start time to after the finishing time of the prerequisites.
             for (int startTime: schedule.keySet()) {
+                Node taskScheduled = schedule.get(startTime);
+
                 //change start time to prerequisite task finishing time
-                if (prerequisiteTasksId.contains(schedule.get(startTime).getId())) {
+                if (prerequisiteTasks.contains(taskScheduled)) {
+                    int prereqTaskWeight = Double.valueOf(taskScheduled.getAttribute("Weight").toString()).intValue();
+                    int prereqTaskCommunicationCost = Double.valueOf(taskScheduled.getEdgeToward(task).getAttribute("Weight").toString()).intValue();
 
-                    //Processor indexing starts from 1
-                    int currentStartTime = startingTimes[i - 1];
-                    int afterPrerequisiteStartTime = startTime + Double.valueOf(schedule.get(startTime).getAttribute("Weight").toString()).intValue();
+                    int prereqStartTime = startTime + prereqTaskWeight + prereqTaskCommunicationCost;
 
-                    if (afterPrerequisiteStartTime > currentStartTime) {
-                        startingTimes[i - 1] = afterPrerequisiteStartTime;
-                        prerequisiteNodePos[i - 1] = schedule.get(startTime);
+                    if (prereqStartTime > startingTimes[i - 1]) {
+                        startingTimes[i - 1] = prereqStartTime;
                     }
                 }
             }

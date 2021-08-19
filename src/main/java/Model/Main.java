@@ -20,6 +20,8 @@ import java.util.concurrent.ExecutorService;
 public class Main {
     public static Boolean VISUALISATIONFLAG = false;
     public static String OUTPUTNAME;
+    public static String INPUTNAME;
+    public static int INPUTPROCNUM;
     public static int NUMPROCESSORS = 1;
 
     public static void main(String[] args) {
@@ -31,7 +33,8 @@ public class Main {
             }
 
             //Process the input dot file
-            String filePath = Paths.get(args[0]).toAbsolutePath().toString();
+            INPUTNAME = args[0];
+            String filePath = Paths.get(INPUTNAME).toAbsolutePath().toString();
             if (!filePath.contains(".dot")) {
                 throw new InvalidInputArgumentException("The input filename needs a .dot extension.");
             }
@@ -47,9 +50,11 @@ public class Main {
 
             //Process the number of processor argument, then start scheduling
             int numberOfProcess = Integer.parseInt(args[1]);
+            INPUTPROCNUM = numberOfProcess;
             AStarScheduler aStarScheduler = new AStarScheduler(graph, numberOfProcess);
             State state = aStarScheduler.generateSchedule();
 
+            System.out.println("algorithm finished");
 
             //End of program procedure
             VisualThread.VisualThread().join();

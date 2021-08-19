@@ -15,6 +15,6 @@ public class SecondaryController {
 
     @FXML
     private void switchToPrimary() throws IOException {
-        Visualiser.setRoot("../View/primary");
+        Visualiser.setRoot("/View/primary");
     }
 }

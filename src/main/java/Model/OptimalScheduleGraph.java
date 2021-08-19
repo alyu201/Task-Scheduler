@@ -36,7 +36,7 @@ public class OptimalScheduleGraph{
         chart.setBlockHeight(50);
         HashMap<Integer, HashMap<Integer, Node>> d = stateDiagram.getState();
         for(int i=0; i<d.size(); i++){
-            String process = "Process" + i;
+            String process = "Processor" + i;
             XYChart.Series series = new XYChart.Series();
             series.getData().add(new XYChart.Data());
             chart.getData().add(series);

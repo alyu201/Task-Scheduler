@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
@@ -31,14 +32,18 @@ import java.util.concurrent.TimeUnit;
  *
  */
 
-public class MainController implements PropertyChangeListener {
+public class MainController {
 
     @FXML
     private AnchorPane graphPane;
     @FXML
+    private AnchorPane ganttChartPane;
+    @FXML
     private Label inputNameLabel;
     @FXML
     private Label processorNumLabel;
+    @FXML
+    private Label elapsedTimeLabel;
 
     private Graph _graph;
 
@@ -100,6 +105,7 @@ public class MainController implements PropertyChangeListener {
 
         // Retrieve graph instance
         _graph = Model.GraphProcessing.Graphprocessing().getGraph();
+        // TODO: remove dummy root node in display
         // Remove any dummy nodes
 //        if (_graph.getNode("dummyRoot") != null) {
 //            _graph.removeNode("dummyRoot");
@@ -152,8 +158,9 @@ public class MainController implements PropertyChangeListener {
         }
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-
+    public void incrementTimer(String time) {
+        Platform.runLater(() -> {
+                elapsedTimeLabel.setText(time);
+        });
     }
 }

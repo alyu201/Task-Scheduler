@@ -2,6 +2,7 @@ package Model;
 import org.graphstream.graph.Node;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -15,6 +16,7 @@ import java.util.Set;
 
  * @author Megan Lim
  */
+
 public interface State {
 
     /**
@@ -46,6 +48,12 @@ public interface State {
      */
     public HashMap<Integer,Node> getSchedule(int processor);
 
+    /**
+     * Returns all the schedules in a state object.
+     * @return A List object containing all processor schedules.
+     */
+    public List<HashMap<Integer,Node>> getAllSchedules();
+
 
     /**
      * This method gets the _state attribute.
@@ -59,5 +67,11 @@ public interface State {
      * @return _state attribute
      */
     public int getNumProcessors();
+
+    @Override
+    public boolean equals(Object o);
+
+    @Override
+    public int hashCode();
 
 }

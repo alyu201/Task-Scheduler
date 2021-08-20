@@ -36,6 +36,7 @@ public class AlgorithmUnitTest {
         private int _numProcessors;
         public PriorityQueue<State> _openList;
         private ExecutorService _executorService;
+        private Set<State> _closedList;
 
         /**
          * This variable keeps track of the dummy root so that it can only be scheduled once
@@ -44,9 +45,10 @@ public class AlgorithmUnitTest {
 
 
         //TODO: Update with the actual classes
-        public SchedulerPrivateData(Graph taskGraph, int numProcessors) {
+        public SchedulerPrivateData (Graph taskGraph, int numProcessors) {
             _numProcessors = numProcessors;
             _openList = new PriorityQueue<State>(200, new StateComparator());
+            _closedList = new HashSet<State>();
             _taskGraph = taskGraph;
             _dummyRootScheduled = false;
             _executorService = Executors.newFixedThreadPool(Main.NUMPROCESSORS);
@@ -64,21 +66,25 @@ public class AlgorithmUnitTest {
             int i = 1;
             int freq = (int) (_taskGraph.nodes().count()) * _numProcessors;
 
+            TaskGraphUtil.removeDummyRootNode(_taskGraph);
+
             while (!_openList.isEmpty()) {
                 State state = _openList.poll();
+
                 // Update GUI at a frequency of 1/(numOfTasks*numProc) whenever a state is popped off openList
-//                if (i % freq == 0) { Visualiser.update(state); }
+//            if (i % freq == 0) { Visualiser.update(state); }
                 i++;
 
                 if (goalStateReached(state)) {
                     _executorService.shutdown();
                     // Call Visualiser to update GUI
-//                    Visualiser.update(state);
+//                Visualiser.update(state);
                     return state;
                 }
 
-                List<Node> schedulableTasks = getSchedulableTasks(state);
+                List<Node> schedulableTasks = getNextTasks(state);
                 addChildStates(state, schedulableTasks);
+                _closedList.add(state);
             }
             _executorService.shutdown();
             return null;
@@ -90,20 +96,15 @@ public class AlgorithmUnitTest {
          * @return True if is goal state, false otherwise
          */
         public boolean goalStateReached(State state) {
-            HashSet<String> requiredTaskIds = _taskGraph.nodes().filter(n -> !(n.getId().equals("dummyRoot"))).map(n -> n.getId()).collect(Collectors.toCollection(HashSet:: new));
-            HashSet<String> completedTaskIds = new HashSet<String>();
-            Set<Integer> processors = state.procKeys();
+            List<HashMap<Integer, Node>> schedules = state.getAllSchedules();
 
-            for (int i: processors) {
-                HashMap<Integer, Node> schedule = state.getSchedule(i);
+            List<Node> scheduledTasks = new ArrayList<Node>();
 
-                for (Node n: schedule.values()) {
-                    String taskId = n.getId();
-                    completedTaskIds.add(taskId);
-                }
+            for (HashMap<Integer, Node> i: schedules) {
+                scheduledTasks.addAll(i.values());
             }
 
-            return requiredTaskIds.equals(completedTaskIds);
+            return TaskGraphUtil.allTaskScheduled(_taskGraph, scheduledTasks);
         }
 
         /**
@@ -112,12 +113,12 @@ public class AlgorithmUnitTest {
          * @param parentState The parent state
          * @param tasks The list of tasks that are to be scheduled in tathe child states.
          */
-        public void addChildStates(State parentState, List<Node> tasks) throws ExecutionException, InterruptedException {
+        public void addChildStates (State parentState, List<Node> tasks) throws ExecutionException, InterruptedException {
             Set<Future> futures = new HashSet<>();
 
             //for each task, add it to the openlist on a different thread
             for (Node task: tasks) {
-                StateAdditionThread stateAdditionThread = new StateAdditionThread(parentState, task, _openList);
+                StateAdditionThread stateAdditionThread = new StateAdditionThread(parentState, task, _openList, _closedList);
                 futures.add(_executorService.submit(stateAdditionThread));
             }
 
@@ -132,48 +133,22 @@ public class AlgorithmUnitTest {
          * @param state The state to be evaluated
          * @return A list of schedulable tasks (nodes)
          */
-        public List<Node> getSchedulableTasks(State state) {
-            HashMap<Node, Integer> allTasks = new HashMap<Node, Integer>();
+        private List<Node> getNextTasks(State state) {
+            List<HashMap<Integer, Node>> schedules = state.getAllSchedules();
 
-            //Stores a mapping for all the tasks and and their number of prerequisite tasks
-            _taskGraph.nodes().forEach(task -> allTasks.put(task, task.getInDegree()));
-
-            Node dummyRootNode = _taskGraph.getNode("dummyRoot");
-
-            if (_dummyRootScheduled) {
-                allTasks.remove(dummyRootNode);
-                dummyRootNode.leavingEdges().forEach(edge -> allTasks.put(edge.getNode1(), allTasks.get(edge.getNode1()) - 1));
-            }
-
-            Set<Integer> processors = state.procKeys();
-
-            //TODO: Might need to change data structure
             List<Node> scheduledTasks = new ArrayList<Node>();
 
-            //Go through all scheduled tasks and reduce the count for prerequisite tasks of their children.
-            for (int i: processors) {
-                HashMap<Integer, Node> processorTasks = state.getSchedule(i);
-                for (int j: processorTasks.keySet()) {
-                    Node task = processorTasks.get(j);
-
-                    task.leavingEdges().forEach(edge -> allTasks.put(edge.getNode1(), allTasks.get(edge.getNode1()) - 1));
-                    scheduledTasks.add(task);
-                }
+            for (HashMap<Integer, Node> i: schedules) {
+                scheduledTasks.addAll(i.values());
             }
 
-            //Remove tasks that have already been scheduled and tasks that still have prerequisite tasks > 0
-            allTasks.entrySet().removeIf(e -> (scheduledTasks.contains(e.getKey()) || e.getValue() > 0));
-
-            List<Node> schedulableTasks = new ArrayList<Node>(allTasks.keySet());
-
-            if (schedulableTasks.contains(_taskGraph.getNode("dummyRoot"))) {
-                _dummyRootScheduled = true;
-            }
+            List<Node> schedulableTasks = TaskGraphUtil.getNextSchedulableTasks(_taskGraph, scheduledTasks);
 
             return schedulableTasks;
         }
 
     }
+
 
     /*
         Before each test method, instantiate a new scheduler.

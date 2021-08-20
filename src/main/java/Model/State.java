@@ -1,9 +1,6 @@
 package Model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.graphstream.graph.Node;
 
@@ -159,4 +156,16 @@ public class State {
         return _state;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        State state = (State) o;
+        return _state.equals(state._state);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(_state);
+    }
 }

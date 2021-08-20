@@ -1,53 +1,76 @@
 package Model;
 
-import java.util.Arrays;
-import java.util.HashMap;
-
-import javafx.collections.FXCollections;
-import javafx.scene.Scene;
+import javafx.fxml.FXML;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import org.graphstream.graph.Node;
 
-public class OptimalScheduleGraph{
+import java.util.*;
 
-    public OptimalScheduleGraph(State stateDiagram) {
+public class OptimalScheduleGraph {
 
-//      stage.setTitle("Gantt Chart Sample");
+    // A stacked bar chart is used to visualise the current best schedule found.
+    // Each bar represents tasks scheduled on a processor.
+    @FXML
+    private StackedBarChart<String, Number> ganttChart;
 
-        final NumberAxis xAxis = new NumberAxis();
-        final CategoryAxis yAxis = new CategoryAxis();
+    private HashMap<Integer, HashMap<Integer, Node>> optimalSchedule;
+    private int numProcessors;
 
-        final GanttChart<Number, String> chart = new GanttChart<Number,String>(xAxis,yAxis);
-        xAxis.setLabel("");
-        xAxis.setTickLabelFill(Color.CHOCOLATE);
-        xAxis.setMinorTickCount(4);
+    public void OptimalScheduleGraph(State state){
+        optimalSchedule = state.getState();
 
-        yAxis.setLabel("");
-        yAxis.setTickLabelFill(Color.CHOCOLATE);
-        yAxis.setTickLabelGap(10);
-//        yAxis.setCategories(FXCollections.<String>observableArrayList(Arrays.asList(processes)));
+        initialiseSchedule();
+        populateSchedule();
+        getStackedBarChart();
+    }
 
-        chart.setTitle("Optimal Schedule");
-        chart.setLegendVisible(false);
-        chart.setBlockHeight(50);
-        HashMap<Integer, HashMap<Integer, Node>> d = stateDiagram.getState();
-        for(int i=0; i<d.size(); i++){
-            String process = "Processor" + i;
-            XYChart.Series series = new XYChart.Series();
-            series.getData().add(new XYChart.Data());
-            chart.getData().add(series);
+    /**
+     * This method sets up initial values for labels in the GUI
+     */
+    public void initialiseSchedule() {
+        numProcessors = optimalSchedule.size();
+
+        //Configuring xAxis and yAxis
+        CategoryAxis xAxis = new CategoryAxis();
+        xAxis.setLabel("Processors");
+
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Time");
+
+        //Configuring StackedBarChart
+        ganttChart = new StackedBarChart(xAxis, yAxis);
+        ganttChart.setTitle("Optimal Schedule");
+    }
+
+    /**
+     * This is called when the algorithm finalises, it builds the nodes for each
+     * processor to be visualised based on the final output. The schedule graph
+     * reflects the output dot file.
+     */
+    public void populateSchedule() {
+        String[] processors = new String[numProcessors];
+        for (int i = 1; i <= numProcessors; i++) {
+            processors[i] = "Processor" + (i);
         }
 
-//        process = processes[1];
-//        XYChart.Series series2 = new XYChart.Series();
-//        series2.getData().add(new XYChart.Data(0, process, new ExtraData( 1, "status-green")));
+        // for each process, get all of its nodes and place them in the schedules chart
+        for (int i = 1; i<=numProcessors; i++) {
+            XYChart.Series series = new XYChart.Series();
 
-//        Scene scene  = new Scene(chart,620,350);
-//        stage.setScene(scene);
-//        stage.show();
+            int key = optimalSchedule.get(i).hashCode();
+            Node node = optimalSchedule.get(i).get(key);
+
+            series.getData().add(new XYChart.Data<>(processors[i], node));
+
+            //Adding series java to the stackedBarChart
+            ganttChart.getData().add(series);
+        }
+    }
+
+    private StackedBarChart<String, Number> getStackedBarChart() {
+        return ganttChart;
     }
 }

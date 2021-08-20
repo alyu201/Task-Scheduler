@@ -1,9 +1,11 @@
 package Controller;
 
+import Model.GraphProcessing;
 import Model.Main;
 import Model.State;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
@@ -15,9 +17,11 @@ import org.graphstream.ui.fx_viewer.FxViewPanel;
 import org.graphstream.ui.fx_viewer.FxViewer;
 import org.graphstream.ui.javafx.FxGraphRenderer;
 import org.graphstream.ui.view.GraphRenderer;
-import java.util.Collection;
-import java.util.Iterator;
+import java.net.URL;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class handles the displaying and controlling functions of the
@@ -28,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  *
  */
 
-public class MainController {
+public class MainController implements Initializable {
 
     @FXML
     private AnchorPane graphPane;
@@ -45,11 +49,17 @@ public class MainController {
 
     private Graph _graph;
     private XYChart.Series<Number,Number> _threadSeries = new XYChart.Series<>();
-    private int _counter = 0;
+    private int _counter = 5;
 
-    public void initialize() {
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
         inputNameLabel.setText(Main.INPUTNAME);
         processorNumLabel.setText(String.valueOf(Main.INPUTPROCNUM));
+        for (int i = 0; i < 5; i++) {
+            _threadSeries.getData().add(new XYChart.Data<>(i,1));
+        }
+        threadChart.getData().add(_threadSeries);
+        _threadSeries.getNode().setStyle("-fx-stroke: #a3c2c2;");
 
         String graphStyle = "node {"
                 + "size: 25px;"
@@ -91,6 +101,7 @@ public class MainController {
                 + "}"
 
                 + "graph {"
+                + "padding: 60;"
                 + "}"
 
                 + "edge {"
@@ -105,55 +116,51 @@ public class MainController {
 
         // Retrieve graph instance
         _graph = Model.GraphProcessing.Graphprocessing().getGraph();
-        // TODO: remove dummy root node in display
-        // Remove any dummy nodes
-//        if (_graph.getNode("dummyRoot") != null) {
-//            _graph.removeNode("dummyRoot");
-//        }
-
-        // Add node id as label
-        Iterator nodesIterator = _graph.nodes().iterator();
-        while (nodesIterator.hasNext()) {
-            Node node = (Node) nodesIterator.next();
-            node.setAttribute("ui.label", "Node: " + node.getId() + "\n" + node.getAttribute("Weight"));
+        try {
+            _graph.setAttribute("ui.stylesheet", graphStyle);
+        } catch(NoSuchElementException e) {
+            System.out.println("NoSuchException occurred from graph setAttribute");
         }
-
-        // Add edge weight as label
-        Iterator edgesIterator = _graph.edges().iterator();
-        while (edgesIterator.hasNext()) {
-            Edge edge = (Edge) edgesIterator.next();
-            edge.setAttribute("ui.label", edge.getAttribute("Weight"));
-        }
-        _graph.setAttribute("ui.stylesheet", graphStyle);
 
         // Setup graph display pane
-        GraphRenderer renderer = new FxGraphRenderer();
-        FxViewer v = new FxViewer(_graph, FxViewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
-        v.enableAutoLayout();
-        FxViewPanel panel = (FxViewPanel)v.addDefaultView(false, renderer);
-        graphPane.getChildren().add(panel);
-        threadChart.getData().add(_threadSeries);
+        Platform.runLater(() -> {
+            GraphRenderer renderer = new FxGraphRenderer();
+            FxViewer v = new FxViewer(_graph, FxViewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
+            v.enableAutoLayout();
+            FxViewPanel panel = (FxViewPanel)v.addDefaultView(false, renderer);
+            graphPane.getChildren().add(panel);
+        });
     }
 
     public void markNode(State state) {
-        for (Node node : _graph) {
-            String colourMode = "default";
-            for (int procNum : state.procKeys()) {
-                Collection<Node> procNodes = state.getSchedule(procNum).values();
-                if (procNodes.contains(node)) {
-                    colourMode = "proc" + procNum;
-                    break;
+        if (_graph != null) {
+            Stream<Node> nodesIterator = _graph.nodes();
+            List<Node> nodesList = nodesIterator.collect(Collectors.toList());
+            for (Node node : nodesList) {
+                String colourMode = "default";
+                for (int procNum : state.procKeys()) {
+                    // TODO: move this to State class
+                    Collection<Node> procNodes = state.getSchedule(procNum).values();
+                    if (procNodes.contains(node)) {
+                        colourMode = "proc" + procNum;
+                        break;
+                    }
                 }
+                String colour = colourMode;
+                Platform.runLater(() -> {
+                    try {
+                        // TODO: concurrentModificationException when performance drops with this
+                        node.setAttribute("ui.class", colour);
+                    } catch(ConcurrentModificationException e) {
+                        System.out.println("ConcurrentModificationException occurred from markNode");
+                    }
+                });
             }
-            String colour = colourMode;
-            Platform.runLater(() -> {
-                node.setAttribute("ui.class", colour);
-            });
+            sleep();
         }
-        sleep();
     }
 
-    public void sleep() {
+    public static void sleep() {
         try {
             TimeUnit.MILLISECONDS.sleep(200);
         } catch (InterruptedException e) {

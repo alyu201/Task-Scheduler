@@ -88,6 +88,7 @@ public class Visualiser extends Application {
 
         MainController ctrl = loader.getController();
         ctrl.markNode(state);
+//        MainController.markNode(state);
     }
 
     public static void stopElapsedTime () {

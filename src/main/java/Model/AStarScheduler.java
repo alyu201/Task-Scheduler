@@ -2,13 +2,11 @@ package Model;
 
 // TODO: Should this class or visualisation classes implement Thread for concurrency
 
-import javafx.application.Platform;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 
 /**
  * This class is responsible for scheduling a number of tasks represented as a DAG (Directed
@@ -49,7 +47,6 @@ public class AStarScheduler {
         _openList.add(emptyState);
         int i = 1;
         int freq = (int) (_taskGraph.nodes().count()) * _numProcessors;
-        Boolean showThreadCount = false;
 
         TaskGraphUtil.removeDummyRootNode(_taskGraph);
 
@@ -74,7 +71,6 @@ public class AStarScheduler {
             // Update GUI at a frequency of 1/(numOfTasks*numProc) whenever a state is popped off openList
             if (i % freq == 0) {
                 Visualiser.update(state);
-                showThreadCount = true;
             }
             i++;
 

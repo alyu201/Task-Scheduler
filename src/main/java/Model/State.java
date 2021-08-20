@@ -53,9 +53,10 @@ public interface State {
      */
     public HashMap<Integer, HashMap<Integer, Node>> getState();
 
+
     /**
-     * This method gets the _numProcessors attribute.
-     * @return _numProcessors
+     * This method returns the number of processors.
+     * @return _state attribute
      */
     public int getNumProcessors();
 

@@ -160,9 +160,8 @@ public class ModelState implements State {
     }
 
     /**
-     * This method gets the _numProcessors attribute.
-     * @return _numProcessors
-     * @author Megan Lim
+     * This method returns the number of processors.
+     * @return _state attribute
      */
     public int getNumProcessors() {
         return _numProcessors;

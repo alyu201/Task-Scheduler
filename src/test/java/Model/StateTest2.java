@@ -45,12 +45,12 @@ class StateTest2 {
         nodeD.setAttribute("weight", 6);
         nodeE.setAttribute("weight", 1);
 
-        State _empty = new State(3);
-        _s1 = new State(_empty,12,nodeA,1,0);
-        _s2 = new State(_s1,12,nodeB,1,3);
-        _s3 = new State(_s2,12,nodeC,1,7);
-        _s4 = new State(_s3,11,nodeD,2,5);
-        _s5 = new State(_s4,9,nodeE,3,8);
+        State _empty = new ModelState(3);
+        _s1 = new ModelState(_empty,12,nodeA,1,0);
+        _s2 = new ModelState(_s1,12,nodeB,1,3);
+        _s3 = new ModelState(_s2,12,nodeC,1,7);
+        _s4 = new ModelState(_s3,11,nodeD,2,5);
+        _s5 = new ModelState(_s4,9,nodeE,3,8);
     }
 
     /**

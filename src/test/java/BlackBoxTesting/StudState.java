@@ -16,17 +16,15 @@ import java.util.Set;
  */
 public class StudState implements State {
 
-    private HashMap<Integer,HashMap<Integer, Node>> _state = new HashMap<>();
+    private HashMap<Integer,HashMap<Integer, Node>> _state;
     private int _underestimate = 0;
-    private int _nextStartTime = 0;
-    private Set<Integer> _procKeys = null;
+    private int _nextStartTime;
     private final int _numProcessors;
 
-    public StudState(HashMap<Integer,HashMap<Integer, Node>> state, int underestimate, int nextStartTime, Set<Integer> procKeys, int numProcessors) {
-        _state = state;
-        _underestimate = underestimate;
+    public StudState(HashMap<Integer,HashMap<Integer, Node>> stateWithAddedTask, int maxUnderestimate, int nextStartTime, int numProcessors) {
+        _state = stateWithAddedTask;
+        _underestimate = maxUnderestimate;
         _nextStartTime = nextStartTime;
-        _procKeys = procKeys;
         _numProcessors = numProcessors;
     }
 
@@ -42,7 +40,7 @@ public class StudState implements State {
 
     @Override
     public Set<Integer> procKeys() {
-        return _procKeys;
+        return _state.keySet();
     }
 
     @Override
@@ -59,4 +57,5 @@ public class StudState implements State {
     public int getNumProcessors() {
         return _numProcessors;
     }
+
 }

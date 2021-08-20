@@ -68,7 +68,7 @@ public class StateAdditionThread implements Runnable{
 
             int maxUnderestimate = Math.max(nextStartTime + _currentTask.getAttribute("BottomLevel", Integer.class), _currentParentState.getUnderestimate());
 
-            State child = new State(_currentParentState, maxUnderestimate, _currentTask, i, nextStartTime);
+            State child = new ModelState(_currentParentState, maxUnderestimate, _currentTask, i, nextStartTime);
             _openList.add(child);
         }
     }

@@ -72,13 +72,13 @@ public class AlgorithmUnitTest {
                 State state = _openList.poll();
 
                 // Update GUI at a frequency of 1/(numOfTasks*numProc) whenever a state is popped off openList
-//            if (i % freq == 0) { Visualiser.update(state); }
+            if (i % freq == 0) { Visualiser.update(state); }
                 i++;
 
                 if (goalStateReached(state)) {
                     _executorService.shutdown();
                     // Call Visualiser to update GUI
-//                Visualiser.update(state);
+                Visualiser.update(state);
                     return state;
                 }
 
@@ -133,7 +133,7 @@ public class AlgorithmUnitTest {
          * @param state The state to be evaluated
          * @return A list of schedulable tasks (nodes)
          */
-        private List<Node> getNextTasks(State state) {
+        public List<Node> getNextTasks(State state) {
             List<HashMap<Integer, Node>> schedules = state.getAllSchedules();
 
             List<Node> scheduledTasks = new ArrayList<Node>();
@@ -159,6 +159,9 @@ public class AlgorithmUnitTest {
         // Clearing the _listOfStates list
         _listOfStates.clear();
 
+        // Clearing the graph
+        _graph = new DefaultGraph("graph");
+
         // Setting the up the graph
         _graph.addNode("A");
         _graph.addNode("B");
@@ -177,8 +180,8 @@ public class AlgorithmUnitTest {
 
         Edge edgeAtoB = _graph.addEdge("A -> B", nodeA, nodeB);
         Edge edgeAtoC = _graph.addEdge("A -> C", nodeA, nodeC);
-        Edge edgeBtoD = _graph.addEdge("B -> D", nodeA, nodeD);
-        Edge edgeCtoD = _graph.addEdge("C -> D", nodeB, nodeD);
+        Edge edgeBtoD = _graph.addEdge("B -> D", nodeB, nodeD);
+        Edge edgeCtoD = _graph.addEdge("C -> D", nodeC, nodeD);
 
         edgeAtoB.setAttribute("Weight", 2);
         edgeAtoC.setAttribute("Weight", 1);
@@ -441,6 +444,29 @@ public class AlgorithmUnitTest {
             assertEquals(false, _scheduler.goalStateReached(nonGoalState2));
         }catch (Exception e){
             fail("False goal state incorrectly detected as goal state.");
+        }
+    }
+
+    /**
+     This method tests on whether the algorithm can correctly list out the
+     current schedulable tasks of a given state. This test only expects 1 task to be scheduled next.
+     **/
+    @Test
+    public void testGetNextTasks(){
+
+        instantiateScheduler();
+
+        // Get a state to test
+        State stateToTest1 = _listOfStates.get(11);
+        Node nodeD = _graph.getNode("D");
+
+        try {
+            List<Node> result = _scheduler.getNextTasks(stateToTest1);
+            for (Node node : result) {
+                assertEquals(node, nodeD);
+            }
+        }catch (Exception e){
+            fail("Unable to correctly list out the 1 schedulable task.");
         }
     }
 

@@ -46,7 +46,7 @@ public class Main {
             processingOptions(args, graphProcessing);
 
             //User specified to have application program open
-//            visualArgProcedure();
+            visualArgProcedure();
 
             //Process the number of processor argument, then start scheduling
             int numberOfProcess = Integer.parseInt(args[1]);
@@ -57,7 +57,7 @@ public class Main {
             System.out.println("algorithm finished");
 
             //End of program procedure
-//            VisualThread.VisualThread().join();
+            VisualThread.VisualThread().join();
             outputArgProcedure(OUTPUTNAME, graphProcessing,state);
             System.exit(0);
 
@@ -89,7 +89,6 @@ public class Main {
 
         //process -v argument
         if (arguments.contains("-v")) {
-//            VISUALISATIONFLAG = true;
             VISUALISATIONFLAG = false;
         }
 
@@ -109,12 +108,12 @@ public class Main {
      *
      * @throws IOException
      */
-//    public static void visualArgProcedure() throws IOException {
-//        if (VISUALISATIONFLAG) {
-//            VisualThread visualThread = VisualThread.VisualThread();
-//            visualThread.start();
-//        }
-//    }
+    public static void visualArgProcedure() throws IOException {
+        if (VISUALISATIONFLAG) {
+            VisualThread visualThread = VisualThread.VisualThread();
+            visualThread.start();
+        }
+    }
 
     /**
      * This method is responsible for output a .dot file using graph that is in the system.

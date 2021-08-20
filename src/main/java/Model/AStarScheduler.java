@@ -58,13 +58,13 @@ public class AStarScheduler {
             State state = _openList.poll();
 
             // Update GUI at a frequency of 1/(numOfTasks*numProc) whenever a state is popped off openList
-//            if (i % freq == 0) { Visualiser.update(state); }
+            if (i % freq == 0) { Visualiser.update(state); }
             i++;
 
             if (goalStateReached(state)) {
                 _executorService.shutdown();
                 // Call Visualiser to update GUI
-//                Visualiser.update(state);
+                Visualiser.update(state);
                 return state;
             }
 

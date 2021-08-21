@@ -3,12 +3,10 @@ package Model;
 import java.util.LinkedList;
 
 public class LinkedStateList {
-    private State _State;
     private LinkedList<State> _LinkedList;
 
-    public LinkedStateList(State state, LinkedList<State> linkedList){
-        _State = state;
-        _LinkedList = linkedList;
+    public LinkedStateList(){
+        _LinkedList = new LinkedList<State>();
     }
 
     public void add(State state){

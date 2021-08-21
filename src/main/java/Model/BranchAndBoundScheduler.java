@@ -2,7 +2,6 @@ package Model;
 
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
-import org.graphstream.graph.implementations.AdjacencyListGraph;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -14,7 +13,7 @@ import java.util.stream.Collectors;
  */
 public class BranchAndBoundScheduler extends Scheduler{
 
-    private ArrayList<LinkedStateList> _stateStack = new ArrayList<LinkedStateList>();
+    private State _completeState = null;
     private int _upperBound= Integer.MAX_VALUE;
 
     public BranchAndBoundScheduler(Graph taskGraph, int numProcessors){
@@ -27,48 +26,41 @@ public class BranchAndBoundScheduler extends Scheduler{
      * @return The state of the processors with schedules
      */
     public State generateSchedule(){
-        State completeState = null;
+
+        TaskGraphUtil.removeDummyRootNode(_taskGraph);
+
         State emptyState = new State(_numProcessors);
-        _stateStack.add(new LinkedStateList(emptyState,new LinkedList<State>()));
-        LinkedStateList topLinkedStateList = _stateStack.get(0);
-        List<Node> schedulableTasks = getNextTasks(emptyState);
-        addChildStates(emptyState, topLinkedStateList, schedulableTasks);
 
-        while (!_stateStack.isEmpty()){
-            topLinkedStateList = _stateStack.get(_stateStack.size()-1);
-            State state = topLinkedStateList.getLowest();
+        exploreState(emptyState);
 
-            // remove from stack if no more state to explore
-            if (!topLinkedStateList.stillAvailable()){
-                _stateStack.remove(topLinkedStateList);
+        return _completeState;
+    }
+
+    public void exploreState(State currentState) {
+
+        if (goalStateReached(currentState)) {
+            if (currentState.getUnderestimate() < _upperBound) {
+                _upperBound = currentState.getUnderestimate();
+                _completeState = currentState;
             }
+        } else {
+            if (currentState.getUnderestimate() <= _upperBound) {
+                List<Node> schedulableTasks = getNextTasks(currentState);
+                List<State> childStates = addChildStates(currentState, schedulableTasks);
 
-            // if state underestimate is less than the upper bound
-            if (state.getUnderestimate() < _upperBound){
-
-                // check goal state
-                if (goalStateReached(state)) {
-
-                    if (state.getUnderestimate()<_upperBound){
-                        _upperBound = state.getUnderestimate();
-                        completeState = state;
-                    }
+                for (State i: childStates) {
+                    exploreState(i);
                 }
 
-                // check if is a leaf
-                if (!getNextTasks(state).isEmpty()){
-                    _stateStack.add(new LinkedStateList(state,new LinkedList<State>()));
-                    topLinkedStateList = _stateStack.get(_stateStack.size()-1);
-                    schedulableTasks = getNextTasks(state);
-                    addChildStates(state, topLinkedStateList, schedulableTasks);
-                }
             }
         }
-        return completeState;
+
     }
 
 
-    public void addChildStates(State state, LinkedStateList linkedStateList, List<Node> schedulableTasks){
+    public List<State> addChildStates(State state, List<Node> schedulableTasks){
+        List<State> childStates = new LinkedList<State>();
+
         for (Node task: schedulableTasks){
             //The processor number in State starts indexing from 1
             Set<Integer> processors = state.procKeys();
@@ -104,11 +96,10 @@ public class BranchAndBoundScheduler extends Scheduler{
 
                 State child = new State(state, maxUnderestimate, task, i, nextStartTime);
 
-                linkedStateList.add(child);
-
+                childStates.add(child);
             }
         }
-
+        return childStates;
     }
 
     /**

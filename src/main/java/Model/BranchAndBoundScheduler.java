@@ -37,7 +37,6 @@ public class BranchAndBoundScheduler extends Scheduler{
         while (!_stateStack.isEmpty()){
             topLinkedStateList = _stateStack.get(_stateStack.size()-1);
             State state = topLinkedStateList.getLowest();
-            System.out.println(state.getAllSchedules());
 
             // remove from stack if no more state to explore
             if (!topLinkedStateList.stillAvailable()){

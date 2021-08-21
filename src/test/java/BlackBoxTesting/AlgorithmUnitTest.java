@@ -17,6 +17,14 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
+/**
+ * This unit test class is executing unit test cases for the AStarScheduler class.
+ * The unit tests will test out the algorithm's methods to see if they give the expected output.
+ * To get around the algorithm's private methods, we are copying and pasting all of the algorithm's code into
+ * this test class and changing the 'private' to 'public' access modifiers.
+ * In this way we can access the methods that we want to test without touching the real code.
+ * Author: Megan Lim
+ */
 public class AlgorithmUnitTest {
 
     // Graph to use in tests
@@ -72,13 +80,13 @@ public class AlgorithmUnitTest {
                 State state = _openList.poll();
 
                 // Update GUI at a frequency of 1/(numOfTasks*numProc) whenever a state is popped off openList
-            if (i % freq == 0) { Visualiser.update(state); }
+//            if (i % freq == 0) { Visualiser.update(state); }
                 i++;
 
                 if (goalStateReached(state)) {
                     _executorService.shutdown();
                     // Call Visualiser to update GUI
-                Visualiser.update(state);
+//                Visualiser.update(state);
                     return state;
                 }
 
@@ -150,9 +158,9 @@ public class AlgorithmUnitTest {
     }
 
 
-    /*
-        Before each test method, instantiate a new scheduler.
-     */
+    /**
+        Before each test method, instantiate a new scheduler, graph and list of all states created with this graph.
+     **/
     @BeforeEach
     private void instantiateScheduler() {
 

@@ -89,7 +89,7 @@ public class Main {
 
         //process -v argument
         if (arguments.contains("-v")) {
-            VISUALISATIONFLAG = false;
+            VISUALISATIONFLAG = true;
         }
 
         //process -o argument

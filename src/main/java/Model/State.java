@@ -20,51 +20,51 @@ import java.util.Set;
 public interface State {
 
     /**
-     * Retrieves the maximum underestimate of the state.
-     * @return int of the maximum underestimate of the state object.
+     * Gets the underestimate of this state
+     * @return the underestimate
      */
     public int getUnderestimate();
 
 
     /**
-     * Retrieve the next starting time for a given processor.
-     * @param processor The processor from which the next starting time should be calculated.
-     * @return int of the next starting time for the given processor.
+     * Gets the next starting time of a given processor.
+     * @param processor The processor number to calculate its next start time.
+     * @return int the next start time of the given processor.
      */
     public int getNextStartTime(int processor);
 
 
     /**
-     * Retrieves all processors in the state object.
-     * @return A Set object of Integers representing all processors in the state object.
+     * Gets all processors' numbers in the state object.
+     * @return A Set object of Integers representing all the processors' number in the state.
      */
     public Set<Integer> procKeys();
 
 
     /**
-     * Returns the schedule in a processor. The keys represent the start time of corresponding Node values.
-     * @param processor The processor to retrieve the schedule from of the state.
-     * @return A HashMap object representing the schedule.
+     * Gets the schedule of a particular processor.
+     * @param processor The processor number that we want to retrieve its schedule from.
+     * @return A HashMap object which represents the schedule.
      */
     public HashMap<Integer,Node> getSchedule(int processor);
 
     /**
-     * Returns all the schedules in a state object.
-     * @return A List object containing all processor schedules.
+     * Gets all the schedules of the state.
+     * @return A List object containing all the schedules in the state.
      */
     public List<HashMap<Integer,Node>> getAllSchedules();
 
 
     /**
-     * This method gets the _state attribute.
-     * @return _state attribute
+     * Getting the actual _state.
+     * @return _state
      */
     public HashMap<Integer, HashMap<Integer, Node>> getState();
 
 
     /**
-     * This method returns the number of processors.
-     * @return _state attribute
+     * Get the number of processors that this state has.
+     * @return int representing the number of processors this state has.
      */
     public int getNumProcessors();
 

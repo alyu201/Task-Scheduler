@@ -33,13 +33,16 @@ public class OptimalScheduleGraph {
         //Configuring xAxis and yAxis
         CategoryAxis xAxis = new CategoryAxis();
         xAxis.setLabel("Processors");
+        // TODO: change axis position to top
+//        xAxis.setSide(Side.TOP);
 
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Time");
+        // TODO: flip y axis
 
         //Configuring StackedBarChart
         ganttChart = new StackedBarChart(xAxis, yAxis);
-        ganttChart.setTitle("Optimal Schedule");
+        ganttChart.setLegendVisible(false);
     }
 
     /**
@@ -49,20 +52,35 @@ public class OptimalScheduleGraph {
      */
     public void populateSchedule() {
         String[] processors = new String[numProcessors];
-        for (int i = 1; i <= numProcessors; i++) {
-            processors[i] = "Processor" + (i);
+//        for (int i = 1; i <= numProcessors; i++) {
+//            processors[i] = "Processor" + (i);
+//        }
+        // for each process, get all of its nodes and place them in the schedules chart
+//        for (int i = 1; i<=numProcessors; i++) {
+//            XYChart.Series series = new XYChart.Series();
+//
+//            int key = optimalSchedule.get(i).hashCode();
+//            Node node = optimalSchedule.get(i).get(key);
+//
+//            series.getData().add(new XYChart.Data<>(processors[i], node));
+//
+//            //Adding series java to the stackedBarChart
+//            ganttChart.getData().add(series);
+//        }
+
+        // Working implementation
+        for (int i = 0; i < numProcessors; i++) {
+            processors[i] = "" + (i+1);
         }
 
-        // for each process, get all of its nodes and place them in the schedules chart
-        for (int i = 1; i<=numProcessors; i++) {
+        for (int proc : optimalSchedule.keySet()) {
             XYChart.Series series = new XYChart.Series();
 
-            int key = optimalSchedule.get(i).hashCode();
-            Node node = optimalSchedule.get(i).get(key);
-
-            series.getData().add(new XYChart.Data<>(processors[i], node));
-
-            //Adding series java to the stackedBarChart
+            HashMap<Integer, Node> schedule = optimalSchedule.get(proc);
+            for (int startTime : schedule.keySet()) {
+                series.getData().add(new XYChart.Data<>(processors[proc - 1], startTime));
+            }
+            // Adding series java to the stackedBarChart
             ganttChart.getData().add(series);
         }
     }

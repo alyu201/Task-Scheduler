@@ -2,19 +2,11 @@ package Model;
 
 import Controller.MainController;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -30,7 +22,9 @@ public class Visualiser extends Application {
 
     private static Scene _scene;
     private static Boolean _completed = false;
+    private static Boolean _showGanttChart = false;
     private static int _threadCount = 0;
+    private static State _finalState;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -40,8 +34,10 @@ public class Visualiser extends Application {
 
         primaryStage.setScene(_scene);
         primaryStage.setTitle("Visualiser");
-        primaryStage.setMinWidth(1259);
-        primaryStage.setMinHeight(893);
+        primaryStage.setMinWidth(1420);
+        primaryStage.setMinHeight(993);
+
+        _scene.getStylesheets().add("/Style/VisualiserStyle.css");
 
         primaryStage.show();
 
@@ -68,6 +64,7 @@ public class Visualiser extends Application {
             }
             // Stop elapsed time counter when algorithm finishes
             if (_completed) {
+                controller.showGanttChart(_finalState);
                 executor.shutdown();
             }
         };
@@ -88,7 +85,6 @@ public class Visualiser extends Application {
 
         MainController ctrl = loader.getController();
         ctrl.markNode(state);
-//        MainController.markNode(state);
     }
 
     public static void stopElapsedTime () {
@@ -101,5 +97,10 @@ public class Visualiser extends Application {
 
     public static void resetThreadCount() {
         _threadCount = 0;
+    }
+
+    public static void displayStateChart(State state) {
+        _showGanttChart = true;
+        _finalState = state;
     }
 }

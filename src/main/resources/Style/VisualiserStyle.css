@@ -1,0 +1,40 @@
+/* Titled Pane Style*/
+.titled-pane > .title {
+    /*-fx-background-color: -fx-box-border, -fx-inner-border, -fx-body-color;*/
+    -fx-padding: 15px 25px;
+    -fx-color: lightgrey;
+    -fx-background-color: -fx-box-border, lightgrey;
+}
+
+/* Gantt Chart Styles*/
+.default-color0.chart-bar {
+    -fx-bar-fill: #ffb3ba;
+}
+
+.default-color1.chart-bar {
+    -fx-bar-fill: #ffd288;
+}
+
+.default-color2.chart-bar {
+    -fx-bar-fill: #ffecbb;
+}
+
+.default-color3.chart-bar {
+    -fx-bar-fill: #cbedc9;
+}
+
+.default-color4.chart-bar {
+    -fx-bar-fill: #ccf2fe;
+}
+
+.default-color5.chart-bar {
+    -fx-bar-fill: #c4d4ff;
+}
+
+.default-color6.chart-bar {
+    -fx-bar-fill: #e6d3fe;
+}
+
+.default-color7.chart-bar {
+    -fx-bar-fill: #ffe2f9;
+}

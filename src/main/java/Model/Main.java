@@ -58,6 +58,7 @@ public class Main {
             State state = aStarScheduler.generateSchedule();
 
             Visualiser.stopElapsedTime();
+            Visualiser.displayStateChart(state);
             System.out.println("algorithm finished");
 
             //End of program procedure

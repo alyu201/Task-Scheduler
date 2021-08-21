@@ -11,7 +11,7 @@
    <children>
       <AnchorPane HBox.hgrow="ALWAYS">
          <children>
-            <TitledPane animated="false" collapsible="false" text="Mode: Sequential" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <TitledPane animated="false" collapsible="false" text="Visualisation" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <content>
                   <AnchorPane style="-fx-background-color: white;">
                      <children>
@@ -54,7 +54,7 @@
       </AnchorPane>
       <AnchorPane prefHeight="200.0" prefWidth="400.0" HBox.hgrow="ALWAYS">
          <children>
-            <TitledPane collapsible="false" minWidth="300.0" text="Task Scheduler Information" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <TitledPane collapsible="false" text="Task Scheduler Information" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
@@ -65,7 +65,21 @@
                            <children>
                               <HBox alignment="CENTER_LEFT" spacing="5.0">
                                  <children>
-                                    <Label text="Input task graph file: " wrapText="true">
+                                    <Label text="Scheduler Mode: " wrapText="true">
+                                       <font>
+                                          <Font name="System Bold" size="16.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="modeLabel" text="mode" wrapText="true">
+                                       <font>
+                                          <Font size="16.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" spacing="5.0">
+                                 <children>
+                                    <Label text="Input Task Graph File: " wrapText="true">
                                        <font>
                                           <Font name="System Bold" size="16.0" />
                                        </font>
@@ -229,14 +243,14 @@
                                          <NumberAxis animated="false" forceZeroInRange="false" minorTickLength="1.0" side="LEFT" tickLabelsVisible="false" tickUnit="1.0" upperBound="20.0" />
                                       </xAxis>
                                       <yAxis>
-                                        <NumberAxis animated="false" autoRanging="false" forceZeroInRange="false" minorTickLength="1.0" side="LEFT" tickUnit="1.0" upperBound="6.0" />
+                                        <NumberAxis animated="false" autoRanging="false" forceZeroInRange="false" minorTickLength="1.0" side="LEFT" tickUnit="1.0" upperBound="8.0" />
                                       </yAxis>
                                     </LineChart>
                                  </children>
                               </VBox>
                               <HBox alignment="CENTER_LEFT" spacing="5.0">
                                  <children>
-                                    <Label text="Output Schedule:" wrapText="true">
+                                    <Label text="Optimal Schedule Output:" wrapText="true">
                                        <font>
                                           <Font name="System Bold" size="16.0" />
                                        </font>
@@ -246,9 +260,12 @@
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>
                               </HBox>
-                              <AnchorPane fx:id="ganttChartPane" style="-fx-background-color: lightgrey;">
+                              <AnchorPane fx:id="ganttChartPane">
                                  <children>
-                                    <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="300.0" text="No content yet" textAlignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                    <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="500.0" text="Loading..." textAlignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <font>
+                                          <Font size="16.0" />
+                                       </font></Label>
                                  </children>
                               </AnchorPane>
                            </children>

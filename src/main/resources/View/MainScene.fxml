@@ -1,17 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.chart.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
 
-<HBox style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.MainController">
+<HBox style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.MainController">
    <children>
       <AnchorPane HBox.hgrow="ALWAYS">
          <children>
-            <TitledPane animated="false" collapsible="false" text="Visualisation" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <TitledPane animated="false" collapsible="false" text="Task Scheduler Visualisation" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <content>
                   <AnchorPane style="-fx-background-color: white;">
                      <children>
@@ -32,6 +40,25 @@
                                           <Font size="18.0" />
                                        </font>
                                     </Label>
+                                    <StackPane alignment="CENTER_RIGHT">
+                                       <children>
+                                          <Button fx:id="visualiserHelpButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" style="-fx-background-color: #7d7d7d; -fx-background-radius: 22;" text="?" textFill="WHITE">
+                                             <font>
+                                                <Font name="System Bold" size="10.0" />
+                                             </font>
+                                             <tooltip>
+                                                <Tooltip autoHide="true" minWidth="-Infinity" prefWidth="400.0" text="Task scheduler visualisation provides live updates of states traversed by the scheduler. Each task node is coloured accordingly to the processor they are schedulued on at a particular time." wrapText="true">
+                                                   <font>
+                                                      <Font size="15.2" />
+                                                   </font>
+                                                </Tooltip>
+                                             </tooltip>
+                                          </Button>
+                                       </children>
+                                       <padding>
+                                          <Insets left="5.0" />
+                                       </padding>
+                                    </StackPane>
                                  </children>
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -41,7 +68,6 @@
                                  <padding>
                                     <Insets bottom="30.0" top="20.0" />
                                  </padding></AnchorPane>
-                              <AnchorPane fx:id="threadProgressPane" />
                            </children>
                         </VBox>
                      </children></AnchorPane>
@@ -52,227 +78,271 @@
             </TitledPane>
          </children>
       </AnchorPane>
-      <AnchorPane prefHeight="200.0" prefWidth="400.0" HBox.hgrow="ALWAYS">
+      <AnchorPane prefHeight="200.0" prefWidth="550.0" HBox.hgrow="ALWAYS">
          <children>
-            <TitledPane collapsible="false" text="Task Scheduler Information" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <TitledPane collapsible="false" text="Scheduler Information" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
                <content>
                   <AnchorPane>
                      <children>
-                        <VBox alignment="TOP_CENTER" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <children>
-                              <HBox alignment="CENTER_LEFT" spacing="5.0">
+                        <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <content>
+                              <VBox alignment="TOP_CENTER" spacing="5.0">
                                  <children>
-                                    <Label text="Scheduler Mode: " wrapText="true">
-                                       <font>
-                                          <Font name="System Bold" size="16.0" />
-                                       </font>
-                                    </Label>
-                                    <Label fx:id="modeLabel" text="mode" wrapText="true">
-                                       <font>
-                                          <Font size="16.0" />
-                                       </font>
-                                    </Label>
-                                 </children>
-                              </HBox>
-                              <HBox alignment="CENTER_LEFT" spacing="5.0">
-                                 <children>
-                                    <Label text="Input Task Graph File: " wrapText="true">
-                                       <font>
-                                          <Font name="System Bold" size="16.0" />
-                                       </font>
-                                    </Label>
-                                    <Label fx:id="inputNameLabel" text="filename.dot" wrapText="true">
-                                       <font>
-                                          <Font size="16.0" />
-                                       </font>
-                                    </Label>
-                                 </children>
-                              </HBox>
-                              <HBox alignment="CENTER_LEFT" spacing="5.0">
-                                 <children>
-                                    <Label minWidth="-Infinity" prefWidth="176.0" text="Number of processors: " wrapText="true">
-                                       <font>
-                                          <Font name="System Bold" size="16.0" />
-                                       </font>
-                                    </Label>
-                                    <Label fx:id="processorNumLabel" text="number" wrapText="true">
-                                       <font>
-                                          <Font size="16.0" />
-                                       </font>
-                                    </Label>
-                                 </children>
-                              </HBox>
-                              <HBox alignment="CENTER" spacing="5.0">
-                                 <children>
-                                    <VBox alignment="CENTER">
+                                    <HBox alignment="CENTER_LEFT" spacing="5.0">
                                        <children>
-                                          <HBox alignment="CENTER" spacing="5.0">
+                                          <Label text="Scheduler mode: " wrapText="true">
+                                             <font>
+                                                <Font name="System Bold" size="16.0" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="modeLabel" text="Sequential" wrapText="true">
+                                             <font>
+                                                <Font size="16.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER_LEFT" spacing="5.0">
+                                       <children>
+                                          <Label text="Input task graph file: " wrapText="true">
+                                             <font>
+                                                <Font name="System Bold" size="16.0" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="inputNameLabel" text="filename.dot" wrapText="true">
+                                             <font>
+                                                <Font size="16.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER_LEFT" spacing="5.0">
+                                       <children>
+                                          <Label text="Number of schedule processors: " wrapText="true">
+                                             <font>
+                                                <Font name="System Bold" size="16.0" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="processorNumLabel" text="number" wrapText="true">
+                                             <font>
+                                                <Font size="16.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER" spacing="5.0">
+                                       <children>
+                                          <VBox alignment="CENTER">
                                              <children>
-                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffb3ba" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="30.0" />
-                                                <Label text="Processor 1" wrapText="true">
-                                                   <font>
-                                                      <Font size="16.0" />
-                                                   </font>
-                                                </Label>
+                                                <HBox alignment="CENTER" spacing="5.0">
+                                                   <children>
+                                                      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffb3ba" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="30.0" />
+                                                      <Label text="Processor 1" wrapText="true">
+                                                         <font>
+                                                            <Font size="16.0" />
+                                                         </font>
+                                                      </Label>
+                                                   </children>
+                                                   <padding>
+                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                   </padding>
+                                                </HBox>
+                                                <HBox alignment="CENTER" spacing="5.0">
+                                                   <children>
+                                                      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffd288" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="30.0" />
+                                                      <Label text="Processor 2" wrapText="true">
+                                                         <font>
+                                                            <Font size="16.0" />
+                                                         </font>
+                                                      </Label>
+                                                   </children>
+                                                   <VBox.margin>
+                                                      <Insets />
+                                                   </VBox.margin>
+                                                   <padding>
+                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                   </padding>
+                                                </HBox>
+                                                <HBox alignment="CENTER" spacing="5.0">
+                                                   <padding>
+                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                   </padding>
+                                                   <children>
+                                                      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffecbb" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="30.0" />
+                                                      <Label text="Processor 3" wrapText="true">
+                                                         <font>
+                                                            <Font size="16.0" />
+                                                         </font>
+                                                      </Label>
+                                                   </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER" spacing="5.0">
+                                                   <padding>
+                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                   </padding>
+                                                   <children>
+                                                      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#cbedc9" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="30.0" />
+                                                      <Label text="Processor 4" wrapText="true">
+                                                         <font>
+                                                            <Font size="16.0" />
+                                                         </font>
+                                                      </Label>
+                                                   </children>
+                                                </HBox>
                                              </children>
-                                             <padding>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                             </padding>
-                                          </HBox>
-                                          <HBox alignment="CENTER" spacing="5.0">
+                                          </VBox>
+                                          <VBox>
                                              <children>
-                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffd288" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="30.0" />
-                                                <Label text="Processor 2" wrapText="true">
-                                                   <font>
-                                                      <Font size="16.0" />
-                                                   </font>
-                                                </Label>
+                                                <HBox alignment="CENTER" spacing="5.0">
+                                                   <padding>
+                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                   </padding>
+                                                   <children>
+                                                      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ccf2fc" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="30.0" />
+                                                      <Label text="Processor 5" wrapText="true">
+                                                         <font>
+                                                            <Font size="16.0" />
+                                                         </font>
+                                                      </Label>
+                                                   </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER" spacing="5.0">
+                                                   <padding>
+                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                   </padding>
+                                                   <children>
+                                                      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#c4d4ff" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="30.0" />
+                                                      <Label text="Processor 6" wrapText="true">
+                                                         <font>
+                                                            <Font size="16.0" />
+                                                         </font>
+                                                      </Label>
+                                                   </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER" spacing="5.0">
+                                                   <padding>
+                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                   </padding>
+                                                   <children>
+                                                      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#e6d3fe" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="30.0" />
+                                                      <Label text="Processor 7" wrapText="true">
+                                                         <font>
+                                                            <Font size="16.0" />
+                                                         </font>
+                                                      </Label>
+                                                   </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER" spacing="5.0">
+                                                   <padding>
+                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                   </padding>
+                                                   <children>
+                                                      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffe2f9" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="30.0" />
+                                                      <Label text="Processor 8" wrapText="true">
+                                                         <font>
+                                                            <Font size="16.0" />
+                                                         </font>
+                                                      </Label>
+                                                   </children>
+                                                </HBox>
                                              </children>
-                                             <VBox.margin>
-                                                <Insets />
-                                             </VBox.margin>
-                                             <padding>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                             </padding>
-                                          </HBox>
-                                          <HBox alignment="CENTER" spacing="5.0">
-                                             <padding>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                             </padding>
+                                          </VBox>
+                                          <StackPane alignment="TOP_CENTER">
                                              <children>
-                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffecbb" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="30.0" />
-                                                <Label text="Processor 3" wrapText="true">
+                                                <Button fx:id="processorKeyHelpButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" style="-fx-background-color: #7d7d7d; -fx-background-radius: 22;" text="?" textFill="WHITE">
                                                    <font>
-                                                      <Font size="16.0" />
+                                                      <Font name="System Bold" size="10.0" />
                                                    </font>
-                                                </Label>
+                                                   <tooltip>
+                                                      <Tooltip minWidth="-Infinity" prefWidth="400.0" text="The possible output schedule proccessors are each identified by a unique colour. Colours displayed during live updates are limited by the input number of processors for schedulling (input argument 'P')." wrapText="true">
+                                                         <font>
+                                                            <Font size="15.2" />
+                                                         </font>
+                                                      </Tooltip>
+                                                   </tooltip>
+                                                </Button>
                                              </children>
-                                          </HBox>
-                                          <HBox alignment="CENTER" spacing="5.0">
-                                             <padding>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                             </padding>
+                                          </StackPane>
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </padding>
+                                    </HBox>
+                                    <VBox alignment="CENTER_LEFT">
+                                       <children>
+                                          <HBox alignment="CENTER_LEFT">
                                              <children>
-                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#cbedc9" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="30.0" />
-                                                <Label text="Processor 4" wrapText="true">
+                                                <Label text="Processor Usage:" wrapText="true">
                                                    <font>
-                                                      <Font size="16.0" />
+                                                      <Font name="System Bold" size="16.0" />
                                                    </font>
+                                                   <padding>
+                                                      <Insets right="10.0" />
+                                                   </padding>
                                                 </Label>
+                                                <Button fx:id="processorUsageHelpButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" style="-fx-background-color: #7d7d7d; -fx-background-radius: 22;" text="?" textFill="WHITE">
+                                                   <font>
+                                                      <Font name="System Bold" size="10.0" />
+                                                   </font>
+                                                   <tooltip>
+                                                      <Tooltip minWidth="-Infinity" prefWidth="400.0" text="Processor Usage tracks the number of processors used by the scheduler every 100ms. Under parallelisation mode, this number will be at maximum N, as specified by the input option '-p N'. By default, sequential shows constant processor usage." wrapText="true">
+                                                         <font>
+                                                            <Font size="15.2" />
+                                                         </font>
+                                                      </Tooltip>
+                                                   </tooltip>
+                                                </Button>
                                              </children>
                                           </HBox>
+                                          <LineChart fx:id="threadChart" animated="false" createSymbols="false" legendVisible="false">
+                                            <xAxis>
+                                               <NumberAxis animated="false" forceZeroInRange="false" minorTickLength="1.0" side="LEFT" tickLabelsVisible="false" tickUnit="1.0" upperBound="20.0" />
+                                            </xAxis>
+                                            <yAxis>
+                                              <NumberAxis animated="false" autoRanging="false" forceZeroInRange="false" minorTickLength="1.0" side="LEFT" tickUnit="2.0" upperBound="8.0" />
+                                            </yAxis>
+                                          </LineChart>
                                        </children>
                                     </VBox>
-                                    <VBox>
+                                    <HBox alignment="CENTER_LEFT" spacing="5.0">
                                        <children>
-                                          <HBox alignment="CENTER" spacing="5.0">
-                                             <padding>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                             </padding>
-                                             <children>
-                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ccf2fc" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="30.0" />
-                                                <Label text="Processor 5" wrapText="true">
-                                                   <font>
-                                                      <Font size="16.0" />
-                                                   </font>
-                                                </Label>
-                                             </children>
-                                          </HBox>
-                                          <HBox alignment="CENTER" spacing="5.0">
-                                             <padding>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                             </padding>
-                                             <children>
-                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#c4d4ff" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="30.0" />
-                                                <Label text="Processor 6" wrapText="true">
-                                                   <font>
-                                                      <Font size="16.0" />
-                                                   </font>
-                                                </Label>
-                                             </children>
-                                          </HBox>
-                                          <HBox alignment="CENTER" spacing="5.0">
-                                             <padding>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                             </padding>
-                                             <children>
-                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#e6d3fe" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="30.0" />
-                                                <Label text="Processor 7" wrapText="true">
-                                                   <font>
-                                                      <Font size="16.0" />
-                                                   </font>
-                                                </Label>
-                                             </children>
-                                          </HBox>
-                                          <HBox alignment="CENTER" spacing="5.0">
-                                             <padding>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                             </padding>
-                                             <children>
-                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffe2f9" height="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="30.0" />
-                                                <Label text="Processor 8" wrapText="true">
-                                                   <font>
-                                                      <Font size="16.0" />
-                                                   </font>
-                                                </Label>
-                                             </children>
-                                          </HBox>
-                                       </children>
-                                    </VBox>
-                                 </children>
-                                 <padding>
-                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                 </padding>
-                              </HBox>
-                              <VBox alignment="CENTER_LEFT">
-                                 <children>
-                                    <HBox alignment="CENTER_LEFT">
-                                       <children>
-                                          <Label text="Thread Usage:">
+                                          <Label text="Optimal schedule output:" wrapText="true">
                                              <font>
                                                 <Font name="System Bold" size="16.0" />
                                              </font>
                                           </Label>
                                        </children>
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </padding>
                                     </HBox>
-                                    <LineChart fx:id="threadChart" animated="false" createSymbols="false" legendVisible="false">
-                                      <xAxis>
-                                         <NumberAxis animated="false" forceZeroInRange="false" minorTickLength="1.0" side="LEFT" tickLabelsVisible="false" tickUnit="1.0" upperBound="20.0" />
-                                      </xAxis>
-                                      <yAxis>
-                                        <NumberAxis animated="false" autoRanging="false" forceZeroInRange="false" minorTickLength="1.0" side="LEFT" tickUnit="1.0" upperBound="8.0" />
-                                      </yAxis>
-                                    </LineChart>
-                                 </children>
-                              </VBox>
-                              <HBox alignment="CENTER_LEFT" spacing="5.0">
-                                 <children>
-                                    <Label text="Optimal Schedule Output:" wrapText="true">
-                                       <font>
-                                          <Font name="System Bold" size="16.0" />
-                                       </font>
-                                    </Label>
+                                    <AnchorPane fx:id="ganttChartPane">
+                                       <children>
+                                          <Label fx:id="loadingLabel" alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="500.0" text="Loading..." textAlignment="CENTER" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                             <font>
+                                                <Font size="16.0" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="ganttMessageLabel" alignment="CENTER" text="Please wait for the scheduler to complete." textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                             <padding>
+                                                <Insets top="166.0" />
+                                             </padding>
+                                             <font>
+                                                <Font size="14.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </AnchorPane>
                                  </children>
                                  <padding>
-                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                  </padding>
-                              </HBox>
-                              <AnchorPane fx:id="ganttChartPane">
-                                 <children>
-                                    <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="500.0" text="Loading..." textAlignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                       <font>
-                                          <Font size="16.0" />
-                                       </font></Label>
-                                 </children>
-                              </AnchorPane>
-                           </children>
-                           <padding>
-                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                           </padding>
-                        </VBox>
+                              </VBox>
+                           </content>
+                        </ScrollPane>
                      </children>
                   </AnchorPane>
                </content></TitledPane>

@@ -5,12 +5,11 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.*;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
-import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
-import org.graphstream.graph.implementations.DefaultGraph;
 import org.graphstream.ui.fx_viewer.FxViewPanel;
 import org.graphstream.ui.fx_viewer.FxViewer;
 import org.graphstream.ui.javafx.FxGraphRenderer;
@@ -44,20 +43,31 @@ public class MainController implements Initializable {
     private Label processorNumLabel;
     @FXML
     private Label elapsedTimeLabel;
+    @FXML
+    private Label modeLabel;
+    @FXML
+    private Label loadingLabel;
+    @FXML
+    private Label ganttMessageLabel;
 
     private Graph _graph;
     private XYChart.Series<Number,Number> _threadSeries = new XYChart.Series<>();
-    private int _counter = 5;
+    private int _counter = 5; // for x axis of the processor usage line graph
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         inputNameLabel.setText(Main.INPUTNAME);
         processorNumLabel.setText(String.valueOf(Main.INPUTPROCNUM));
+        // Plot 5 points on line graph as 1 processors used in cases of fast computation speeds
         for (int i = 0; i < 5; i++) {
             _threadSeries.getData().add(new XYChart.Data<>(i,1));
         }
         threadChart.getData().add(_threadSeries);
         _threadSeries.getNode().setStyle("-fx-stroke: #a3c2c2;");
+        // Determine the scheduler mode
+        if (Main.PARALLELISATIONFLAG) {
+            modeLabel.setText("Parallisation (" + Main.NUMPROCESSORS + " processors)");
+        }
 
         String graphStyle = "node {"
                 + "size: 25px;"
@@ -68,6 +78,7 @@ public class MainController implements Initializable {
                 + "text-offset: 8, -15;"
                 + "text-padding: 5;"
                 + "text-color: dimgray;"
+                + "z-index: 1;"
                 + "}"
 
                 + "node.default {"
@@ -110,10 +121,12 @@ public class MainController implements Initializable {
                 + "text-offset: 0, 2;"
                 + "text-padding: 5;"
                 + "text-color: dimgray;"
+                + "z-index: 0;"
                 + "}";
 
         // Retrieve graph instance
         _graph = Model.GraphProcessing.Graphprocessing().getGraph();
+        // TODO: remove try catch block
         try {
             _graph.setAttribute("ui.stylesheet", graphStyle);
         } catch(NoSuchElementException e) {
@@ -130,14 +143,19 @@ public class MainController implements Initializable {
         });
     }
 
+    /**
+     * Mark the tasks in the given state object with its corresponding processor colour.
+     * @param state The State object containing the tasks to be coloured.
+     */
     public void markNode(State state) {
         if (_graph != null) {
+            // Iterate through every node in the graph to set the correct colour for the given state object
             Stream<Node> nodesIterator = _graph.nodes();
             List<Node> nodesList = nodesIterator.collect(Collectors.toList());
             for (Node node : nodesList) {
                 String colourMode = "default";
                 for (int procNum : state.procKeys()) {
-                    // TODO: move this to State class
+                    // TODO: recheck if this throws a ConcurrentModificationException
                     Collection<Node> procNodes = state.getSchedule(procNum).values();
                     if (procNodes.contains(node)) {
                         colourMode = "proc" + procNum;
@@ -146,8 +164,8 @@ public class MainController implements Initializable {
                 }
                 String colour = colourMode;
                 Platform.runLater(() -> {
+                    // TODO: remove try catch block
                     try {
-                        // TODO: concurrentModificationException when performance drops with this
                         node.setAttribute("ui.class", colour);
                     } catch(ConcurrentModificationException e) {
                         System.out.println("ConcurrentModificationException occurred from markNode");
@@ -158,6 +176,9 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * A delay for the rendering of coloured tasks.
+     */
     public static void sleep() {
         try {
             TimeUnit.MILLISECONDS.sleep(200);
@@ -166,27 +187,46 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Update GUI elapsed time watch.
+     * @param time The current elapsed time to be rendered.
+     */
     public void incrementTimer(String time) {
         Platform.runLater(() -> {
             elapsedTimeLabel.setText(time);
         });
     }
 
-    public void showThreadUsage(int threadCount) {
+    /**
+     * Updates processor usage line graph with new data.
+     * @param processorUseCount The next number of processors used data to be rendered.
+     */
+    public void showProcessorUsage(int processorUseCount) {
         _counter++;
-        if (threadCount > 0) {
-            Platform.runLater(() -> {
-                if (_threadSeries.getData().size() > 20) {
-                    _threadSeries.getData().remove(0);
-                }
-                _threadSeries.getData().add(new XYChart.Data<>(_counter, threadCount));
-                _threadSeries.getNode().setStyle("-fx-stroke: #a3c2c2;");
-            });
+        // Trim processor usage to the max number of processors specified by the user
+        if (processorUseCount > Main.NUMPROCESSORS) {
+            processorUseCount = Main.NUMPROCESSORS;
         }
+
+        // Update processor usage
+        int finalProcessorUseCount = processorUseCount;
+        Platform.runLater(() -> {
+            if (_threadSeries.getData().size() > 20) {
+                _threadSeries.getData().remove(0);
+            }
+            _threadSeries.getData().add(new XYChart.Data<>(_counter, finalProcessorUseCount));
+            _threadSeries.getNode().setStyle("-fx-stroke: #a3c2c2;");
+        });
     }
 
+    /**
+     * Displays the gantt chart form of the optimal schedule output when invoked.
+     * @param state The optimal output schedule to be rendered.
+     */
     public void showGanttChart(State state) {
         Platform.runLater(() -> {
+            loadingLabel.setVisible(false);
+            ganttMessageLabel.setVisible(false);
             OptimalScheduleGraph stateChart = new OptimalScheduleGraph(state);
             ganttChartPane.getChildren().add(stateChart.getStackedBarChart());
         });

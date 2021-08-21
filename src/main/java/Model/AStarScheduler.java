@@ -55,11 +55,16 @@ public class AStarScheduler {
         while (!_openList.isEmpty()) {
             State state = _openList.poll();
 
+            // Update GUI at a frequency of 1/(numOfTasks*numProc) whenever a state is popped off openList
+            if (i % freq == 0 && Main.VISUALISATIONFLAG) { Visualiser.update(state); }
+            i++;
+
             if (goalStateReached(state)) {
                 _executorService.shutdown();
                 // Call Visualiser to update GUI
-                Visualiser.update(state);
-                System.out.println("openList count: " + i + " vs " + updateCount);
+                if (Main.VISUALISATIONFLAG) {
+                    Visualiser.update(state);
+                }
                 return state;
             }
 
@@ -67,13 +72,14 @@ public class AStarScheduler {
             addChildStates(state, schedulableTasks);
             _closedList.add(state);
 
-            // Update GUI at a frequency of 1/(numOfTasks*numProc) whenever a state is popped off openList
+            // Update GUI at a frequency of 1/(2^numProc*numOfTasks) whenever a state is popped off openList
             if (i % freq == 0) {
                 Visualiser.update(state);
                 updateCount++;
             }
             i++;
 
+            // Reset the count for the number of processors/threads
             Visualiser.resetThreadCount();
         }
         _executorService.shutdown();
@@ -104,14 +110,19 @@ public class AStarScheduler {
      * @param tasks The list of tasks that are to be scheduled in tathe child states.
      */
     private void addChildStates (State parentState, List<Node> tasks) throws ExecutionException, InterruptedException {
-        Set<Future> futures = new HashSet<>();
+        List<Callable<Object>> taskList = new ArrayList<>() ;
 
         //for each task, add it to the openlist on a different thread
         for (Node task: tasks) {
             StateAdditionThread stateAdditionThread = new StateAdditionThread(parentState, task, _openList, _closedList);
-            futures.add(_executorService.submit(stateAdditionThread));
-            Visualiser.incrThreadCount();
+            taskList.add(stateAdditionThread);
+            // only count number of processors/threads if parallelisation is required
+            if (Main.PARALLELISATIONFLAG) {
+                Visualiser.incrThreadCount();
+            }
         }
+
+        List<Future<Object>> futures = _executorService.invokeAll(taskList);
 
         //Wait for all the child thread to return
         for (Future future:futures){

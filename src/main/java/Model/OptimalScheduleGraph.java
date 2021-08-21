@@ -45,12 +45,9 @@ public class OptimalScheduleGraph {
         //Configuring xAxis and yAxis
         xAxis = new CategoryAxis();
         xAxis.setLabel("Processors");
-        // TODO: change axis position to top
-//        xAxis.setSide(Side.TOP);
 
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Time");
-        // TODO: flip y axis
 
         //Configuring StackedBarChart
         ganttChart = new StackedBarChart(xAxis, yAxis);

@@ -100,14 +100,11 @@ public class State {
         if (procSchedule.keySet().size() == 0) {
             return 0;
         }
-        int nextStartTime = (int)procSchedule.keySet().toArray()[0];
 
-        for (int key : procSchedule.keySet()) {
-            Node node = procSchedule.get(key);
-            int weight = Double.valueOf(node.getAttribute("Weight").toString()).intValue();
-            nextStartTime += weight;
-        }
-        return nextStartTime;
+        int latestStartTime = Collections.max(procSchedule.keySet());
+        Node latestTask = procSchedule.get(latestStartTime);
+        int weight = Double.valueOf(latestTask.getAttribute("Weight").toString()).intValue();
+        return latestStartTime + weight;
     }
 
     /**

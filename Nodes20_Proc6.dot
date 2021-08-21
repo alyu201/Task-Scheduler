@@ -6,12 +6,12 @@ digraph "Nodes20_Proc6" {
 	E	 [Weight=1];
 	F	 [Weight=2];
     G	 [Weight=1];
-    H	 [Weight=2;
+    H	 [Weight=2];
     I	 [Weight=4];
     J	 [Weight=4];
     K	 [Weight=4];
     L	 [Weight=2];
-    M	 [Weight=2;
+    M	 [Weight=2];
     N	 [Weight=2];
     O	 [Weight=2];
     P	 [Weight=2];

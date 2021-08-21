@@ -1,6 +1,5 @@
 package Model;
 
-import javafx.fxml.FXML;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedBarChart;
@@ -13,18 +12,16 @@ public class OptimalScheduleGraph {
 
     // A stacked bar chart is used to visualise the current best schedule found.
     // Each bar represents tasks scheduled on a processor.
-    @FXML
     private StackedBarChart<String, Number> ganttChart;
 
     private HashMap<Integer, HashMap<Integer, Node>> optimalSchedule;
     private int numProcessors;
 
-    public void OptimalScheduleGraph(State state){
+    public OptimalScheduleGraph(State state){
         optimalSchedule = state.getState();
 
         initialiseSchedule();
         populateSchedule();
-        getStackedBarChart();
     }
 
     /**
@@ -70,7 +67,7 @@ public class OptimalScheduleGraph {
         }
     }
 
-    private StackedBarChart<String, Number> getStackedBarChart() {
+    public StackedBarChart<String, Number> getStackedBarChart() {
         return ganttChart;
     }
 }

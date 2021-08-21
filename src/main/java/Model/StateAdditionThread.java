@@ -5,6 +5,7 @@ import org.graphstream.graph.Element;
 import org.graphstream.graph.Node;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 /**
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
  * This class implements the Runnable interface, as adding new states to open list will be done in parallel.
  * @author Kelvin Shen
  */
-public class StateAdditionThread implements Runnable{
+public class StateAdditionThread implements Callable{
     private PriorityQueue<State> _openList;
     private Set<State> _closedList;
     private State _currentParentState;
@@ -107,7 +108,8 @@ public class StateAdditionThread implements Runnable{
     }
 
     @Override
-    public void run() {
+    public Object call() {
         addIndividualTask();
+        return 1;
     }
 }

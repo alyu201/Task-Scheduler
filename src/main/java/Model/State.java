@@ -37,7 +37,7 @@ public class State {
     public State(State parentState, int MaxUnderestimate, Node childTask, int processor, int startTime) {
         HashMap<Integer,Node> newSchedule = new HashMap<>();
         newSchedule.put(startTime, childTask);
-        _numProcessors = parentState._numProcessors;
+        _numProcessors = parentState.getNumProcessors();
 
         // Deep copy of parentState - uses custom clone method
         _state = clone(parentState);
@@ -164,5 +164,9 @@ public class State {
     @Override
     public int hashCode() {
         return Objects.hash(_state);
+    }
+
+    public int getNumProcessors() {
+        return _numProcessors;
     }
 }

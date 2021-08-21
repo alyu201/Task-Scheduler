@@ -28,7 +28,7 @@ public class AStarScheduler {
 
 
     //TODO: Update with the actual classes
-    public AStarScheduler(Graph taskGraph, int numProcessors) {
+    public AStarScheduler (Graph taskGraph, int numProcessors) {
         _numProcessors = numProcessors;
         _openList = new PriorityQueue<State>(200, new StateComparator());
         _closedList = new HashSet<State>();
@@ -40,7 +40,6 @@ public class AStarScheduler {
 
     /**
      * Create an optimal schedule using A* algorithm
-     *
      * @return The state of the processors with schedules
      */
     public State generateSchedule() throws ExecutionException, InterruptedException {
@@ -53,54 +52,24 @@ public class AStarScheduler {
         TaskGraphUtil.removeDummyRootNode(_taskGraph);
 
         while (!_openList.isEmpty()) {
-            if (_openList.size() > 1) {
-                Set<Future> futures = new HashSet<>();
-                int threadNum = 0;
-                if (_openList.size() < Main.NUMPROCESSORS) {
-                    while (threadNum != _openList.size()) {
-                        State state = _openList.poll();
-                        futures.add(_executorService.submit(new ParallelAStar(this,state)));
-                        _closedList.add(state);
-                        threadNum++;
-                    }
-                } else {
-                    while (threadNum != Main.NUMPROCESSORS) {
-                        State state = _openList.poll();
-                        futures.add(_executorService.submit(new ParallelAStar(this, state)));
-                        _closedList.add(state);
-                        threadNum++;
-                    }
-                }
-                // Wait for all the child thread to return
-                for (Future future : futures) {
-                    if (future.get()!=null) {
-                        _executorService.shutdown();
-                        return (State)future.get();
-                    }
-                }
+            State state = _openList.poll();
 
-            } else {
-                State state = _openList.poll();
+            // Update GUI at a frequency of 1/(numOfTasks*numProc) whenever a state is popped off openList
+            if (i % freq == 0 && Main.VISUALISATIONFLAG) { Visualiser.update(state); }
+            i++;
 
-                // Update GUI at a frequency of 1/(numOfTasks*numProc) whenever a state is popped off openList
-                if (Main.VISUALISATIONFLAG && i % freq == 0) {
+            if (goalStateReached(state)) {
+                _executorService.shutdown();
+                // Call Visualiser to update GUI
+                if (Main.VISUALISATIONFLAG) {
                     Visualiser.update(state);
                 }
-                i++;
-
-                if (goalStateReached(state)) {
-                    _executorService.shutdown();
-                    // Call Visualiser to update GUI
-                    if (Main.VISUALISATIONFLAG) {
-                        Visualiser.update(state);
-                    }
-                    return state;
-                }
-
-                List<Node> schedulableTasks = getNextTasks(state);
-                addChildStates(state, schedulableTasks);
-                _closedList.add(state);
+                return state;
             }
+
+            List<Node> schedulableTasks = getNextTasks(state);
+            addChildStates(state, schedulableTasks);
+            _closedList.add(state);
         }
         _executorService.shutdown();
         return null;
@@ -108,16 +77,15 @@ public class AStarScheduler {
 
     /**
      * This method determines if a state has reached the goal
-     *
      * @param state The state to be checked
      * @return True if is goal state, false otherwise
      */
-    public boolean goalStateReached(State state) {
+    private boolean goalStateReached(State state) {
         List<HashMap<Integer, Node>> schedules = state.getAllSchedules();
 
         List<Node> scheduledTasks = new ArrayList<Node>();
 
-        for (HashMap<Integer, Node> i : schedules) {
+        for (HashMap<Integer, Node> i: schedules) {
             scheduledTasks.addAll(i.values());
         }
 
@@ -127,19 +95,19 @@ public class AStarScheduler {
     /**
      * Create a set of child state from a parent state.
      * This method uses the ExecutorService to add the child state in parallel.
-     *
      * @param parentState The parent state
-     * @param tasks       The list of tasks that are to be scheduled in tathe child states.
+     * @param tasks The list of tasks that are to be scheduled in tathe child states.
      */
-    public void addChildStates(State parentState, List<Node> tasks) throws ExecutionException, InterruptedException {
-        Set<Future> futures = new HashSet<>();
+    private void addChildStates (State parentState, List<Node> tasks) throws ExecutionException, InterruptedException {
+        List<Callable<Object>> taskList = new ArrayList<>() ;
 
         //for each task, add it to the openlist on a different thread
-        for (Node task : tasks) {
+        for (Node task: tasks) {
             StateAdditionThread stateAdditionThread = new StateAdditionThread(parentState, task, _openList, _closedList);
-//            stateAdditionThread.addIndividualTask();
-            futures.add(_executorService.submit(stateAdditionThread));
+            taskList.add(stateAdditionThread);
         }
+
+        List<Future<Object>> futures = _executorService.invokeAll(taskList);
 
         //Wait for all the child thread to return
         for (Future future:futures){
@@ -149,16 +117,15 @@ public class AStarScheduler {
 
     /**
      * Generate a list of schedulable tasks (nodes) for a state
-     *
      * @param state The state to be evaluated
      * @return A list of schedulable tasks (nodes)
      */
-    public List<Node> getNextTasks(State state) {
+    private List<Node> getNextTasks(State state) {
         List<HashMap<Integer, Node>> schedules = state.getAllSchedules();
 
         List<Node> scheduledTasks = new ArrayList<Node>();
 
-        for (HashMap<Integer, Node> i : schedules) {
+        for (HashMap<Integer, Node> i: schedules) {
             scheduledTasks.addAll(i.values());
         }
 

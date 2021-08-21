@@ -22,6 +22,7 @@ import java.util.concurrent.*;
 
 public class Main {
     public static Boolean VISUALISATIONFLAG = false;
+    public static Boolean PARALLELISATIONFLAG = false;
     public static String OUTPUTNAME;
     public static String INPUTNAME;
     public static int INPUTPROCNUM;
@@ -87,6 +88,7 @@ public class Main {
 
         //process -p argument
         if (arguments.contains("-p")) {
+            PARALLELISATIONFLAG = true;
             int indexOfp = arguments.indexOf("-p");
             NUMPROCESSORS = Integer.parseInt(arguments.get(indexOfp - 1));
             System.out.print("the number of processes is "+ NUMPROCESSORS);

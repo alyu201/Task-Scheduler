@@ -1,9 +1,41 @@
+/* Scrollbar*/
+.scroll-bar:vertical .increment-button ,
+.scroll-bar:vertical .decrement-button {
+    -fx-background-color :transparent;
+    -fx-background-radius : 0.0em;
+    -fx-padding :0.0 10.0 0.0 0.0;
+}
+
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow{
+    -fx-shape : " ";
+    -fx-padding :0.15em 0.0;
+}
+
+.scroll-bar:vertical .increment-arrow,
+.scroll-bar:vertical .decrement-arrow{
+    -fx-shape : " ";
+    -fx-padding :0.0 0.15em;
+}
+
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color :derive(#2d2d2d,90.0%);
+    -fx-background-insets : 2.0, 0.0, 0.0;
+    -fx-background-radius : 2.0em;
+}
+
+.scroll-bar:horizontal .thumb:hover,
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color :derive(#7d7d7d,10.0%);
+    -fx-background-insets : 2.0, 0.0, 0.0;
+    -fx-background-radius : 2.0em;
+}
+
 /* Titled Pane Style*/
 .titled-pane > .title {
-    /*-fx-background-color: -fx-box-border, -fx-inner-border, -fx-body-color;*/
+    -fx-background-color: -fx-box-border, -fx-inner-border, #dcdcdc;
     -fx-padding: 15px 25px;
-    -fx-color: lightgrey;
-    -fx-background-color: -fx-box-border, lightgrey;
 }
 
 /* Gantt Chart Styles*/

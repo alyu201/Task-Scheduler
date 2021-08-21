@@ -7,6 +7,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -23,7 +25,7 @@ public class Visualiser extends Application {
     private static Scene _scene;
     private static Boolean _completed = false;
     private static Boolean _showGanttChart = false;
-    private static int _threadCount = 0;
+    private static int _processorUseCount = 1;
     private static State _finalState;
 
     @Override
@@ -34,12 +36,21 @@ public class Visualiser extends Application {
 
         primaryStage.setScene(_scene);
         primaryStage.setTitle("Visualiser");
-        primaryStage.setMinWidth(1420);
+        primaryStage.setMinWidth(1490);
         primaryStage.setMinHeight(993);
 
         _scene.getStylesheets().add("/Style/VisualiserStyle.css");
 
         primaryStage.show();
+
+        // Display the number of processors used at every 100ms
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                controller.showProcessorUsage(_processorUseCount);
+            }
+        }, 0, 200);
 
         // Start elapsed time count
         long startTime = System.nanoTime();
@@ -58,23 +69,30 @@ public class Visualiser extends Application {
             String elapsedTime =  minutes + ":" + seconds + "." + milliSeconds;
             // Update GUI
             controller.incrementTimer(elapsedTime);
-            // Display the number of threads used at every 100ms
-            if (currentTime.longValue() % 100 == 0) {
-                controller.showThreadUsage(_threadCount);
-            }
-            // Stop elapsed time counter when algorithm finishes
+
+            // Stop elapsed time counter and processor usage timer when algorithm finishes
             if (_completed) {
                 controller.showGanttChart(_finalState);
                 executor.shutdown();
+                timer.cancel();
             }
         };
         executor.scheduleAtFixedRate(updateElapsedTime, 0, 1, TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * This method is called to initiate the visualier application.
+     * @throws IOException
+     */
     public static void start() throws IOException {
         launch();
     }
 
+    /**
+     * This updates the task graph of the GUI by rendering the tasks in the given state object with its corresponding
+     * processor colour.
+     * @param state The State object to update the task graph of the GUI with.
+     */
     public static void update(State state) {
         FXMLLoader loader = new FXMLLoader(Visualiser.class.getResource("/View/MainScene.fxml"));
         try {
@@ -87,18 +105,31 @@ public class Visualiser extends Application {
         ctrl.markNode(state);
     }
 
+    /**
+     * Stops the elapsed time background thread.
+     */
     public static void stopElapsedTime () {
         _completed = true;
     }
 
+    /**
+     * Increments the processor/thread counter for processor usage tracking.
+     */
     public static void incrThreadCount() {
-        _threadCount++;
+        _processorUseCount++;
     }
 
+    /**
+     * Resets the processor/thread counter back to 1.
+     */
     public static void resetThreadCount() {
-        _threadCount = 0;
+        _processorUseCount = 1;
     }
 
+    /**
+     * Called to display a gantt chart format of the optimal state (schedule) output.
+     * @param state The optimal state (schedule) to be rendered.
+     */
     public static void displayStateChart(State state) {
         _showGanttChart = true;
         _finalState = state;

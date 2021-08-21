@@ -1,18 +1,16 @@
 package Controller;
 
-import Model.GraphProcessing;
-import Model.Main;
-import Model.State;
+import Model.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.XYChart;
+import javafx.scene.chart.*;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
+import org.graphstream.graph.implementations.DefaultGraph;
 import org.graphstream.ui.fx_viewer.FxViewPanel;
 import org.graphstream.ui.fx_viewer.FxViewer;
 import org.graphstream.ui.javafx.FxGraphRenderer;
@@ -185,5 +183,12 @@ public class MainController implements Initializable {
                 _threadSeries.getNode().setStyle("-fx-stroke: #a3c2c2;");
             });
         }
+    }
+
+    public void showGanttChart(State state) {
+        Platform.runLater(() -> {
+            OptimalScheduleGraph stateChart = new OptimalScheduleGraph(state);
+            ganttChartPane.getChildren().add(stateChart.getStackedBarChart());
+        });
     }
 }

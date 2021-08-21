@@ -1,9 +1,6 @@
 package Model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.graphstream.graph.Node;
 
@@ -40,7 +37,7 @@ public class State {
     public State(State parentState, int MaxUnderestimate, Node childTask, int processor, int startTime) {
         HashMap<Integer,Node> newSchedule = new HashMap<>();
         newSchedule.put(startTime, childTask);
-        _numProcessors = parentState._numProcessors;
+        _numProcessors = parentState.getNumProcessors();
 
         // Deep copy of parentState - uses custom clone method
         _state = clone(parentState);
@@ -159,4 +156,20 @@ public class State {
         return _state;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        State state = (State) o;
+        return _state.equals(state._state);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(_state);
+    }
+
+    public int getNumProcessors() {
+        return _numProcessors;
+    }
 }

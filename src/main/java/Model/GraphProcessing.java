@@ -83,6 +83,7 @@ public class GraphProcessing {
                 if (node.getInDegree() == 0) {
                     listOfOriginalRoots.add(node);
                 }
+                node.setAttribute("ui.label", "Node: " + node.getId() + "\n" + node.getAttribute("Weight"));
             }
 
             //Adding a dummy node to the graph and setting its weight to 0.
@@ -96,6 +97,7 @@ public class GraphProcessing {
                 String edgeName = "(" + dummyRootNode.toString() + ";" + originalRoot.toString() + ")";
                 Edge edge = _graph.addEdge(edgeName, dummyRootNode, originalRoot, true);
                 edge.setAttribute("Weight", 0);
+                edge.setAttribute("ui.label", edge.getAttribute("Weight"));
             }
 
             //Calculating all the bottomLevels of all nodes by starting at the dummyRootNode
@@ -224,5 +226,4 @@ public class GraphProcessing {
         node.setAttribute("BottomLevel", bottomLevel);
         return bottomLevel;
     }
-
 }

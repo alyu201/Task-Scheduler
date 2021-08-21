@@ -51,6 +51,16 @@ public class testIT {
     }
 
     @Test (timeout = 10000)
+    public void test7Nodes2trees(){
+        try {
+            String[] argument = {"Nodes_7_TwoTree.dot", "2"};
+            Main.main(argument);
+        }catch (Exception e){
+            fail("Test not pass!");
+        }
+    }
+
+    @Test (timeout = 10000)
     public void test8NodesRandom(){
         try {
             String[] argument = {"Nodes_8_Random.dot", "2"};
@@ -63,7 +73,7 @@ public class testIT {
     @Test (timeout = 10000)
     public void test9NodesSeriesparallel(){
         try {
-            String[] argument = {"Nodes_9_SeriesParallel.dot", "2"};
+            String[] argument = {"Nodes_9_SeriesParallel.dot", "4"};
             Main.main(argument);
         }catch (Exception e){
             fail("Test not pass!");
@@ -80,7 +90,7 @@ public class testIT {
         }
     }
 
-    @Test (timeout = 10000)
+    @Test /*(timeout = 10000)*/
     public void test11Nodes1trees(){
         try {
             String[] argument = {"Nodes_11_OutTree.dot", "2"};

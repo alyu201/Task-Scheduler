@@ -92,10 +92,10 @@ public class OptimalScheduleGraph {
                 if(prevNode == null){
                     prevNode = schedule.get(startTime);
                 }
-                int prevFinishTime = prevKey + (int)prevNode.getAttribute("Weight");
+                double prevFinishTime = prevKey + (double)prevNode.getAttribute("Weight");
                 double duration = (double)schedule.get(startTime).getAttribute("Weight");
 
-                System.out.printf("PrevKey: %s\nPrevFin: %s\nDuration: %s", prevKey, prevFinishTime, duration);
+                System.out.printf("PrevKey: %s PrevFin: %s Duration: %s\n", prevKey, prevFinishTime, duration);
 
                 if(startTime != 0){
                     // Add idle time if the first task does not start at 0

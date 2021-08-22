@@ -5,7 +5,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.*;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import org.graphstream.graph.Graph;
@@ -16,6 +15,7 @@ import org.graphstream.ui.javafx.FxGraphRenderer;
 import org.graphstream.ui.view.GraphRenderer;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -69,69 +69,8 @@ public class MainController implements Initializable {
             modeLabel.setText("Parallisation (" + Main.NUMPROCESSORS + " processors)");
         }
 
-        String graphStyle = "node {"
-                + "size: 25px;"
-                + "fill-color: dimgray;"
-                + "text-size: 15;"
-                + "text-alignment: at-right;"
-                + "text-background-mode: rounded-box;"
-                + "text-offset: 8, -15;"
-                + "text-padding: 5;"
-                + "text-color: dimgray;"
-                + "z-index: 1;"
-                + "}"
-
-                + "node.default {"
-                + "fill-color: dimgray;"
-                + "}"
-                + "node.proc1 {"
-                + "fill-color: #ffb3ba;"
-                + "}"
-                + "node.proc2 {"
-                + "fill-color: #ffd288;"
-                + "}"
-                + "node.proc3 {"
-                + "fill-color: #ffecbb;"
-                + "}"
-                + "node.proc4 {"
-                + "fill-color: #cbedc9;"
-                + "}"
-                + "node.proc5 {"
-                + "fill-color: #ccf2fe;"
-                + "}"
-                + "node.proc6 {"
-                + "fill-color: #c4d4ff;"
-                + "}"
-                + "node.proc7 {"
-                + "fill-color: #e6d3fe;"
-                + "}"
-                + "node.proc8 {"
-                + "fill-color: #f5d5e6;"
-                + "}"
-
-                + "graph {"
-                + "padding: 60;"
-                + "}"
-
-                + "edge {"
-                + "fill-color: dimgray;"
-                + "text-size: 15;"
-                + "text-alignment: center;"
-                + "text-background-mode: rounded-box;"
-                + "text-offset: 0, 2;"
-                + "text-padding: 5;"
-                + "text-color: dimgray;"
-                + "z-index: 0;"
-                + "}";
-
         // Retrieve graph instance
         _graph = Model.GraphProcessing.Graphprocessing().getGraph();
-        // TODO: remove try catch block
-        try {
-            _graph.setAttribute("ui.stylesheet", graphStyle);
-        } catch(NoSuchElementException e) {
-            System.out.println("NoSuchException occurred from graph setAttribute");
-        }
 
         // Setup graph display pane
         Platform.runLater(() -> {
@@ -155,8 +94,9 @@ public class MainController implements Initializable {
             for (Node node : nodesList) {
                 String colourMode = "default";
                 for (int procNum : state.procKeys()) {
-                    // TODO: recheck if this throws a ConcurrentModificationException
-                    Collection<Node> procNodes = state.getSchedule(procNum).values();
+                    // Converted to ConcurrentHashMap for multithreading use
+                    ConcurrentHashMap<Integer,Node> procSchedules = new ConcurrentHashMap<>(state.getSchedule(procNum));
+                    Collection<Node> procNodes = procSchedules.values();
                     if (procNodes.contains(node)) {
                         colourMode = "proc" + procNum;
                         break;
@@ -165,11 +105,7 @@ public class MainController implements Initializable {
                 String colour = colourMode;
                 Platform.runLater(() -> {
                     // TODO: remove try catch block
-                    try {
-                        node.setAttribute("ui.class", colour);
-                    } catch(ConcurrentModificationException e) {
-                        System.out.println("ConcurrentModificationException occurred from markNode");
-                    }
+                    node.setAttribute("ui.class", colour);
                 });
             }
             sleep();

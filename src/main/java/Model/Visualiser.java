@@ -26,7 +26,7 @@ public class Visualiser extends Application {
     private static Boolean _completed = false;
     private static Boolean _showGanttChart = false;
     private static int _processorUseCount = 1;
-    private static State _finalState;
+    private static State _state;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -72,7 +72,7 @@ public class Visualiser extends Application {
 
             // Stop elapsed time counter and processor usage timer when algorithm finishes
             if (_completed) {
-                controller.showGanttChart(_finalState);
+                controller.showGanttChart(_state);
                 executor.shutdown();
                 timer.cancel();
             }
@@ -132,6 +132,6 @@ public class Visualiser extends Application {
      */
     public static void displayStateChart(State state) {
         _showGanttChart = true;
-        _finalState = state;
+        _state = state;
     }
 }

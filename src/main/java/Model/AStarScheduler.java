@@ -46,7 +46,6 @@ public class AStarScheduler {
         State emptyState = new State(_numProcessors);
         _openList.add(emptyState);
         int i = 1;
-        int updateCount = 0;
         int freq = (int) ((Math.pow(2, _numProcessors)) * ((int) (_taskGraph.nodes().count())));
         System.out.println((int) (_taskGraph.nodes().count()));
 
@@ -54,10 +53,6 @@ public class AStarScheduler {
 
         while (!_openList.isEmpty()) {
             State state = _openList.poll();
-
-            // Update GUI at a frequency of 1/(numOfTasks*numProc) whenever a state is popped off openList
-            if (i % freq == 0 && Main.VISUALISATIONFLAG) { Visualiser.update(state); }
-            i++;
 
             if (goalStateReached(state)) {
                 _executorService.shutdown();
@@ -75,7 +70,6 @@ public class AStarScheduler {
             // Update GUI at a frequency of 1/(2^numProc*numOfTasks) whenever a state is popped off openList
             if (i % freq == 0) {
                 Visualiser.update(state);
-                updateCount++;
             }
             i++;
 

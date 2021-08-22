@@ -64,8 +64,62 @@ public class GraphProcessing {
      * @author Kelvin Shen and Megan Lim
      */
     public void inputProcessing(String filePath) throws IOException{
+        // Set the graph style
+        String graphStyle = "node {"
+                + "size: 25px;"
+                + "fill-color: dimgray;"
+                + "text-size: 15;"
+                + "text-alignment: at-right;"
+                + "text-background-mode: rounded-box;"
+                + "text-offset: 8, -15;"
+                + "text-padding: 5;"
+                + "text-color: dimgray;"
+                + "z-index: 1;"
+                + "}"
 
+                + "node.default {"
+                + "fill-color: dimgray;"
+                + "}"
+                + "node.proc1 {"
+                + "fill-color: #ffb3ba;"
+                + "}"
+                + "node.proc2 {"
+                + "fill-color: #ffd288;"
+                + "}"
+                + "node.proc3 {"
+                + "fill-color: #ffecbb;"
+                + "}"
+                + "node.proc4 {"
+                + "fill-color: #cbedc9;"
+                + "}"
+                + "node.proc5 {"
+                + "fill-color: #ccf2fe;"
+                + "}"
+                + "node.proc6 {"
+                + "fill-color: #c4d4ff;"
+                + "}"
+                + "node.proc7 {"
+                + "fill-color: #e6d3fe;"
+                + "}"
+                + "node.proc8 {"
+                + "fill-color: #f5d5e6;"
+                + "}"
 
+                + "graph {"
+                + "padding: 60;"
+                + "}"
+
+                + "edge {"
+                + "fill-color: dimgray;"
+                + "text-size: 15;"
+                + "text-alignment: center;"
+                + "text-background-mode: rounded-box;"
+                + "text-offset: 0, 2;"
+                + "text-padding: 5;"
+                + "text-color: dimgray;"
+                + "z-index: 0;"
+                + "}";
+        _graph.setAttribute("ui.stylesheet", graphStyle);
 
         //Keep a list of the original root nodes of the graph
         ArrayList<Node> listOfOriginalRoots = new ArrayList<Node>();

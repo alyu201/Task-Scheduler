@@ -106,7 +106,6 @@ public class GraphProcessing {
             int dummyRootBL = calBottomLevels(dummyRootNode);
 
             fileSource.removeSink(_graph);
-            System.out.println(_graph);
 
 
         } catch (IOException e) {

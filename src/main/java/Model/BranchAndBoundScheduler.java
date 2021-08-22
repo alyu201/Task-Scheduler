@@ -15,9 +15,12 @@ public class BranchAndBoundScheduler extends Scheduler{
 
     private State _completeState = null;
     private int _upperBound= Integer.MAX_VALUE;
+    private Set<State> _closedList;
+    private static int CLOSED_LIST_MAX_SIZE = (int) Math.pow(2, 22);
 
     public BranchAndBoundScheduler(Graph taskGraph, int numProcessors){
         super(taskGraph,numProcessors);
+        _closedList = Collections.synchronizedSet(new LinkedHashSet<State>());
     }
 
     /**
@@ -25,8 +28,7 @@ public class BranchAndBoundScheduler extends Scheduler{
      *
      * @return The state of the processors with schedules
      */
-    public State generateSchedule(){
-
+    public State generateSchedule() {
         TaskGraphUtil.removeDummyRootNode(_taskGraph);
 
         State emptyState = new State(_numProcessors);
@@ -36,25 +38,37 @@ public class BranchAndBoundScheduler extends Scheduler{
         return _completeState;
     }
 
+    /**
+     * Expand on a state if it is not in closed list and the underestimate of the state is not higher
+     * than the current upper bound.
+     * @param currentState
+     */
     public void exploreState(State currentState) {
 
-        if (goalStateReached(currentState)) {
-            if (currentState.getUnderestimate() < _upperBound) {
-                _upperBound = currentState.getUnderestimate();
-                _completeState = currentState;
-            }
-        } else {
-            if (currentState.getUnderestimate() <= _upperBound) {
-                List<Node> schedulableTasks = getNextTasks(currentState);
-                List<State> childStates = addChildStates(currentState, schedulableTasks);
-
-                for (State i: childStates) {
-                    exploreState(i);
-                }
-
-            }
+        if (_closedList.contains(currentState) || currentState.getUnderestimate() > _upperBound) {
+            return;
         }
 
+        if (goalStateReached(currentState)) {
+            _upperBound = currentState.getUnderestimate();
+            _completeState = currentState;
+        } else {
+            List<Node> schedulableTasks = getNextTasks(currentState);
+            fixTaskOrder(schedulableTasks, currentState);
+            List<State> childStates = addChildStates(currentState, schedulableTasks);
+
+            for (State i: childStates) {
+                exploreState(i);
+            }
+
+        }
+
+        synchronized (_closedList) {
+            if (_closedList.size() > CLOSED_LIST_MAX_SIZE) {
+                _closedList.remove(_closedList.iterator().next());
+            }
+            _closedList.add(currentState);
+        }
     }
 
 

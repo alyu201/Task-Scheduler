@@ -1,10 +1,16 @@
 package Model;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.geometry.Bounds;
+import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.text.Text;
 import org.graphstream.graph.Node;
 
 import java.util.*;
@@ -78,6 +84,9 @@ public class OptimalScheduleGraph {
             series.setName(processors[i]);
         }
 
+        Node prevNode = null;
+        int prevKey = 0;
+
         // Working implementation
         for (int proc : optimalSchedule.keySet()) {
             XYChart.Series series = new XYChart.Series();
@@ -85,45 +94,44 @@ public class OptimalScheduleGraph {
             ganttChart.getData().add(series);
 
             HashMap<Integer, Node> schedule = optimalSchedule.get(proc);
-            String currProcessor = processors[proc - 1];
-            int prevKey = 0;
-            Node prevNode = null;
+            Map<Integer,Node> ordered = new TreeMap<>(schedule);
 
-            XYChart.Data<String, Number> idle = null;
+            String currProcessor = processors[proc - 1];
+            boolean firstNode = true;
+
+            XYChart.Data<String, Number> idle;
+            XYChart.Data<String, Number> data;
             // Looping through all tasks scheduled on the processor
-            Map<Integer,Node> orderedSchedule = new TreeMap<>(schedule);
-            System.out.println(orderedSchedule);
-            for (int startTime : orderedSchedule.keySet()) {
+            for (int startTime : ordered.keySet()) {
+
                 if(prevNode == null){
-                    prevNode = orderedSchedule.get(startTime);
+                    prevNode = ordered.get(startTime);
                 }
                 double prevFinishTime = prevKey + (double)prevNode.getAttribute("Weight");
-                double duration = (double)orderedSchedule.get(startTime).getAttribute("Weight");
+                double duration = (double)ordered.get(startTime).getAttribute("Weight");
 
-                System.out.printf("PrevKey: %s PrevFin: %s Duration: %s\n", prevKey, prevFinishTime, duration);
-
-                 if (startTime != prevFinishTime) { //finish time of prev task scheduled
-                     // Add idle time blocks between two scheduled tasks
-                     System.out.println("idle time is from in between");
-                     System.out.println("startime: " + startTime + ", previousfintime: " + prevFinishTime);
-                     System.out.println("");
-                     idle = new XYChart.Data<>(currProcessor, Math.abs(startTime - prevFinishTime));
-                     series.getData().add(idle);
-                    idle.getNode().setStyle("-fx-background-color: transparent");
-                 } else if(startTime != 0){
+                if(startTime != 0 && firstNode){
                     // Add idle time if the first task does not start at 0
-                    System.out.println("idle time is from start");
                     idle = new XYChart.Data<>(currProcessor, startTime);
                     series.getData().add(idle);
-                    idle.getNode().setStyle("-fx-background-color: transparent");
+                    idle.getNode().setStyle("-fx-background-color: transparent;");
                     // Add the first task to the corresponding processor
-                    series.getData().add(new XYChart.Data<>(currProcessor, duration));
+                    data = new XYChart.Data<>(currProcessor, duration);
+                    series.getData().add(data);
+                    data.getNode().setStyle(" -fx-border-color: #f4f4f4; -fx-border-width: 2px;");
+                } else if (startTime != prevFinishTime && startTime != 0){ //finish time of prev task scheduled
+                    // Add idle time blocks between two scheduled tasks
+                    idle = new XYChart.Data<>(currProcessor, startTime-prevFinishTime);
+                    series.getData().add(idle);
                 } else {
                     // Add actual task blocks
-                    series.getData().add(new XYChart.Data<>(currProcessor, duration));
+                    data = new XYChart.Data<>(currProcessor, duration);
+                    series.getData().add(data);
+                    data.getNode().setStyle(" -fx-border-color: #f4f4f4; -fx-border-width: 2px;");
                 }
                 prevKey = startTime;
-                prevNode = orderedSchedule.get(startTime);
+                prevNode = ordered.get(startTime);
+                firstNode = false;
             }
         }
     }

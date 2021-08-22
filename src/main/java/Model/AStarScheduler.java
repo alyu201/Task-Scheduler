@@ -16,7 +16,7 @@ import java.util.concurrent.*;
 public class AStarScheduler {
     private Graph _taskGraph;
     private int _numProcessors;
-    private PriorityQueue<State> _openList;
+    private PriorityBlockingQueue<State> _openList;
     private ExecutorService _executorService;
     private Set<State> _closedList;
 
@@ -29,7 +29,7 @@ public class AStarScheduler {
     //TODO: Update with the actual classes
     public AStarScheduler (Graph taskGraph, int numProcessors) {
         _numProcessors = numProcessors;
-        _openList = new PriorityQueue<State>(200, new StateComparator());
+        _openList = new PriorityBlockingQueue<State>(200, new StateComparator());
         _closedList = new HashSet<State>();
         _taskGraph = taskGraph;
         _dummyRootScheduled = false;
@@ -120,7 +120,7 @@ public class AStarScheduler {
 
         //Wait for all the child thread to return
         for (Future future:futures){
-            future.get();
+                future.get();
         }
     }
 

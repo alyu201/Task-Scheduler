@@ -29,8 +29,6 @@ public class Main {
         try {
             long startTime = System.currentTimeMillis();
 
-
-
             //through an exception if a dot file and number of processors not provided.
             if (args.length < 2) {
                 throw new InvalidInputArgumentException("Input arguments must at least specify a .dot file and a number of processors");
@@ -55,10 +53,10 @@ public class Main {
             //Process the number of processor argument, then start scheduling
             int numberOfProcess = Integer.parseInt(args[1]);
             INPUTPROCNUM = numberOfProcess;
-            AStarScheduler aStarScheduler = new AStarScheduler(graph, numberOfProcess);
-            State state = aStarScheduler.generateSchedule();
-//            BranchAndBoundScheduler branchAndBoundScheduler = new BranchAndBoundScheduler(graph, numberOfProcess);
-//            State state = branchAndBoundScheduler.generateSchedule();
+//            AStarScheduler aStarScheduler = new AStarScheduler(graph, numberOfProcess);
+//            State state = aStarScheduler.generateSchedule();
+            BranchAndBoundScheduler branchAndBoundScheduler = new BranchAndBoundScheduler(graph, numberOfProcess);
+            State state = branchAndBoundScheduler.generateSchedule();
 
             System.out.println("algorithm finished");
 

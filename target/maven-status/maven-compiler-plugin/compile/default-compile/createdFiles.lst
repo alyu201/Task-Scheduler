@@ -1,9 +1,15 @@
 Model\State.class
-Controller\PrimaryController.class
+Model\LinkedStateList.class
+Model\BranchAndBoundScheduler.class
 Model\AStarScheduler.class
+Model\TaskGraphUtil.class
+Controller\MainController.class
+Model\Visualiser.class
+Model\Scheduler.class
+Model\StateAdditionThread.class
+Model\VisualThread.class
 Model\StateComparator.class
 Model\GraphProcessing.class
 Controller\SecondaryController.class
-Model\Visualiser.class
 Model\InvalidInputArgumentException.class
 Model\Main.class

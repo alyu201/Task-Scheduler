@@ -104,6 +104,7 @@ public class GraphProcessing {
             int dummyRootBL = calBottomLevels(dummyRootNode);
 
             fileSource.removeSink(_graph);
+            System.out.println(_graph);
 
 
         } catch (IOException e) {
@@ -195,7 +196,6 @@ public class GraphProcessing {
      *
      */
     private int calBottomLevels(Node node) {
-
         int currentNodeWeight = (Double.valueOf(node.getAttribute("Weight").toString())).intValue();
         int numberOfChildren = node.getOutDegree();
 

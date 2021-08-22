@@ -4,6 +4,8 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 
 import java.util.*;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
 /**
@@ -11,7 +13,7 @@ import java.util.stream.Collectors;
  * acyclic graph) into a number of processors using the Branch and Bound technique.
  * author: Sherman Chin and Kelvin Shen
  */
-public class BranchAndBoundScheduler extends Scheduler{
+public class BranchAndBoundScheduler extends Scheduler {
 
     private State _completeState = null;
     private int _upperBound= Integer.MAX_VALUE;
@@ -31,33 +33,31 @@ public class BranchAndBoundScheduler extends Scheduler{
 
         State emptyState = new State(_numProcessors);
 
-        exploreState(emptyState);
-
+        ForkJoinPool pool = new ForkJoinPool(Main.NUMPROCESSORS);
+        BranchAndBoundParallel task = new BranchAndBoundParallel(this, emptyState);
+        pool.invoke(task);
         return _completeState;
     }
 
-    public void exploreState(State currentState) {
+    public synchronized void updateCompleteState(State state){
+        _completeState = state;
+    }
 
-        if (goalStateReached(currentState)) {
-            if (currentState.getUnderestimate() < _upperBound) {
-                _upperBound = currentState.getUnderestimate();
-                _completeState = currentState;
-            }
-        } else {
-            if (currentState.getUnderestimate() <= _upperBound) {
-                List<Node> schedulableTasks = getNextTasks(currentState);
-                List<State> childStates = addChildStates(currentState, schedulableTasks);
+    public synchronized void updateUpperBound(int upperBound){
+        _upperBound = upperBound;
+    }
 
-                for (State i: childStates) {
-                    exploreState(i);
-                }
-
-            }
-        }
-
+    public synchronized int getUpperBound(){
+        return _upperBound;
     }
 
 
+    /**
+     * This methods generates a list of child states, which will be used to continue compute for the goal state.
+     * @param state
+     * @param schedulableTasks
+     * @returns a list of child states
+     */
     public List<State> addChildStates(State state, List<Node> schedulableTasks){
         List<State> childStates = new LinkedList<State>();
 

@@ -42,8 +42,8 @@ public class AStarScheduler extends Scheduler{
 
         TaskGraphUtil.removeDummyRootNode(_taskGraph);
 
-        int i = 0;
-        int freq = (int) ((Math.pow(2, _numProcessors)) * ((int) (_taskGraph.nodes().count())));
+        int i = 1;
+        int freq = (int) ((Math.pow(2, _numProcessors)) * ((int) (_taskGraph.getNodeCount())));
 
         while (!_openList.isEmpty()) {
             State state = _openList.poll();
@@ -73,7 +73,7 @@ public class AStarScheduler extends Scheduler{
             // Update GUI at a frequency of 1/(2^numProc*numOfTasks) whenever a state is popped off openList
             if (i == freq) {
                 Visualiser.update(state);
-                i = 0;
+                i = 1;
             }
             i++;
 

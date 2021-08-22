@@ -82,6 +82,9 @@ public class Main {
         } catch(InvalidInputArgumentException | InterruptedException e1){
             logger.info("There is an error in your input argument!");
         }
+//        catch (ExecutionException e) {
+//            logger.info("An error has occurred when scheduling!");
+//        }
     }
 
     /**

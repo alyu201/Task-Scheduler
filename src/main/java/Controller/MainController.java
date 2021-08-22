@@ -104,7 +104,6 @@ public class MainController implements Initializable {
                 }
                 String colour = colourMode;
                 Platform.runLater(() -> {
-                    // TODO: remove try catch block
                     node.setAttribute("ui.class", colour);
                 });
             }
@@ -116,8 +115,14 @@ public class MainController implements Initializable {
      * A delay for the rendering of coloured tasks.
      */
     public static void sleep() {
+        int numNodes = GraphProcessing.Graphprocessing().getGraph().getNodeCount();
+        // Determine timeout based on number of nodes
+        int timeout = 200;
+        if (numNodes < 6) {
+            timeout = (int) (((double)(20-numNodes)/20)*500);
+        }
         try {
-            TimeUnit.MILLISECONDS.sleep(200);
+            TimeUnit.MILLISECONDS.sleep(timeout);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

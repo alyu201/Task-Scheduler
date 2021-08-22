@@ -5,7 +5,9 @@ import org.graphstream.graph.Graph;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.logging.Logger;
 
 /**
  * This is the Main class of the project, an entry point to the project.
@@ -25,11 +27,10 @@ public class Main {
     public static int NUMPROCESSORS = 1;
 
     public static void main(String[] args) {
+        Logger logger = Logger.getLogger(Main.class.getName());
 
         try {
             long startTime = System.currentTimeMillis();
-
-
 
             //through an exception if a dot file and number of processors not provided.
             if (args.length < 2) {
@@ -47,7 +48,7 @@ public class Main {
             Graph graph = graphProcessing.getGraph();
 
             //Process the optional arguments
-            processingOptions(args, graphProcessing);
+            processingOptions(args, graphProcessing, logger);
 
             //User specified to have application program open
             visualArgProcedure();
@@ -55,21 +56,27 @@ public class Main {
             //Process the number of processor argument, then start scheduling
             int numberOfProcess = Integer.parseInt(args[1]);
             INPUTPROCNUM = numberOfProcess;
+            logger.info("Start scheduling...");
             AStarScheduler aStarScheduler = new AStarScheduler(graph, numberOfProcess);
             State state = aStarScheduler.generateSchedule();
 //            BranchAndBoundScheduler branchAndBoundScheduler = new BranchAndBoundScheduler(graph, numberOfProcess);
 //            State state = branchAndBoundScheduler.generateSchedule();
 
-            System.out.println("algorithm finished");
+            logger.info("Scheduling completes.");
 
             //End of program procedure
             VisualThread.VisualThread().join();
             outputArgProcedure(OUTPUTNAME, graphProcessing,state);
             long endTime = System.currentTimeMillis();
-            System.out.println("That took " + (endTime - startTime) + " milliseconds");
+            logger.info("The program took " + (endTime - startTime) + " milliseconds to finish.");
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            logger.info("Make sure your dot file is in the same directory level as the jar file!");
+        }catch(InvalidInputArgumentException | InterruptedException e1){
+            logger.info("There is an error in your input argument!");
+        }
+        catch (ExecutionException e) {
+            logger.info("An error has occurred when scheduling!");
         }
     }
 
@@ -79,7 +86,7 @@ public class Main {
      *
      * @throws IOException
      */
-    public static void processingOptions(String[] args, GraphProcessing graphProcessing) throws IOException, InterruptedException {
+    public static void processingOptions(String[] args, GraphProcessing graphProcessing, Logger logger) throws IOException, InterruptedException {
         int numberArg = args.length;
         ArrayList<String> arguments = new ArrayList<>();
         while (numberArg > 2) {
@@ -91,11 +98,11 @@ public class Main {
         if (arguments.contains("-p")) {
             int indexOfp = arguments.indexOf("-p");
             NUMPROCESSORS = Integer.parseInt(arguments.get(indexOfp - 1));
-            System.out.print("the number of processes is "+ NUMPROCESSORS);
         }
 
         //process -v argument
         if (arguments.contains("-v")) {
+            logger.info("Starting visualisation...");
             VISUALISATIONFLAG = true;
         }
 

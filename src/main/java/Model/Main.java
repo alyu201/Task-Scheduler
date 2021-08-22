@@ -27,6 +27,10 @@ public class Main {
     public static void main(String[] args) {
 
         try {
+            long startTime = System.currentTimeMillis();
+
+
+
             //through an exception if a dot file and number of processors not provided.
             if (args.length < 2) {
                 throw new InvalidInputArgumentException("Input arguments must at least specify a .dot file and a number of processors");
@@ -53,13 +57,16 @@ public class Main {
             INPUTPROCNUM = numberOfProcess;
             AStarScheduler aStarScheduler = new AStarScheduler(graph, numberOfProcess);
             State state = aStarScheduler.generateSchedule();
+//            BranchAndBoundScheduler branchAndBoundScheduler = new BranchAndBoundScheduler(graph, numberOfProcess);
+//            State state = branchAndBoundScheduler.generateSchedule();
 
             System.out.println("algorithm finished");
 
             //End of program procedure
             VisualThread.VisualThread().join();
             outputArgProcedure(OUTPUTNAME, graphProcessing,state);
-            System.exit(0);
+            long endTime = System.currentTimeMillis();
+            System.out.println("That took " + (endTime - startTime) + " milliseconds");
 
         } catch (Exception e) {
             e.printStackTrace();

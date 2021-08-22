@@ -37,7 +37,7 @@ public class State {
     public State(State parentState, int MaxUnderestimate, Node childTask, int processor, int startTime) {
         HashMap<Integer,Node> newSchedule = new HashMap<>();
         newSchedule.put(startTime, childTask);
-        _numProcessors = parentState._numProcessors;
+        _numProcessors = parentState.getNumProcessors();
 
         // Deep copy of parentState - uses custom clone method
         _state = clone(parentState);
@@ -100,14 +100,11 @@ public class State {
         if (procSchedule.keySet().size() == 0) {
             return 0;
         }
-        int nextStartTime = (int)procSchedule.keySet().toArray()[0];
 
-        for (int key : procSchedule.keySet()) {
-            Node node = procSchedule.get(key);
-            int weight = Double.valueOf(node.getAttribute("Weight").toString()).intValue();
-            nextStartTime += weight;
-        }
-        return nextStartTime;
+        int latestStartTime = Collections.max(procSchedule.keySet());
+        Node latestTask = procSchedule.get(latestStartTime);
+        int weight = Double.valueOf(latestTask.getAttribute("Weight").toString()).intValue();
+        return latestStartTime + weight;
     }
 
     /**
@@ -167,5 +164,9 @@ public class State {
     @Override
     public int hashCode() {
         return Objects.hash(_state);
+    }
+
+    public int getNumProcessors() {
+        return _numProcessors;
     }
 }

@@ -76,15 +76,13 @@ public class Main {
             outputArgProcedure(OUTPUTNAME, graphProcessing,state);
             long endTime = System.currentTimeMillis();
             logger.info("The program took " + (endTime - startTime) + " milliseconds to finish.");
+            System.exit(0);
 
         } catch (IOException e) {
             logger.info("Make sure your dot file is in the same directory level as the jar file!");
         } catch(InvalidInputArgumentException | InterruptedException e1){
             logger.info("There is an error in your input argument!");
         }
-//        catch (ExecutionException e) {
-//            logger.info("An error has occurred when scheduling!");
-//        }
     }
 
     /**

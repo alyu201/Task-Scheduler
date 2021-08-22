@@ -3,6 +3,8 @@ This program creates a valid schedule that puts tasks into processors.
 Both the input and output dot files contain a task graph with nodes representing tasks and edges representing the communication costs between tasks.
 The output will additionally contain the processor number that the node/task should run in.
 
+![](ReadMePics/SamplePic.PNG)
+
 ## How to access file
 Approach 1. Download the `scheduler.jar` file from the Milestone 1, `v1.0` release.
 

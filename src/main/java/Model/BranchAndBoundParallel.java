@@ -15,6 +15,7 @@ import java.util.concurrent.RecursiveAction;
 public class BranchAndBoundParallel extends RecursiveAction {
     private BranchAndBoundScheduler _branchAndBoundScheduler;
     private State _currentState;
+    private int counter = 0;
 
     public BranchAndBoundParallel(BranchAndBoundScheduler branchAndBoundScheduler, State state){
         _branchAndBoundScheduler = branchAndBoundScheduler;
@@ -27,6 +28,11 @@ public class BranchAndBoundParallel extends RecursiveAction {
      */
     @Override
     protected void compute() {
+        counter++;
+        // only count number of processors/threads if parallelisation is required
+        if (Main.PARALLELISATIONFLAG) {
+            Visualiser.incrThreadCount();
+        }
         int upperBound = _branchAndBoundScheduler.getUpperBound();
 
         Set<State> closedList = _branchAndBoundScheduler.getClosedList();
@@ -37,7 +43,8 @@ public class BranchAndBoundParallel extends RecursiveAction {
 
         if (_branchAndBoundScheduler.goalStateReached(_currentState)) {
             if (_currentState.getUnderestimate() < upperBound) {
-
+                // Update GUI when another best upperbound is found
+                Visualiser.update(_currentState);
                 _branchAndBoundScheduler.updateUpperBound(_currentState.getUnderestimate());
                 _branchAndBoundScheduler.updateCompleteState(_currentState);
             }
@@ -56,8 +63,7 @@ public class BranchAndBoundParallel extends RecursiveAction {
 
                 for (BranchAndBoundParallel childThread : listActions){
                     childThread.join();
-                }
-
+                 }
             }
         }
 

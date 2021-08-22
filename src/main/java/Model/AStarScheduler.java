@@ -39,17 +39,14 @@ public class AStarScheduler extends Scheduler{
 
         State emptyState = new State(_numProcessors);
         _openList.add(emptyState);
-        int i = 1;
-        int freq = (int) (_taskGraph.nodes().count()) * _numProcessors;
 
         TaskGraphUtil.removeDummyRootNode(_taskGraph);
 
+        int i = 1;
+        int freq = (int) ((Math.pow(2, _numProcessors)) * ((int) (_taskGraph.getNodeCount())));
+
         while (!_openList.isEmpty()) {
             State state = _openList.poll();
-
-            // Update GUI at a frequency of 1/(numOfTasks*numProc) whenever a state is popped off openList
-            if (i % freq == 0 && Main.VISUALISATIONFLAG) { Visualiser.update(state); }
-            i++;
 
             if (goalStateReached(state)) {
                 _executorService.shutdown();
@@ -72,6 +69,16 @@ public class AStarScheduler extends Scheduler{
                 _logger.info("Threading error in adding child states");
             }
             _closedList.add(state);
+
+            // Update GUI at a frequency of 1/(2^numProc*numOfTasks) whenever a state is popped off openList
+            if (i == freq) {
+                Visualiser.update(state);
+                i = 1;
+            }
+            i++;
+
+            // Reset the count for the number of processors/threads
+            Visualiser.resetThreadCount();
         }
         _executorService.shutdown();
         return null;
@@ -91,6 +98,10 @@ public class AStarScheduler extends Scheduler{
         for (Node task: tasks) {
             StateAdditionThread stateAdditionThread = new StateAdditionThread(parentState, task, _openList, _closedList);
             taskList.add(stateAdditionThread);
+            // only count number of processors/threads if parallelisation is required
+            if (Main.PARALLELISATIONFLAG) {
+                Visualiser.incrThreadCount();
+            }
         }
 
         List<Future<Object>> futures = _executorService.invokeAll(taskList);

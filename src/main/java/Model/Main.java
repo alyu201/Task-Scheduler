@@ -1,5 +1,7 @@
 package Model;
 
+import javafx.animation.AnimationTimer;
+import org.apache.commons.lang3.time.StopWatch;
 import org.graphstream.graph.Graph;
 
 import java.io.IOException;
@@ -19,6 +21,7 @@ import java.util.logging.Logger;
 
 public class Main {
     public static Boolean VISUALISATIONFLAG = false;
+    public static Boolean PARALLELISATIONFLAG = false;
     public static String OUTPUTNAME;
     public static String INPUTNAME;
     public static int INPUTPROCNUM;
@@ -63,6 +66,9 @@ public class Main {
             }
             State state = scheduler.generateSchedule();
 
+            Visualiser.stopElapsedTime();
+            Visualiser.displayStateChart(state);
+            System.out.println("algorithm finished");
             logger.info("Scheduling completes.");
 
             //End of program procedure
@@ -73,9 +79,12 @@ public class Main {
 
         } catch (IOException e) {
             logger.info("Make sure your dot file is in the same directory level as the jar file!");
-        }catch(InvalidInputArgumentException | InterruptedException e1){
+        } catch(InvalidInputArgumentException | InterruptedException e1){
             logger.info("There is an error in your input argument!");
         }
+//        catch (ExecutionException e) {
+//            logger.info("An error has occurred when scheduling!");
+//        }
     }
 
     /**
@@ -94,6 +103,7 @@ public class Main {
 
         //process -p argument
         if (arguments.contains("-p")) {
+            PARALLELISATIONFLAG = true;
             int indexOfp = arguments.indexOf("-p");
             NUMPROCESSORS = Integer.parseInt(arguments.get(indexOfp - 1));
         }

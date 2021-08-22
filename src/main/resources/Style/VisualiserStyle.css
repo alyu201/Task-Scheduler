@@ -1,0 +1,72 @@
+/* Scrollbar*/
+.scroll-bar:vertical .increment-button ,
+.scroll-bar:vertical .decrement-button {
+    -fx-background-color :transparent;
+    -fx-background-radius : 0.0em;
+    -fx-padding :0.0 10.0 0.0 0.0;
+}
+
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow{
+    -fx-shape : " ";
+    -fx-padding :0.15em 0.0;
+}
+
+.scroll-bar:vertical .increment-arrow,
+.scroll-bar:vertical .decrement-arrow{
+    -fx-shape : " ";
+    -fx-padding :0.0 0.15em;
+}
+
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color :derive(#2d2d2d,90.0%);
+    -fx-background-insets : 2.0, 0.0, 0.0;
+    -fx-background-radius : 2.0em;
+}
+
+.scroll-bar:horizontal .thumb:hover,
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color :derive(#7d7d7d,10.0%);
+    -fx-background-insets : 2.0, 0.0, 0.0;
+    -fx-background-radius : 2.0em;
+}
+
+/* Titled Pane Style*/
+.titled-pane > .title {
+    -fx-background-color: -fx-box-border, -fx-inner-border, #dcdcdc;
+    -fx-padding: 15px 25px;
+}
+
+/* Gantt Chart Styles*/
+.default-color0.chart-bar {
+    -fx-bar-fill: #ffb3ba;
+}
+
+.default-color1.chart-bar {
+    -fx-bar-fill: #ffd288;
+}
+
+.default-color2.chart-bar {
+    -fx-bar-fill: #ffecbb;
+}
+
+.default-color3.chart-bar {
+    -fx-bar-fill: #cbedc9;
+}
+
+.default-color4.chart-bar {
+    -fx-bar-fill: #ccf2fe;
+}
+
+.default-color5.chart-bar {
+    -fx-bar-fill: #c4d4ff;
+}
+
+.default-color6.chart-bar {
+    -fx-bar-fill: #e6d3fe;
+}
+
+.default-color7.chart-bar {
+    -fx-bar-fill: #ffe2f9;
+}

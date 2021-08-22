@@ -78,39 +78,47 @@ public class OptimalScheduleGraph {
             series.setName(processors[i]);
         }
 
+        Node prevNode = null;
+        int prevKey = 0;
+
         // Working implementation
         for (int proc : optimalSchedule.keySet()) {
             XYChart.Series series = new XYChart.Series();
 
             HashMap<Integer, Node> schedule = optimalSchedule.get(proc);
+            Map<Integer,Node> ordered = new TreeMap<>(schedule);
+
             String currProcessor = processors[proc - 1];
-            int prevKey = 0;
-            Node prevNode = null;
+            boolean firstNode = true;
 
             // Looping through all tasks scheduled on the processor
-            for (int startTime : schedule.keySet()) {
+            for (int startTime : ordered.keySet()) {
+
                 if(prevNode == null){
-                    prevNode = schedule.get(startTime);
+                    prevNode = ordered.get(startTime);
                 }
                 double prevFinishTime = prevKey + (double)prevNode.getAttribute("Weight");
-                double duration = (double)schedule.get(startTime).getAttribute("Weight");
+                double duration = (double)ordered.get(startTime).getAttribute("Weight");
 
-                System.out.printf("PrevKey: %s PrevFin: %s Duration: %s\n", prevKey, prevFinishTime, duration);
-
-                if(startTime != 0){
+                if(startTime != 0 && firstNode){
                     // Add idle time if the first task does not start at 0
                     series.getData().add(new XYChart.Data<>(currProcessor, startTime));
                     // Add the first task to the corresponding processor
                     series.getData().add(new XYChart.Data<>(currProcessor, duration));
-                } else if (startTime != prevFinishTime){ //finish time of prev task scheduled
+                    System.out.printf("Proc: %s PrevKey: %s PrevFin: %s Start: %s Duration: %s\n", proc, prevKey, prevFinishTime, startTime, duration);
+
+                } else if (startTime != prevFinishTime && startTime != 0){ //finish time of prev task scheduled
                     // Add idle time blocks between two scheduled tasks
-                    series.getData().add(new XYChart.Data<>(currProcessor, prevFinishTime-startTime));
+                    series.getData().add(new XYChart.Data<>(currProcessor, startTime-prevFinishTime));
+                    System.out.printf("Proc: %s PrevKey: %s PrevFin: %s Start: %s Duration: %s\n", proc, prevKey, prevFinishTime, startTime, duration);
                 } else {
                     // Add actual task blocks
                     series.getData().add(new XYChart.Data<>(currProcessor, duration));
+                    System.out.printf("Proc: %s PrevKey: %s PrevFin: %s Start: %s Duration: %s\n", proc, prevKey, prevFinishTime, startTime, duration);
                 }
                 prevKey = startTime;
-                prevNode = schedule.get(startTime);
+                prevNode = ordered.get(startTime);
+                firstNode = false;
             }
             // Adding series of tasks to the gantt chart (stackedBarChart)
             ganttChart.getData().add(series);

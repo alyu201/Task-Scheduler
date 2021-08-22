@@ -14,6 +14,7 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * This class is a singleton class that is used for processing input dot file and output dot file.
@@ -22,6 +23,7 @@ import java.util.Set;
  */
 
 public class GraphProcessing {
+    private Logger _logger = Logger.getLogger(GraphProcessing.class.getName());
 
 
     // static variable single_instance of type Singleton
@@ -108,7 +110,8 @@ public class GraphProcessing {
 
 
         } catch (IOException e) {
-            e.printStackTrace();
+            _logger.info("Ensure your dot file is in the same directory as the jar file!");
+            System.exit(0);
         }
     }
 
@@ -153,13 +156,15 @@ public class GraphProcessing {
                         out.write(edgeFormatted + " [" + "Weight=" + edgeWeight + "];");
                         out.newLine();
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        _logger.info("Unsuccessful output the schedule.");
                     }
                 });
             }
             out.write("}");
         } catch (IOException e) {
-            e.printStackTrace();
+            _logger.info("Unsuccessful output the schedule.");
+        }catch(NullPointerException e1){
+            _logger.info("The program did not came up with an schedule!");
         }
 
     }

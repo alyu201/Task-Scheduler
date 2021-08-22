@@ -37,7 +37,7 @@ public class Visualiser extends Application {
         primaryStage.setScene(_scene);
         primaryStage.setTitle("Visualiser");
         primaryStage.setMinWidth(1490);
-        primaryStage.setMinHeight(993);
+        primaryStage.setMinHeight(980);
 
         _scene.getStylesheets().add("/Style/VisualiserStyle.css");
 

@@ -7,7 +7,6 @@ import org.graphstream.graph.Node;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 
 /**
  * This class is responsible for scheduling a number of tasks represented as a DAG (Directed

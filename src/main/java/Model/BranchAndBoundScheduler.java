@@ -72,6 +72,12 @@ public class BranchAndBoundScheduler extends Scheduler{
     }
 
 
+    /**
+     * This method generates the child states of a given state and tasks to schedule.
+     * @param state The state to expand and generate child states from
+     * @param schedulableTasks The list of task to be added
+     * @return A list of children states
+     */
     public List<State> addChildStates(State state, List<Node> schedulableTasks){
         List<State> childStates = new LinkedList<State>();
 

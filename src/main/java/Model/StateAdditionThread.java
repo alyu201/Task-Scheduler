@@ -1,7 +1,5 @@
 package Model;
 
-import org.graphstream.graph.Edge;
-import org.graphstream.graph.Element;
 import org.graphstream.graph.Node;
 
 import java.util.*;

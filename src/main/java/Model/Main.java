@@ -5,8 +5,6 @@ import org.graphstream.graph.Graph;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 
 /**
@@ -57,10 +55,13 @@ public class Main {
             int numberOfProcess = Integer.parseInt(args[1]);
             INPUTPROCNUM = numberOfProcess;
             logger.info("Start scheduling...");
-            AStarScheduler aStarScheduler = new AStarScheduler(graph, numberOfProcess);
-            State state = aStarScheduler.generateSchedule();
-//            BranchAndBoundScheduler branchAndBoundScheduler = new BranchAndBoundScheduler(graph, numberOfProcess);
-//            State state = branchAndBoundScheduler.generateSchedule();
+            Scheduler scheduler;
+            if (graph.getNodeCount() > 11 || (graph.getNodeCount() == 11 && INPUTPROCNUM > 5)) {
+                scheduler = new BranchAndBoundScheduler(graph, numberOfProcess);
+            } else {
+                scheduler = new AStarScheduler(graph, numberOfProcess);
+            }
+            State state = scheduler.generateSchedule();
 
             logger.info("Scheduling completes.");
 
@@ -74,9 +75,6 @@ public class Main {
             logger.info("Make sure your dot file is in the same directory level as the jar file!");
         }catch(InvalidInputArgumentException | InterruptedException e1){
             logger.info("There is an error in your input argument!");
-        }
-        catch (ExecutionException e) {
-            logger.info("An error has occurred when scheduling!");
         }
     }
 

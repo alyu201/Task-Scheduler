@@ -4,6 +4,7 @@ import org.graphstream.graph.Node;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.RecursiveAction;
 
 /**
@@ -27,6 +28,13 @@ public class BranchAndBoundParallel extends RecursiveAction {
     @Override
     protected void compute() {
         int upperBound = _branchAndBoundScheduler.getUpperBound();
+
+        Set<State> closedList = _branchAndBoundScheduler.getClosedList();
+
+        if (closedList.contains(_currentState) || _currentState.getUnderestimate() > upperBound) {
+            return;
+        }
+
         if (_branchAndBoundScheduler.goalStateReached(_currentState)) {
             if (_currentState.getUnderestimate() < upperBound) {
 
@@ -51,6 +59,13 @@ public class BranchAndBoundParallel extends RecursiveAction {
                 }
 
             }
+        }
+
+        synchronized (closedList) {
+            if (closedList.size() > BranchAndBoundScheduler.CLOSED_LIST_MAX_SIZE) {
+                closedList.remove(closedList.iterator().next());
+            }
+            closedList.add(_currentState);
         }
     }
 }

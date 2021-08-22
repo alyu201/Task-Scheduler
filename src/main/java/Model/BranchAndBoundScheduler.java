@@ -5,7 +5,6 @@ import org.graphstream.graph.Node;
 
 import java.util.*;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
 /**
@@ -17,9 +16,12 @@ public class BranchAndBoundScheduler extends Scheduler {
 
     private State _completeState = null;
     private int _upperBound= Integer.MAX_VALUE;
+    private Set<State> _closedList;
+    public static int CLOSED_LIST_MAX_SIZE = (int) Math.pow(2, 22);
 
     public BranchAndBoundScheduler(Graph taskGraph, int numProcessors){
         super(taskGraph,numProcessors);
+        _closedList = Collections.synchronizedSet(new LinkedHashSet<State>());
     }
 
     /**
@@ -27,8 +29,8 @@ public class BranchAndBoundScheduler extends Scheduler {
      *
      * @return The state of the processors with schedules
      */
-    public State generateSchedule(){
-
+    @Override
+    public State generateSchedule() {
         TaskGraphUtil.removeDummyRootNode(_taskGraph);
 
         State emptyState = new State(_numProcessors);
@@ -51,12 +53,16 @@ public class BranchAndBoundScheduler extends Scheduler {
         return _upperBound;
     }
 
+    public synchronized Set<State> getClosedList() {
+        return _closedList;
+    }
+
 
     /**
-     * This methods generates a list of child states, which will be used to continue compute for the goal state.
-     * @param state
-     * @param schedulableTasks
-     * @returns a list of child states
+     * This method generates the child states of a given state and tasks to schedule.
+     * @param state The state to expand and generate child states from
+     * @param schedulableTasks The list of task to be added
+     * @return A list of child states
      */
     public List<State> addChildStates(State state, List<Node> schedulableTasks){
         List<State> childStates = new LinkedList<State>();

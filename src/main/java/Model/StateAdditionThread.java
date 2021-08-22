@@ -6,6 +6,7 @@ import org.graphstream.graph.Node;
 
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.stream.Collectors;
 
 /**
@@ -14,12 +15,12 @@ import java.util.stream.Collectors;
  * @author Kelvin Shen
  */
 public class StateAdditionThread implements Callable{
-    private PriorityQueue<State> _openList;
+    private PriorityBlockingQueue<State> _openList;
     private Set<State> _closedList;
     private State _currentParentState;
     private Node _currentTask;
 
-    public StateAdditionThread(State parentState, Node task, PriorityQueue<State> priorityQueue, Set<State> closedList){
+    public StateAdditionThread(State parentState, Node task, PriorityBlockingQueue<State> priorityQueue, Set<State> closedList){
         _currentParentState = parentState;
         _currentTask = task;
         _openList = priorityQueue;
@@ -30,7 +31,7 @@ public class StateAdditionThread implements Callable{
      * This method is responsible for creating a new state from the given task to be scheduled and it's parent state.
      * This method is call in the Run method, and will be done on a child thread.
      */
-    public void addIndividualTask(){
+    public synchronized void addIndividualTask(){
 
         //The processor number in State starts indexing from 1
         Set<Integer> processors = _currentParentState.procKeys();
@@ -67,7 +68,9 @@ public class StateAdditionThread implements Callable{
             State child = new State(_currentParentState, maxUnderestimate, _currentTask, i, nextStartTime);
 
             if (!_closedList.contains(child)) {
-                _openList.add(child);
+                synchronized (_openList) {
+                    _openList.add(child);
+                }
             }
 
         }

@@ -55,10 +55,10 @@ public class Main {
             //Process the number of processor argument, then start scheduling
             int numberOfProcess = Integer.parseInt(args[1]);
             INPUTPROCNUM = numberOfProcess;
-//            AStarScheduler aStarScheduler = new AStarScheduler(graph, numberOfProcess);
-//            State state = aStarScheduler.generateSchedule();
-            BranchAndBoundScheduler branchAndBoundScheduler = new BranchAndBoundScheduler(graph, numberOfProcess);
-            State state = branchAndBoundScheduler.generateSchedule();
+            AStarScheduler aStarScheduler = new AStarScheduler(graph, numberOfProcess);
+            State state = aStarScheduler.generateSchedule();
+//            BranchAndBoundScheduler branchAndBoundScheduler = new BranchAndBoundScheduler(graph, numberOfProcess);
+//            State state = branchAndBoundScheduler.generateSchedule();
 
             System.out.println("algorithm finished");
 

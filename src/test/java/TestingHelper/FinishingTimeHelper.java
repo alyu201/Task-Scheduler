@@ -6,6 +6,10 @@ import org.graphstream.graph.implementations.DefaultGraph;
 import java.util.HashMap;
 import java.util.Set;
 
+/**
+ * This class serves as a helper to calculate the finishing time of a schedule.
+ * @author Megan Lim
+ */
 public class FinishingTimeHelper {
 
     private HashMap<Integer, HashMap<Integer, Node>> _stateToTest = new HashMap<>();
@@ -14,46 +18,42 @@ public class FinishingTimeHelper {
         _stateToTest = stateToTest;
     }
 
+    /**
+     * This helper method will calculate the latest finishing time of the given state.
+     * @return (int) the latest finishing time
+     */
     public int returnLatestFinishingTime() {
 
-        System.out.println("******************************************************");
-        System.out.println(_stateToTest);
+        System.out.println("State to calculate latest finishing time for:" + _stateToTest);
 
         int latestFinTime = 0;
 
         // Go through each processor
         Set<Integer> allProcessors = _stateToTest.keySet();
         for (Integer processorNum : allProcessors) {
-            System.out.println("Now going through processor " + processorNum);
 
             // Get all the tasks that this processor has
             HashMap<Integer, Node> allTasks = _stateToTest.get(processorNum);
-            System.out.println("\t All tasks this processor has: " + allTasks);
 
             int latestFinTimeThisProc = 0;
 
             // Go through all the tasks that this processor has
             Set<Integer> allTasksStartTimes = allTasks.keySet();
             for (Integer startTime : allTasksStartTimes) {
-                // Say the task name and what time it starts
+                // Calculate what time does this node finish
                 Node node = allTasks.get(startTime);
                 int nodeWeight = (int) node.getAttribute("Weight");
                 int thisNodeFinTime = startTime + nodeWeight;
-                System.out.println("\t\t Task " + node + ":");
-                System.out.println("\t\t\t Starts at: " + startTime);
-                System.out.println("\t\t\t Weight: " + nodeWeight);
-                System.out.println("\t\t\t thisNodeFinTime: " + thisNodeFinTime);
 
+                // Update (if needed) the latestFinTimeThisProc
                 if (latestFinTimeThisProc < thisNodeFinTime) {
                     latestFinTimeThisProc = thisNodeFinTime;
                 }
             }
 
-            System.out.println("\t This processor " + processorNum + " finishes at time: " + latestFinTimeThisProc);
-
+            // Update (if needed) the latestFinTime of the overall state
             if (latestFinTime < latestFinTimeThisProc) {
                 latestFinTime = latestFinTimeThisProc;
-                System.out.println("\t UPDATE latestFinTime!!");
             }
         }
 
@@ -79,6 +79,11 @@ public class FinishingTimeHelper {
         System.out.println("FINAL latestFinTime4: " + latestFinTime4);
     }
 
+    /**
+     * This creates another good state to test with.
+     * There are tasks in both processors #1 and #2.
+     * @return good state
+     */
     private static HashMap<Integer, HashMap<Integer, Node>> creatingGoodState() {
         /***** Setting up the a state to test this helper for now *****/
         // Graph stuff
@@ -120,6 +125,11 @@ public class FinishingTimeHelper {
         return stateToReturn;
     }
 
+    /**
+     * This creates another good state to test with.
+     *  This time, all the tasks will be on processor #2 only.
+     * @return good state
+     */
     private static HashMap<Integer, HashMap<Integer, Node>> creatingGoodState2() {
         /***** Setting up the a state to test this helper for now *****/
         // Graph stuff
@@ -161,6 +171,13 @@ public class FinishingTimeHelper {
         return stateToReturn;
     }
 
+    /**
+     * This creates a bad state to test with. It is bad because:
+     *      * Task C (Starts at: 3) (Weight: 9)
+     *      * Task D (Starts at: 6) (Weight: 2)
+     *  In other words, there is an overlap in the tasks.
+     * @return bad state
+     */
     private static HashMap<Integer, HashMap<Integer, Node>> creatingBadState() {
         /***** Setting up the a state to test this helper for now *****/
         // Graph stuff
@@ -202,6 +219,16 @@ public class FinishingTimeHelper {
         return stateToReturn;
     }
 
+    /**
+     * This creates a bad state to test with. It is bad because Processor #1 has:
+     *      * Task C (Starts at: 3) (Weight: 8)
+     *      * Task D (Starts at: 6) (Weight: 2)
+     *  In other words, there is an overlap in the tasks.
+     *  But Processor #2's last task is:
+     *      * Task B (Starts at: 2) (Weight: 20)
+     *    which will create a bigger finishing time than the overlapped tasks.
+     * @return bad state
+     */
     private static HashMap<Integer, HashMap<Integer, Node>> creatingBadState2() {
         /***** Setting up the a state to test this helper for now *****/
         // Graph stuff

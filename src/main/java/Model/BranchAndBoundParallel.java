@@ -31,7 +31,7 @@ public class BranchAndBoundParallel extends RecursiveAction {
         counter++;
         // only count number of processors/threads if parallelisation is required
         if (Main.PARALLELISATIONFLAG) {
-            Visualiser.incrThreadCount();
+//            Visualiser.incrThreadCount();
         }
         int upperBound = _branchAndBoundScheduler.getUpperBound();
 
@@ -44,7 +44,7 @@ public class BranchAndBoundParallel extends RecursiveAction {
         if (_branchAndBoundScheduler.goalStateReached(_currentState)) {
             if (_currentState.getUnderestimate() < upperBound) {
                 // Update GUI when another best upperbound is found
-                Visualiser.update(_currentState);
+//                Visualiser.update(_currentState);
                 _branchAndBoundScheduler.updateUpperBound(_currentState.getUnderestimate());
                 _branchAndBoundScheduler.updateCompleteState(_currentState);
             }

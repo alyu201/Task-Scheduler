@@ -1,6 +1,6 @@
 package Model;
 
-import javafx.animation.AnimationTimer;
+//import javafx.animation.AnimationTimer;
 import org.apache.commons.lang3.time.StopWatch;
 import org.graphstream.graph.Graph;
 
@@ -52,7 +52,7 @@ public class Main {
             processingOptions(args, graphProcessing, logger);
 
             //User specified to have application program open
-            visualArgProcedure();
+//            visualArgProcedure();
 
             //Process the number of processor argument, then start scheduling
             int numberOfProcess = Integer.parseInt(args[1]);
@@ -66,13 +66,13 @@ public class Main {
             }
             State state = scheduler.generateSchedule();
 
-            Visualiser.stopElapsedTime();
-            Visualiser.displayStateChart(state);
+//            Visualiser.stopElapsedTime();
+//            Visualiser.displayStateChart(state);
             System.out.println("algorithm finished");
             logger.info("Scheduling completes.");
 
             //End of program procedure
-            VisualThread.VisualThread().join();
+//            VisualThread.VisualThread().join();
             outputArgProcedure(OUTPUTNAME, graphProcessing,state);
             long endTime = System.currentTimeMillis();
             logger.info("The program took " + (endTime - startTime) + " milliseconds to finish.");
@@ -128,12 +128,12 @@ public class Main {
      *
      * @throws IOException
      */
-    public static void visualArgProcedure() throws IOException {
-        if (VISUALISATIONFLAG) {
-            VisualThread visualThread = VisualThread.VisualThread();
-            visualThread.start();
-        }
-    }
+//    public static void visualArgProcedure() throws IOException {
+//        if (VISUALISATIONFLAG) {
+//            VisualThread visualThread = VisualThread.VisualThread();
+//            visualThread.start();
+//        }
+//    }
 
     /**
      * This method is responsible for output a .dot file using graph that is in the system.

@@ -18,9 +18,11 @@ import static org.junit.Assert.*;
 public class AutomatedTester {
 
     private int _numOfThreads = 1;
+    private DotFileTestCase _dotFileTestCase = DotFileTestCase.NODES4_PROC2_FROM_SLIDES;
 
-    public AutomatedTester(int numOfThreads) {
+    public AutomatedTester(int numOfThreads, DotFileTestCase dotFileTestCase) {
         _numOfThreads = numOfThreads;
+        _dotFileTestCase = dotFileTestCase;
     }
 
     private static int gettingNumOfThreads() throws IOException {
@@ -29,18 +31,38 @@ public class AutomatedTester {
         System.out.println("Enter number of threads (1 <= x <= 8): ");
         String s = br.readLine();
         int numOfThreads = Integer.parseInt(s);
-        System.out.println("Number of threads to use: " + numOfThreads);
 
         return numOfThreads;
+    }
+
+    private static DotFileTestCase getDotFileTestCase() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("\n1) NODES4_PROC2_FROM_SLIDES");
+        System.out.println("2) NODES7_PROC2_TWOTREE");
+        System.out.println("Choose which dot file you want to test with (e.g. 3): ");
+        String s = br.readLine();
+        int choice = Integer.parseInt(s);
+        System.out.println("Chosen: " + choice);
+
+        if (choice == 1) {
+//            System.out.println("DotFileTestCase: NODES4_PROC2_FROM_SLIDES");
+            return DotFileTestCase.NODES4_PROC2_FROM_SLIDES;
+        } else if (choice == 2) {
+            //System.out.println("DotFileTestCase: NODES7_PROC2_TWOTREE");
+            return DotFileTestCase.NODES7_PROC2_TWOTREE;
+        }
+
+        // By default, return DotFileTestCase.NODES4_PROC2_FROM_SLIDES
+        return DotFileTestCase.NODES4_PROC2_FROM_SLIDES;
     }
 
     public void testingScheduler() {
 
         // Getting the desired dotfile and its details
-        DotFileTestCase dotFileTestCase = DotFileTestCase.NODES7_PROC2_TWOTREE;
-        String filePathTestCase = dotFileTestCase.getFilePath();
-        int numProcTestCaseUse = dotFileTestCase.getNumOfProcUsed();
-        int optimalSolTestCase = dotFileTestCase.getOptimalSol();
+        //DotFileTestCase dotFileTestCase = DotFileTestCase.NODES7_PROC2_TWOTREE;
+        String filePathTestCase = _dotFileTestCase.getFilePath();
+        int numProcTestCaseUse = _dotFileTestCase.getNumOfProcUsed();
+        int optimalSolTestCase = _dotFileTestCase.getOptimalSol();
 
 
         // Generating the graph obj
@@ -109,7 +131,12 @@ public class AutomatedTester {
     public static void main(String[] args) throws IOException {
         int numOfThreads = gettingNumOfThreads();
 
-        AutomatedTester automatedTester = new AutomatedTester(numOfThreads);
+        DotFileTestCase dotFileTestCase = getDotFileTestCase();
+
+        System.out.println("\nNumber of threads to use: " + numOfThreads);
+        System.out.println("DotFileTestCase: " + dotFileTestCase.name());
+
+        AutomatedTester automatedTester = new AutomatedTester(numOfThreads, dotFileTestCase);
         automatedTester.testingScheduler();
 
     }

@@ -1,4 +1,4 @@
-package TestingHelper;
+package AutomatedTesting;
 
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;

@@ -7,14 +7,33 @@ import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.DefaultGraph;
 import org.junit.jupiter.api.Test;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.Scanner;
 
 import static org.junit.Assert.*;
 
 public class AutomatedTester {
 
-    @Test
+    private int _numOfThreads = 1;
+
+    public AutomatedTester(int numOfThreads) {
+        _numOfThreads = numOfThreads;
+    }
+
+    private static int gettingNumOfThreads() throws IOException {
+        // Getting number of threads
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("Enter number of threads (1 <= x <= 8): ");
+        String s = br.readLine();
+        int numOfThreads = Integer.parseInt(s);
+        System.out.println("Number of threads to use: " + numOfThreads);
+
+        return numOfThreads;
+    }
+
     public void testingScheduler() {
 
         // Getting the desired dotfile and its details
@@ -23,7 +42,8 @@ public class AutomatedTester {
         int numProcTestCaseUse = dotFileTestCase.getNumOfProcUsed();
         int optimalSolTestCase = dotFileTestCase.getOptimalSol();
 
-        // Generating the graph
+
+        // Generating the graph obj
         GraphProcessing graphProcessing = GraphProcessing.Graphprocessing();
         try {
             graphProcessing.inputProcessing(filePathTestCase);
@@ -43,12 +63,10 @@ public class AutomatedTester {
             System.out.println("\t Node: " + node + " (Weight: " + node.getAttribute("Weight") + ")");
         }
 
-        // Temporary number of threads for now
-        int numOfThreads = 6;
 
         // Taking care of whether we are using A* or BnB to generate an outputState
         State outputState;
-        if (graph.getNodeCount() > 11 || (graph.getNodeCount() == 11 && numOfThreads > 5)) {
+        if (graph.getNodeCount() > 11 || (graph.getNodeCount() == 11 && _numOfThreads > 5)) {
             System.out.println("Running Branch and Bound ......");
             BranchAndBoundScheduler scheduler = new BranchAndBoundScheduler(graph, numProcTestCaseUse);
             outputState = scheduler.generateSchedule();
@@ -59,19 +77,40 @@ public class AutomatedTester {
         }
         System.out.println("outputState: " + outputState);
 
+
         // Getting the HashMap representation
         HashMap<Integer, HashMap<Integer, Node>> stateHashMap = outputState.getState();
         System.out.println("stateHashMap: " + stateHashMap);
 
+
         // Checking on the finishing time
         FinishingTimeHelper finishingTimeHelper = new FinishingTimeHelper(stateHashMap);
         int generatedFinTime = finishingTimeHelper.returnLatestFinishingTime();
-        assertEquals(generatedFinTime, optimalSolTestCase);
+
+        if (generatedFinTime == optimalSolTestCase) {
+            System.out.println("IT IS OPTIMAL (" + generatedFinTime + ")");
+        } else {
+            System.out.println("NOT OPTIMAL: (generatedFinTime: " + generatedFinTime + ") (optimalSolTestCase: " + optimalSolTestCase + ")");
+        }
+
 
         // Checking whether valid schedule or not
         ValidityChecker validityChecker = new ValidityChecker(stateHashMap);
         boolean validOrNot = validityChecker.checkValidity();
-        assertTrue(validOrNot);
+
+        if (validOrNot) {
+            System.out.println("VALID");
+        } else {
+            System.out.println("NOT VALID");
+        }
+
+    }
+
+    public static void main(String[] args) throws IOException {
+        int numOfThreads = gettingNumOfThreads();
+
+        AutomatedTester automatedTester = new AutomatedTester(numOfThreads);
+        automatedTester.testingScheduler();
 
     }
 

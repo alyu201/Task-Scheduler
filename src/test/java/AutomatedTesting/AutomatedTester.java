@@ -1,6 +1,7 @@
 package AutomatedTesting;
 
 import Model.AStarScheduler;
+import Model.GraphProcessing;
 import Model.State;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
@@ -8,6 +9,7 @@ import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.DefaultGraph;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import static org.junit.Assert.*;
@@ -16,6 +18,28 @@ public class AutomatedTester {
 
     @Test
     public void testingScheduler() {
+
+        DotFileTestCase dotFileTestCase = DotFileTestCase.NODES4_PROC2_FROM_SLIDES;
+
+        GraphProcessing graphProcessing = GraphProcessing.Graphprocessing();
+        try {
+            graphProcessing.inputProcessing(dotFileTestCase.getFilePath());
+        } catch (IOException e) {
+            System.out.println("Make sure your dot file is in the same directory level as the 'src' folder!");
+            e.printStackTrace();
+        }
+        Graph graph = graphProcessing.getGraph();
+        System.out.println("Hello");
+
+        Node nodeA = graph.getNode("a");
+        Node nodeB = graph.getNode("b");
+        Node nodeC = graph.getNode("c");
+        Node nodeD = graph.getNode("d");
+        System.out.println("Node: " + nodeA + " (Weight: " + nodeA.getAttribute("Weight") + ")");
+        System.out.println("Node: " + nodeB + " (Weight: " + nodeB.getAttribute("Weight") + ")");
+        System.out.println("Node: " + nodeC + " (Weight: " + nodeC.getAttribute("Weight") + ")");
+        System.out.println("Node: " + nodeD + " (Weight: " + nodeD.getAttribute("Weight") + ")");
+
 //        int numProcessors = 2;
 //        Graph graphToTest = creatingGoodGraph();
 //        AStarScheduler scheduler = new AStarScheduler(graphToTest, numProcessors);

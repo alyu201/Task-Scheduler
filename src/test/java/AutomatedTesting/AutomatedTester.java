@@ -53,15 +53,17 @@ public class AutomatedTester {
     private static DotFileTestCase getDotFileTestCase() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("\n1) NODES4_PROC2_FROM_SLIDES");
-        System.out.println("2) NODES7_PROC2_TWOTREE \t\t\t 3) NODES7_PROC4_TWOTREE");
+        System.out.println("2) NODES7_PROC2_TWOTREE \t\t\t 3) NODES7_PROC4_TWOTREE \t\t\t 12) NODES7_PROC4_MULTIROOT_DETACH");
         System.out.println("4) NODES8_PROC2_RANDOM \t\t\t 5) NODES8_PROC4_RANDOM");
-        System.out.println("6) NODES9_PROC2_SERIESPARALLEL \t\t\t 7) NODES9_PROC4_SERIESPARALLEL");
+        System.out.println("6) NODES9_PROC2_SERIESPARALLEL \t\t\t 7) NODES9_PROC4_SERIESPARALLEL \t\t\t 13) NODES9_PROC2_MULTIROOT");
         System.out.println("8) NODES10_PROC2_RANDOM \t\t\t 9) NODES10_PROC4_RANDOM");
         System.out.println("10) NODES11_PROC2_OUTTREE \t\t\t 11) NODES11_PROC4_OUTTREE");
+        System.out.println("14) NODES13_PROC8 \t\t\t 15) NODES14_PROC3");
+        System.out.println("16) NODES15_PROC5ORMORE_MULTIROOT \t\t\t 17) NODES18_PROC5OR6");
+        System.out.println("18) NODES20_PROC6 \t\t\t 19) NODES20_ANYNUMPROC");
         System.out.println("Choose which dot file you want to test with (e.g. 3): ");
         String s = br.readLine();
         int choice = Integer.parseInt(s);
-        System.out.println("Chosen: " + choice);
 
         // By default, return DotFileTestCase.NODES4_PROC2_FROM_SLIDES
         DotFileTestCase dotFileToReturn = DotFileTestCase.NODES4_PROC2_FROM_SLIDES;
@@ -100,6 +102,30 @@ public class AutomatedTester {
                 break;
             case 11:
                 dotFileToReturn = DotFileTestCase.NODES11_PROC4_OUTTREE;
+                break;
+            case 12:
+                dotFileToReturn = DotFileTestCase.NODES7_PROC4_MULTIROOT_DETACH;
+                break;
+            case 13:
+                dotFileToReturn = DotFileTestCase.NODES9_PROC2_MULTIROOT;
+                break;
+            case 14:
+                dotFileToReturn = DotFileTestCase.NODES13_PROC8;
+                break;
+            case 15:
+                dotFileToReturn = DotFileTestCase.NODES14_PROC3;
+                break;
+            case 16:
+                dotFileToReturn = DotFileTestCase.NODES15_PROC5ORMORE_MULTIROOT;
+                break;
+            case 17:
+                dotFileToReturn = DotFileTestCase.NODES18_PROC5OR6;
+                break;
+            case 18:
+                dotFileToReturn = DotFileTestCase.NODES20_PROC6;
+                break;
+            case 19:
+                dotFileToReturn = DotFileTestCase.NODES20_ANYNUMPROC;
                 break;
             default:
                 break;
@@ -161,12 +187,10 @@ public class AutomatedTester {
             AStarScheduler scheduler = new AStarScheduler(graph, numProcTestCaseUse);
             outputState = scheduler.generateSchedule();
         }
-        System.out.println("outputState: " + outputState);
 
 
         // Getting the HashMap representation
         HashMap<Integer, HashMap<Integer, Node>> stateHashMap = outputState.getState();
-        System.out.println("stateHashMap: " + stateHashMap);
 
 
         // Checking on the finishing time

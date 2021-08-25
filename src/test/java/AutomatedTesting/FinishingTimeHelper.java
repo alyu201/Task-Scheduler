@@ -24,8 +24,6 @@ class FinishingTimeHelper {
      */
     public int returnLatestFinishingTime() {
 
-        System.out.println("State to calculate latest finishing time for:" + _stateToTest);
-
         int latestFinTime = 0;
 
         // Go through each processor

@@ -44,7 +44,9 @@ public class BranchAndBoundParallel extends RecursiveAction {
         if (_branchAndBoundScheduler.goalStateReached(_currentState)) {
             if (_currentState.getUnderestimate() < upperBound) {
                 // Update GUI when another best upperbound is found
+                if (Main.VISUALISATIONFLAG){
                 Visualiser.update(_currentState);
+                }
                 _branchAndBoundScheduler.updateUpperBound(_currentState.getUnderestimate());
                 _branchAndBoundScheduler.updateCompleteState(_currentState);
             }

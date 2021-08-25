@@ -1,6 +1,7 @@
 package Model;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  * This class is responsible for starting the JavaFX application on a new thread.
@@ -11,7 +12,7 @@ import java.io.IOException;
 public class VisualThread extends Thread{
     // static variable single_instance of type Singleton
     private static VisualThread _single_instance = null;
-
+    private Logger _logger = Logger.getLogger(VisualThread.class.getName());
     /**
      *private constructor restricted to this class itself
      */
@@ -36,7 +37,7 @@ public class VisualThread extends Thread{
         try {
             Visualiser.start();
         } catch (IOException e) {
-            e.printStackTrace();
-        }
+            _logger.info("Problem with starting visualisation!");
+                }
     }
 }

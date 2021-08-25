@@ -15,7 +15,16 @@ import java.nio.file.Paths;
 enum DotFileTestCase {
 
     NODES4_PROC2_FROM_SLIDES("Nodes4_Proc2_FromSlides.dot", 2, 8),
-    NODES7_PROC2_TWOTREE("Nodes_7_TwoTree.dot", 2, 28);
+    NODES7_PROC2_TWOTREE("Nodes_7_TwoTree.dot", 2, 28),
+    NODES7_PROC4_TWOTREE("Nodes_7_TwoTree.dot", 4, 22),
+    NODES8_PROC2_RANDOM("Nodes_8_Random.dot", 2, 581),
+    NODES8_PROC4_RANDOM("Nodes_8_Random.dot", 4, 581),
+    NODES9_PROC2_SERIESPARALLEL("Nodes_9_SeriesParallel.dot", 2, 55),
+    NODES9_PROC4_SERIESPARALLEL("Nodes_9_SeriesParallel.dot", 4, 55),
+    NODES10_PROC2_RANDOM("Nodes_10_Random.dot", 2, 50),
+    NODES10_PROC4_RANDOM("Nodes_10_Random.dot", 4, 50),
+    NODES11_PROC2_OUTTREE("Nodes_11_OutTree.dot", 2, 350),
+    NODES11_PROC4_OUTTREE("Nodes_11_OutTree.dot", 4, 227);
 
     private final String _filePath;
     private final int _numOfProcUsed;

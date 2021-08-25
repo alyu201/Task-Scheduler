@@ -53,7 +53,11 @@ public class AutomatedTester {
     private static DotFileTestCase getDotFileTestCase() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("\n1) NODES4_PROC2_FROM_SLIDES");
-        System.out.println("2) NODES7_PROC2_TWOTREE");
+        System.out.println("2) NODES7_PROC2_TWOTREE \t\t\t 3) NODES7_PROC4_TWOTREE");
+        System.out.println("4) NODES8_PROC2_RANDOM \t\t\t 5) NODES8_PROC4_RANDOM");
+        System.out.println("6) NODES9_PROC2_SERIESPARALLEL \t\t\t 7) NODES9_PROC4_SERIESPARALLEL");
+        System.out.println("8) NODES10_PROC2_RANDOM \t\t\t 9) NODES10_PROC4_RANDOM");
+        System.out.println("10) NODES11_PROC2_OUTTREE \t\t\t 11) NODES11_PROC4_OUTTREE");
         System.out.println("Choose which dot file you want to test with (e.g. 3): ");
         String s = br.readLine();
         int choice = Integer.parseInt(s);
@@ -69,6 +73,33 @@ public class AutomatedTester {
                 break;
             case 2:
                 dotFileToReturn = DotFileTestCase.NODES7_PROC2_TWOTREE;
+                break;
+            case 3:
+                dotFileToReturn = DotFileTestCase.NODES7_PROC4_TWOTREE;
+                break;
+            case 4:
+                dotFileToReturn = DotFileTestCase.NODES8_PROC2_RANDOM;
+                break;
+            case 5:
+                dotFileToReturn = DotFileTestCase.NODES8_PROC4_RANDOM;
+                break;
+            case 6:
+                dotFileToReturn = DotFileTestCase.NODES9_PROC2_SERIESPARALLEL;
+                break;
+            case 7:
+                dotFileToReturn = DotFileTestCase.NODES9_PROC4_SERIESPARALLEL;
+                break;
+            case 8:
+                dotFileToReturn = DotFileTestCase.NODES10_PROC2_RANDOM;
+                break;
+            case 9:
+                dotFileToReturn = DotFileTestCase.NODES10_PROC4_RANDOM;
+                break;
+            case 10:
+                dotFileToReturn = DotFileTestCase.NODES11_PROC2_OUTTREE;
+                break;
+            case 11:
+                dotFileToReturn = DotFileTestCase.NODES11_PROC4_OUTTREE;
                 break;
             default:
                 break;

@@ -10,7 +10,7 @@ import java.util.Set;
  * This class serves as a helper to calculate the finishing time of a schedule.
  * @author Megan Lim
  */
-public class FinishingTimeHelper {
+class FinishingTimeHelper {
 
     private HashMap<Integer, HashMap<Integer, Node>> _stateToTest = new HashMap<>();
 

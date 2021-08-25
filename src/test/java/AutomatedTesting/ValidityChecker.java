@@ -12,7 +12,7 @@ import java.util.*;
  * is representing a valid schedule or not.
  * @author Megan Lim
  */
-public class ValidityChecker {
+class ValidityChecker {
 
     private HashMap<Integer, HashMap<Integer, Node>> _stateToTest;
 

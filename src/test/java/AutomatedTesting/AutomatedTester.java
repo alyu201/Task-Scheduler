@@ -20,10 +20,13 @@ public class AutomatedTester {
     public void testingScheduler() {
 
         DotFileTestCase dotFileTestCase = DotFileTestCase.NODES4_PROC2_FROM_SLIDES;
+        String filePathTestCase = dotFileTestCase.getFilePath();
+        int numProcTestCaseUse = dotFileTestCase.getNumOfProcUsed();
+        int optimalSolTestCase = dotFileTestCase.getOptimalSol();
 
         GraphProcessing graphProcessing = GraphProcessing.Graphprocessing();
         try {
-            graphProcessing.inputProcessing(dotFileTestCase.getFilePath());
+            graphProcessing.inputProcessing(filePathTestCase);
         } catch (IOException e) {
             System.out.println("Make sure your dot file is in the same directory level as the 'src' folder!");
             e.printStackTrace();
@@ -35,14 +38,16 @@ public class AutomatedTester {
         Node nodeB = graph.getNode("b");
         Node nodeC = graph.getNode("c");
         Node nodeD = graph.getNode("d");
-        System.out.println("Node: " + nodeA + " (Weight: " + nodeA.getAttribute("Weight") + ")");
-        System.out.println("Node: " + nodeB + " (Weight: " + nodeB.getAttribute("Weight") + ")");
-        System.out.println("Node: " + nodeC + " (Weight: " + nodeC.getAttribute("Weight") + ")");
-        System.out.println("Node: " + nodeD + " (Weight: " + nodeD.getAttribute("Weight") + ")");
+        System.out.println("This graph has " + graph.getNodeCount() + " nodes:");
+        for (int nodeIndex = 0; nodeIndex < graph.getNodeCount(); nodeIndex++) {
+            Node node = graph.getNode(nodeIndex);
+            System.out.println("\t Node: " + node + " (Weight: " + node.getAttribute("Weight") + ")");
+        }
+
 
 //        int numProcessors = 2;
 //        Graph graphToTest = creatingGoodGraph();
-//        AStarScheduler scheduler = new AStarScheduler(graphToTest, numProcessors);
+//        AStarScheduler scheduler = new AStarScheduler(graphToTest, numProcTestCaseUse);
 //        System.out.println("hello");
 //
 //        State outputState = scheduler.generateSchedule();
@@ -51,12 +56,14 @@ public class AutomatedTester {
 //        HashMap<Integer, HashMap<Integer, Node>> stateHashMap = outputState.getState();
 //        System.out.println("stateHashMap: " + stateHashMap);
 
+
+        // This is a temporary hashmap for while making the AutomatedTester class
         HashMap<Integer, HashMap<Integer, Node>> stateHashMap = creatingGoodState();
 
         // Checking on the finishing time
         FinishingTimeHelper finishingTimeHelper = new FinishingTimeHelper(stateHashMap);
-        int generatedFinTime =finishingTimeHelper.returnLatestFinishingTime();
-        assertEquals(generatedFinTime, 8); // WILL NEED TO CHANGE LATER!!!
+        int generatedFinTime = finishingTimeHelper.returnLatestFinishingTime();
+        assertEquals(generatedFinTime, optimalSolTestCase);
 
         // Checking whether valid schedule or not
         ValidityChecker validityChecker = new ValidityChecker(stateHashMap);

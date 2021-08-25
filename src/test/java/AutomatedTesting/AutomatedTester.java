@@ -144,9 +144,15 @@ public class AutomatedTester {
         }
 
 
+        // Calculating the true amount of nodes in the graph (aka everything minus the dummy node).
+        // This is because at this stage, the algorithm hasn't removed the dummy node yet.
+        // And we need the true amount of nodes to decide to do BnB or A*.
+        int trueAmountOfNodes = graph.getNodeCount() - 1;
+
+
         // Taking care of whether we are using A* or BnB to generate an outputState
         State outputState;
-        if (graph.getNodeCount() > 11 || (graph.getNodeCount() == 11 && _numOfThreads > 5)) {
+        if (trueAmountOfNodes > 11 || (trueAmountOfNodes == 11 && _numOfThreads > 5)) {
             System.out.println("Running Branch and Bound ......");
             BranchAndBoundScheduler scheduler = new BranchAndBoundScheduler(graph, numProcTestCaseUse);
             outputState = scheduler.generateSchedule();

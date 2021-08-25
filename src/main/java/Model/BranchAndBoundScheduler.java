@@ -34,12 +34,35 @@ public class BranchAndBoundScheduler extends Scheduler {
         TaskGraphUtil.removeDummyRootNode(_taskGraph);
 
         State emptyState = new State(_numProcessors);
-
-        ForkJoinPool pool = new ForkJoinPool(Main.NUMPROCESSORS);
-        BranchAndBoundParallel task = new BranchAndBoundParallel(this, emptyState);
-        pool.invoke(task);
+        if (Main.NUMPROCESSORS == 1) {
+            exploreState(emptyState);
+        } else {
+            ForkJoinPool pool = new ForkJoinPool(Main.NUMPROCESSORS);
+            BranchAndBoundParallel task = new BranchAndBoundParallel(this, emptyState);
+            pool.invoke(task);
+        }
         return _completeState;
     }
+
+    public void exploreState(State currentState) {
+        //todo update visualisation
+
+        if (goalStateReached(currentState)) {
+            if (currentState.getUnderestimate() < _upperBound) {
+                _upperBound = currentState.getUnderestimate();
+                _completeState = currentState;
+            }
+        } else {
+            if (currentState.getUnderestimate() <= _upperBound) {
+                List<Node> schedulableTasks = getNextTasks(currentState);
+                PriorityQueue<State> childStates = addChildStates(currentState, schedulableTasks);
+                for (State i : childStates) {
+                    exploreState(i);
+                }
+            }
+        }
+    }
+
 
     public synchronized void updateCompleteState(State state){
         _completeState = state;
@@ -64,8 +87,8 @@ public class BranchAndBoundScheduler extends Scheduler {
      * @param schedulableTasks The list of task to be added
      * @return A list of child states
      */
-    public List<State> addChildStates(State state, List<Node> schedulableTasks){
-        List<State> childStates = new LinkedList<State>();
+    public PriorityQueue<State> addChildStates(State state, List<Node> schedulableTasks){
+        PriorityQueue<State> childStates = new PriorityQueue<>(100, new StateComparator());
 
         for (Node task: schedulableTasks){
             //The processor number in State starts indexing from 1

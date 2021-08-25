@@ -62,11 +62,13 @@ public class Main {
             logger.info("Start scheduling...");
             long startScheduleTime = System.currentTimeMillis();
             Scheduler scheduler;
-            if (graph.getNodeCount() > 11 || (graph.getNodeCount() == 11 && INPUTPROCNUM > 5)) {
-                scheduler = new BranchAndBoundScheduler(graph, numberOfProcess);
-            } else {
-                scheduler = new AStarScheduler(graph, numberOfProcess);
-            }
+//            if (graph.getNodeCount() > 11 || (graph.getNodeCount() == 11 && INPUTPROCNUM > 5)) {
+//                scheduler = new BranchAndBoundScheduler(graph, numberOfProcess);
+//            } else {
+//                scheduler = new AStarScheduler(graph, numberOfProcess);
+//            }
+            // Temporarily moved here
+            scheduler = new BranchAndBoundScheduler(graph, numberOfProcess);
             State state = scheduler.generateSchedule();
 
             // Update visualisation and terminate the visualisation thread

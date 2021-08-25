@@ -9,16 +9,32 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 
+/**
+ * This class is for Automated Testing. It's main method will ask the user to:
+ *         * Enter the number of threads that they want to use (1 <= numOfThreads <= 8)
+ *         * Which dot file they want to use from the list
+ * Then the class will test the algorithm schedulers by:
+ *         * Generating a schedule with AStarScheduler or BranchAndBoundScheduler (to decide which algorithm to use is
+ *                 based on what dot file was chosen)
+ *         * Checking whether: Generated finishing time = Graph's optimal finishing time
+ *         * Checking whether the generated schedule is valid or not
+ * @author Megan Lim
+ */
 public class AutomatedTester {
 
     private int _numOfThreads = 1;
-    private DotFileTestCase _dotFileTestCase = DotFileTestCase.NODES4_PROC2_FROM_SLIDES;
+    private DotFileTestCase _dotFileTestCase;
 
     public AutomatedTester(int numOfThreads, DotFileTestCase dotFileTestCase) {
         _numOfThreads = numOfThreads;
         _dotFileTestCase = dotFileTestCase;
     }
 
+    /**
+     * This method will ask the user to type in how many threads they want to use.
+     * @return (int) the number of threads that the user requested.
+     * @throws IOException
+     */
     private static int gettingNumOfThreads() throws IOException {
         // Getting number of threads
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -29,6 +45,11 @@ public class AutomatedTester {
         return numOfThreads;
     }
 
+    /**
+     * This method will ask the user to chose among some options to select which dot file they want to use to test.
+     * @return (DotFileTestCase) the selected input dot file enum that the user wanted
+     * @throws IOException
+     */
     private static DotFileTestCase getDotFileTestCase() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("\n1) NODES4_PROC2_FROM_SLIDES");
@@ -56,9 +77,16 @@ public class AutomatedTester {
         return dotFileToReturn;
     }
 
+    /**
+     * This method will test the algorithm schedulers by:
+     *      * Generating a schedule with AStarScheduler or BranchAndBoundScheduler (to decide which algorithm to use is
+     *                based on what dot file was chosen)
+     *      * Checking whether: Generated finishing time = Graph's optimal finishing time
+     *      * Checking whether the generated schedule is valid or not
+     */
     public void testingScheduler() {
 
-        // Getting the desired dotfile and its details
+        // Getting the desired input dot file's details
         String filePathTestCase = _dotFileTestCase.getFilePath();
         int numProcTestCaseUse = _dotFileTestCase.getNumOfProcUsed();
         int optimalSolTestCase = _dotFileTestCase.getOptimalSol();
@@ -78,7 +106,7 @@ public class AutomatedTester {
         Node nodeB = graph.getNode("b");
         Node nodeC = graph.getNode("c");
         Node nodeD = graph.getNode("d");
-        System.out.println("This graph has " + graph.getNodeCount() + " nodes:");
+        System.out.println("This graph has " + graph.getNodeCount() + " nodes (including dummy node because algorithm hasn't taken it away yet)");
         for (int nodeIndex = 0; nodeIndex < graph.getNodeCount(); nodeIndex++) {
             Node node = graph.getNode(nodeIndex);
             System.out.println("\t Node: " + node + " (Weight: " + node.getAttribute("Weight") + ")");
@@ -128,13 +156,16 @@ public class AutomatedTester {
     }
 
     public static void main(String[] args) throws IOException {
+        // Getting the number of threads that the user wants to use
         int numOfThreads = gettingNumOfThreads();
 
+        // Getting the desired inptu dot file enum that the user wants to use
         DotFileTestCase dotFileTestCase = getDotFileTestCase();
 
         System.out.println("\nNumber of threads to use: " + numOfThreads);
         System.out.println("DotFileTestCase: " + dotFileTestCase.name());
 
+        // Test out the chosen input dot file on the scheduler with the given number of threads; and print results
         AutomatedTester automatedTester = new AutomatedTester(numOfThreads, dotFileTestCase);
         automatedTester.testingScheduler();
 

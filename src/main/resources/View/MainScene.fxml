@@ -23,7 +23,7 @@
                <content>
                   <AnchorPane style="-fx-background-color: white;">
                      <children>
-                        <VBox alignment="CENTER" spacing="20.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <VBox alignment="CENTER" spacing="10.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <padding>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </padding>
@@ -60,9 +60,6 @@
                                        </padding>
                                     </StackPane>
                                  </children>
-                                 <padding>
-                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                 </padding>
                               </HBox>
                               <AnchorPane fx:id="graphPane" VBox.vgrow="ALWAYS">
                                  <padding>
@@ -78,7 +75,7 @@
             </TitledPane>
          </children>
       </AnchorPane>
-      <AnchorPane prefHeight="200.0" prefWidth="550.0" HBox.hgrow="ALWAYS">
+      <AnchorPane HBox.hgrow="ALWAYS">
          <children>
             <TitledPane collapsible="false" text="Scheduler Information" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <font>
@@ -297,12 +294,12 @@
                                                 </Button>
                                              </children>
                                           </HBox>
-                                          <LineChart fx:id="threadChart" animated="false" createSymbols="false" legendVisible="false">
+                                          <LineChart fx:id="threadChart" animated="false" createSymbols="false" legendVisible="false" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="160.0">
                                             <xAxis>
                                                <NumberAxis animated="false" forceZeroInRange="false" minorTickLength="1.0" side="LEFT" tickLabelsVisible="false" tickUnit="1.0" upperBound="20.0" />
                                             </xAxis>
                                             <yAxis>
-                                              <NumberAxis animated="false" autoRanging="false" forceZeroInRange="false" minorTickLength="1.0" side="LEFT" tickUnit="2.0" upperBound="8.0" />
+                                              <NumberAxis animated="false" autoRanging="false" forceZeroInRange="false" minorTickLength="1.0" side="LEFT" tickUnit="1.0" upperBound="9.0" />
                                             </yAxis>
                                           </LineChart>
                                        </children>
@@ -337,11 +334,11 @@
                                        </children>
                                     </AnchorPane>
                                  </children>
-                                 <padding>
-                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                 </padding>
                               </VBox>
                            </content>
+                           <padding>
+                              <Insets right="20.0" />
+                           </padding>
                         </ScrollPane>
                      </children>
                   </AnchorPane>

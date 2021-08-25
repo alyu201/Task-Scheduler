@@ -7,16 +7,28 @@ import org.graphstream.graph.implementations.DefaultGraph;
 
 import java.util.*;
 
+/**
+ * This class is a validity checker. It checks whether a state (HashMap<Integer, HashMap<Integer, Node>>)
+ * is representing a valid schedule or not.
+ * @author Megan Lim
+ */
 public class ValidityChecker {
 
-    private HashMap<Integer, HashMap<Integer, Node>> _stateToTest = new HashMap<>();
-    //private static Graph _graphToTest = new DefaultGraph("graph");
+    private HashMap<Integer, HashMap<Integer, Node>> _stateToTest;
 
     public ValidityChecker(HashMap<Integer, HashMap<Integer, Node>> stateToTest) {
         _stateToTest = stateToTest;
-//        _graphToTest = graphToTest;
     }
 
+    /**
+     * This is a helper method to find the requested node in the state, and return its details.
+     * Its details are:
+     *      * The processor number it is scheduled in
+     *      * Start time
+     * @param nodeToFind the node that we want to find the details of
+     * @return (List<Integer>) an arraylist containing the node's details.
+     *          0th index contains proc num. 1st index contains start time.
+     */
     private List<Integer> getNodeDetails(Node nodeToFind) {
 
         List<Integer> nodeDetails = new ArrayList<Integer>();
@@ -52,33 +64,33 @@ public class ValidityChecker {
         return nodeDetails;
     }
 
+    /**
+     * This method checks for validity in terms of when a task was scheduled in the state.
+     * @return (boolean) whether the state represents a valid schedule or not
+     */
     public boolean checkValidity() {
 
-        System.out.println("****************************************************");
-
+        // This is to keep track of whether the whole schedule is valid or not
         boolean validSchedule = true;
 
-        // Testing for validity in terms of when a task was scheduled
-        // Go through each processor
+        // Going through each processor
         Set<Integer> allProcessors = _stateToTest.keySet();
         for (Integer processorNum : allProcessors) {
-            System.out.println("Now on processor " + processorNum + ": ");
 
+            // Getting all the tasks in this processor
             HashMap<Integer, Node> thisProcAllTasks = _stateToTest.get(processorNum);
-            System.out.println("\t Has tasks: " + thisProcAllTasks);
 
             // Going through each node scheduled in this processor
             Set<Integer> allStartTimes = thisProcAllTasks.keySet();
             for(Integer startTime : allStartTimes) {
                 //Get the node
                 Node node = thisProcAllTasks.get(startTime);
-                System.out.println("\t\t Node: " + node + " (Start: " + startTime + ")");
 
                 int numOfParents = node.getInDegree();
-                System.out.println("\t\t\t This node has " + numOfParents + " parents");
 
                 if (numOfParents > 0) {
 
+                    // This keeps track of the earliest time that this node/task is able to start
                     int earliestStartTime = 0;
 
                     // Go through all its parent(s)
@@ -92,18 +104,10 @@ public class ValidityChecker {
                         int parentStartTime = parentDetails.get(1).intValue();
                         int parentWeight = (int) parent.getAttribute("Weight");
                         int communicationTime = (int) parentEdge.getAttribute("Weight");
-                        System.out.println("\t\t\t\t This node has " + parent + " as a parent:");
-                        System.out.println("\t\t\t\t\t * On processor:  " + parentProcessorNum);
-                        System.out.println("\t\t\t\t\t * Start time: " + parentStartTime);
-                        System.out.println("\t\t\t\t\t * Weight: " + parentWeight);
-                        System.out.println("\t\t\t\t\t * Communication time: " + communicationTime);
 
                         // If the parent is on a different processor
                         if (processorNum.intValue() != parentProcessorNum) {
-                            System.out.println("\t\t\t\t\t Parent on different processor!!!!!!");
                             int childStartTime4ThisParent = parentStartTime + parentWeight + communicationTime;
-
-                            System.out.println("\t\t\t\t\t >>> Considered: " + childStartTime4ThisParent);
 
                             // If we have found a later time that the child should start
                             if (earliestStartTime < childStartTime4ThisParent) {
@@ -111,11 +115,8 @@ public class ValidityChecker {
                             }
 
                         } else {
-                            System.out.println("\t\t\t\t\t Parent on SAME processor!!!!!!");
 
                             int childStartTime4ThisParent = parentStartTime + parentWeight;
-
-                            System.out.println("\t\t\t\t\t >>> Considered: " + childStartTime4ThisParent);
 
                             // If we have found a later time that the child should start
                             if (earliestStartTime < childStartTime4ThisParent) {
@@ -127,10 +128,7 @@ public class ValidityChecker {
                     // If this task was scheduled way too early
                     if (!(earliestStartTime <= startTime.intValue())) {
                         validSchedule = false;
-                        System.out.println("\t\t\t BAD BAD BAD!!!!! NOT VALID");
-                        System.out.println("\t\t\t Problem is: Node " + node + " should have started on " + earliestStartTime + " or later, But it actually started at " + startTime.intValue());
-                    } else {
-                        System.out.println("\t\t\t Good! Valid! earliestStartTime = " + earliestStartTime + ", It actually started = " + startTime);
+                        System.out.println("NOT VALID! Problem is: Node " + node + " should have started on " + earliestStartTime + " or later, But it actually started at " + startTime.intValue());
                     }
                 }
 
@@ -144,19 +142,19 @@ public class ValidityChecker {
 
         ValidityChecker validityChecker = new ValidityChecker(creatingGoodState());
         boolean valid = validityChecker.checkValidity();
-        System.out.println("FINAL validSchedule: " + valid);
+        System.out.println("FINAL state 1 validSchedule: " + valid);
 
         ValidityChecker validityChecker2 = new ValidityChecker(creatingGoodState2());
         boolean valid2 = validityChecker2.checkValidity();
-        System.out.println("FINAL validSchedule: " + valid2);
+        System.out.println("FINAL state 2 validSchedule: " + valid2);
 
         ValidityChecker validityChecker3 = new ValidityChecker(creatingBadState());
         boolean valid3 = validityChecker3.checkValidity();
-        System.out.println("FINAL validSchedule: " + valid3);
+        System.out.println("FINAL state 3 validSchedule: " + valid3);
 
         ValidityChecker validityChecker4 = new ValidityChecker(creatingBadState2());
         boolean valid4 = validityChecker4.checkValidity();
-        System.out.println("FINAL validSchedule: " + valid4);
+        System.out.println("FINAL state 4 validSchedule: " + valid4);
 
     }
 

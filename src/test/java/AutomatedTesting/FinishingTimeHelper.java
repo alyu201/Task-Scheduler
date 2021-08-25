@@ -42,7 +42,8 @@ class FinishingTimeHelper {
             for (Integer startTime : allTasksStartTimes) {
                 // Calculate what time does this node finish
                 Node node = allTasks.get(startTime);
-                int nodeWeight = (int) node.getAttribute("Weight");
+                int nodeWeight = (Double.valueOf(node.getAttribute("Weight").toString())).intValue();
+//                int nodeWeight = (int) node.getAttribute("Weight");
                 int thisNodeFinTime = startTime + nodeWeight;
 
                 // Update (if needed) the latestFinTimeThisProc

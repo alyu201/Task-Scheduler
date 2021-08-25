@@ -1,8 +1,6 @@
 package AutomatedTesting;
 
-import Model.AStarScheduler;
-import Model.GraphProcessing;
-import Model.State;
+import Model.*;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
@@ -19,11 +17,13 @@ public class AutomatedTester {
     @Test
     public void testingScheduler() {
 
-        DotFileTestCase dotFileTestCase = DotFileTestCase.NODES4_PROC2_FROM_SLIDES;
+        // Getting the desired dotfile and its details
+        DotFileTestCase dotFileTestCase = DotFileTestCase.NODES7_PROC2_TWOTREE;
         String filePathTestCase = dotFileTestCase.getFilePath();
         int numProcTestCaseUse = dotFileTestCase.getNumOfProcUsed();
         int optimalSolTestCase = dotFileTestCase.getOptimalSol();
 
+        // Generating the graph
         GraphProcessing graphProcessing = GraphProcessing.Graphprocessing();
         try {
             graphProcessing.inputProcessing(filePathTestCase);
@@ -32,7 +32,6 @@ public class AutomatedTester {
             e.printStackTrace();
         }
         Graph graph = graphProcessing.getGraph();
-        System.out.println("Hello");
 
         Node nodeA = graph.getNode("a");
         Node nodeB = graph.getNode("b");
@@ -44,21 +43,25 @@ public class AutomatedTester {
             System.out.println("\t Node: " + node + " (Weight: " + node.getAttribute("Weight") + ")");
         }
 
+        // Temporary number of threads for now
+        int numOfThreads = 6;
 
-//        int numProcessors = 2;
-//        Graph graphToTest = creatingGoodGraph();
-//        AStarScheduler scheduler = new AStarScheduler(graphToTest, numProcTestCaseUse);
-//        System.out.println("hello");
-//
-//        State outputState = scheduler.generateSchedule();
-//        System.out.println("outputState: " + outputState);
-//
-//        HashMap<Integer, HashMap<Integer, Node>> stateHashMap = outputState.getState();
-//        System.out.println("stateHashMap: " + stateHashMap);
+        // Taking care of whether we are using A* or BnB to generate an outputState
+        State outputState;
+        if (graph.getNodeCount() > 11 || (graph.getNodeCount() == 11 && numOfThreads > 5)) {
+            System.out.println("Running Branch and Bound ......");
+            BranchAndBoundScheduler scheduler = new BranchAndBoundScheduler(graph, numProcTestCaseUse);
+            outputState = scheduler.generateSchedule();
+        } else {
+            System.out.println("Running A-Star ......");
+            AStarScheduler scheduler = new AStarScheduler(graph, numProcTestCaseUse);
+            outputState = scheduler.generateSchedule();
+        }
+        System.out.println("outputState: " + outputState);
 
-
-        // This is a temporary hashmap for while making the AutomatedTester class
-        HashMap<Integer, HashMap<Integer, Node>> stateHashMap = creatingGoodState();
+        // Getting the HashMap representation
+        HashMap<Integer, HashMap<Integer, Node>> stateHashMap = outputState.getState();
+        System.out.println("stateHashMap: " + stateHashMap);
 
         // Checking on the finishing time
         FinishingTimeHelper finishingTimeHelper = new FinishingTimeHelper(stateHashMap);

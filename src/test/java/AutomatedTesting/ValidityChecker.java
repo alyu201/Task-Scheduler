@@ -103,9 +103,7 @@ class ValidityChecker {
                         int parentProcessorNum = parentDetails.get(0).intValue();
                         int parentStartTime = parentDetails.get(1).intValue();
                         int parentWeight = (Double.valueOf(parent.getAttribute("Weight").toString())).intValue();
-//                        int parentWeight = (int) parent.getAttribute("Weight");
                         int communicationTime = (Double.valueOf(parentEdge.getAttribute("Weight").toString())).intValue();
-//                        int communicationTime = (int) parentEdge.getAttribute("Weight");
 
                         // If the parent is on a different processor
                         if (processorNum.intValue() != parentProcessorNum) {

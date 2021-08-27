@@ -45,7 +45,7 @@ public class BranchAndBoundScheduler extends Scheduler {
             }
             ForkJoinPool pool = new ForkJoinPool(Main.NUMPROCESSORS);
 
-            for (State state: initialStatesForBnB) {
+            for (State state : initialStatesForBnB) {
                 BranchAndBoundParallel task = new BranchAndBoundParallel(this, state);
                 pool.invoke(task);
             }
@@ -55,9 +55,10 @@ public class BranchAndBoundScheduler extends Scheduler {
 
     /**
      * Expand a state and add to closed list
+     *
      * @param states List of states available to be expanded
      */
-    private void expandState (PriorityQueue<State> states) {
+    private void expandState(PriorityQueue<State> states) {
         State statesToExpand = states.poll();
 
         if (goalStateReached(statesToExpand)) {
@@ -73,6 +74,7 @@ public class BranchAndBoundScheduler extends Scheduler {
 
     /**
      * Used as a recursive function to explore the search space
+     *
      * @param currentState The current state to expand and explore
      */
     public void exploreState(State currentState) {
@@ -80,26 +82,23 @@ public class BranchAndBoundScheduler extends Scheduler {
         if (Main.PARALLELISATIONFLAG) {
             Visualiser.incrThreadCount();
         }
-        if (_closedList.contains(currentState) || currentState.getUnderestimate() > _upperBound) {
+        if (_closedList.contains(currentState) || currentState.getUnderestimate() >= _upperBound) {
             return;
         }
 
         if (goalStateReached(currentState)) {
-            if (currentState.getUnderestimate() < _upperBound) {
-                // Update GUI when another best upperbound is found
-                if (Main.VISUALISATIONFLAG){
-                    Visualiser.update(currentState);
-                }
-                _upperBound = currentState.getUnderestimate();
-                _completeState = currentState;
+            // Update GUI when another best upperbound is found
+            if (Main.VISUALISATIONFLAG) {
+                Visualiser.update(currentState);
             }
+            _upperBound = currentState.getUnderestimate();
+            _completeState = currentState;
         } else {
-            if (currentState.getUnderestimate() <= _upperBound) {
-                List<Node> schedulableTasks = getNextTasks(currentState);
-                PriorityQueue<State> childStates = addChildStates(currentState, schedulableTasks);
-                for (State i : childStates) {
-                    exploreState(i);
-                }
+            List<Node> schedulableTasks = getNextTasks(currentState);
+            fixTaskOrder(schedulableTasks, currentState);
+            PriorityQueue<State> childStates = addChildStates(currentState, schedulableTasks);
+            for (State i : childStates) {
+                exploreState(i);
             }
         }
 
@@ -114,7 +113,7 @@ public class BranchAndBoundScheduler extends Scheduler {
     /**
      * This method generates the child states of a given state and tasks to schedule.
      *
-     * @param state The state to expand and generate child states from
+     * @param state            The state to expand and generate child states from
      * @param schedulableTasks The list of task to be added
      * @return A list of child states
      */

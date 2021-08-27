@@ -14,10 +14,12 @@ import java.util.stream.Collectors;
 abstract class Scheduler {
     protected Graph _taskGraph;
     protected int _numProcessors;
+    protected int _totalNodeWeight;
 
     public Scheduler(Graph taskGraph, int numProcessors) {
         _numProcessors = numProcessors;
         _taskGraph = taskGraph;
+        computeSumNodesWeight();
     }
 
     public abstract State generateSchedule();
@@ -207,6 +209,15 @@ abstract class Scheduler {
 
         sortedEntries.addAll(dataReadyMap.entrySet());
         return sortedEntries;
+    }
+
+    /**
+     * This method computes the total node weight. The total node weight is kept as a field.
+     */
+    private void computeSumNodesWeight(){
+        for (Node node : _taskGraph){
+            _totalNodeWeight = _totalNodeWeight + Double.valueOf(node.getAttribute("Weight").toString()).intValue();
+        }
     }
 
 }

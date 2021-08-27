@@ -52,7 +52,7 @@ public class AStarScheduler extends Scheduler{
                 _executorService.shutdown();
                 // Call Visualiser to update GUI
                 if (Main.VISUALISATIONFLAG) {
-//                    Visualiser.update(state);
+                    Visualiser.update(state);
                 }
                 return state;
             }
@@ -72,13 +72,13 @@ public class AStarScheduler extends Scheduler{
 
             // Update GUI at a frequency of 1/(2^numProc*numOfTasks) whenever a state is popped off openList
             if (i == freq) {
-//                Visualiser.update(state);
+                Visualiser.update(state);
                 i = 1;
             }
             i++;
 
             // Reset the count for the number of processors/threads
-//            Visualiser.resetThreadCount();
+            Visualiser.resetThreadCount();
         }
         _executorService.shutdown();
         return null;
@@ -100,7 +100,7 @@ public class AStarScheduler extends Scheduler{
             taskList.add(stateAdditionThread);
             // only count number of processors/threads if parallelisation is required
             if (Main.PARALLELISATIONFLAG) {
-//                Visualiser.incrThreadCount();
+                Visualiser.incrThreadCount();
             }
         }
 

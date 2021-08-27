@@ -37,13 +37,44 @@ public class BranchAndBoundScheduler extends Scheduler {
         if (Main.NUMPROCESSORS == 1) {
             exploreState(emptyState);
         } else {
+            //Continue expanding states until there are enough number of initial states to use BnB in each thread
+            PriorityQueue<State> initialStatesForBnB = new PriorityQueue<State>(100, new StateComparator());
+            initialStatesForBnB.add(emptyState);
+            while (initialStatesForBnB.size() < Main.NUMPROCESSORS) {
+                expandState(initialStatesForBnB);
+            }
             ForkJoinPool pool = new ForkJoinPool(Main.NUMPROCESSORS);
-            BranchAndBoundParallel task = new BranchAndBoundParallel(this, emptyState);
-            pool.invoke(task);
+
+            for (State state: initialStatesForBnB) {
+                BranchAndBoundParallel task = new BranchAndBoundParallel(this, state);
+                pool.invoke(task);
+            }
         }
         return _completeState;
     }
 
+    /**
+     * Expand a state and add to closed list
+     * @param states List of states available to be expanded
+     */
+    private void expandState (PriorityQueue<State> states) {
+        State statesToExpand = states.poll();
+
+        if (goalStateReached(statesToExpand)) {
+            return;
+        }
+        List<Node> schedulableTasks = getNextTasks(statesToExpand);
+        fixTaskOrder(schedulableTasks, statesToExpand);
+        PriorityQueue<State> childStates = addChildStates(statesToExpand, schedulableTasks);
+        states.addAll(childStates);
+
+        _closedList.add(statesToExpand);
+    }
+
+    /**
+     * Used as a recursive function to explore the search space
+     * @param currentState The current state to expand and explore
+     */
     public void exploreState(State currentState) {
         //todo update visualisation
         if (Main.PARALLELISATIONFLAG) {
@@ -72,36 +103,18 @@ public class BranchAndBoundScheduler extends Scheduler {
             }
         }
 
-
-        if (_closedList.size() > BranchAndBoundScheduler.CLOSED_LIST_MAX_SIZE) {
-            _closedList.remove(_closedList.iterator().next());
+        synchronized (_closedList) {
+            if (_closedList.size() > BranchAndBoundScheduler.CLOSED_LIST_MAX_SIZE) {
+                _closedList.remove(_closedList.iterator().next());
+            }
+            _closedList.add(currentState);
         }
-        _closedList.add(currentState);
-
     }
-
-
-    public synchronized void updateCompleteState(State state) {
-        _completeState = state;
-    }
-
-    public synchronized void updateUpperBound(int upperBound) {
-        _upperBound = upperBound;
-    }
-
-    public synchronized int getUpperBound() {
-        return _upperBound;
-    }
-
-    public synchronized Set<State> getClosedList() {
-        return _closedList;
-    }
-
 
     /**
      * This method generates the child states of a given state and tasks to schedule.
      *
-     * @param state            The state to expand and generate child states from
+     * @param state The state to expand and generate child states from
      * @param schedulableTasks The list of task to be added
      * @return A list of child states
      */

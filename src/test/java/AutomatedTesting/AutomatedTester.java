@@ -226,9 +226,17 @@ public class AutomatedTester {
         System.out.println("\nNumber of threads to use: " + numOfThreads);
         System.out.println("DotFileTestCase: " + dotFileTestCase.name());
 
+        // Time started
+        long startTime = System.currentTimeMillis();
+
         // Test out the chosen input dot file on the scheduler with the given number of threads; and print results
         AutomatedTester automatedTester = new AutomatedTester(numOfThreads, dotFileTestCase);
         automatedTester.testingScheduler();
+
+        // Time ended
+        long endTime = System.currentTimeMillis();
+
+        System.out.println("The program took " + (endTime - startTime) + " milliseconds to finish.");
 
     }
 }

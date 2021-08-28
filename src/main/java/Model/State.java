@@ -15,6 +15,7 @@ public class State {
     private HashMap<Integer,HashMap<Integer, Node>> _state = new HashMap<>();
     private int _underestimate = 0;
     private final int _numProcessors;
+    private int _totalIdleTime = 0;
 
     /**
      * Creates an empty state object.
@@ -151,6 +152,22 @@ public class State {
      */
     public HashMap<Integer, HashMap<Integer, Node>> getState() {
         return _state;
+    }
+
+    /**
+     * This method sets _totalIdleTime
+     * @param totalIdleTime
+     */
+    public void setTotalIdleTime(int totalIdleTime){
+        _totalIdleTime = totalIdleTime;
+    }
+
+    /**
+     * This method gets _totalIdleTime
+     * @return _totalIdleTime
+     */
+    public int getTotalIdleTime(){
+        return _totalIdleTime;
     }
 
     @Override

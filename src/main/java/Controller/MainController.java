@@ -115,12 +115,7 @@ public class MainController implements Initializable {
      * A delay for the rendering of coloured tasks.
      */
     public static void sleep() {
-        int numNodes = GraphProcessing.Graphprocessing().getGraph().getNodeCount();
-        // Determine timeout based on number of nodes
-        int timeout = 200;
-        if (numNodes < 6) {
-            timeout = (int) (((double)(20-numNodes)/20)*500);
-        }
+        int timeout = 150;
         try {
             TimeUnit.MILLISECONDS.sleep(timeout);
         } catch (InterruptedException e) {
@@ -152,6 +147,7 @@ public class MainController implements Initializable {
         // Update processor usage
         int finalProcessorUseCount = processorUseCount;
         Platform.runLater(() -> {
+            // Move the graph along to the left
             if (_threadSeries.getData().size() > 20) {
                 _threadSeries.getData().remove(0);
             }

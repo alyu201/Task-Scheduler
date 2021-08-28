@@ -24,20 +24,27 @@ public class Visualiser extends Application {
 
     private static Scene _scene;
     private static Boolean _completed = false;
-    private static Boolean _showGanttChart = false;
     private static int _processorUseCount = 1;
     private static State _state;
+    private static int _freq = Main.INPUTPROCNUM;
+    private static int _count = 0;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
+        // Set the max between the number of tasks and the number of scheduling processors
+        if (GraphProcessing.Graphprocessing().getGraph().getNodeCount() > _freq) {
+            _freq = GraphProcessing.Graphprocessing().getGraph().getNodeCount();
+        }
+
+        // Setup window
         FXMLLoader loader = new FXMLLoader(Visualiser.class.getResource("/View/MainScene.fxml"));
         _scene = new Scene(loader.load());
         MainController controller = loader.getController();
 
         primaryStage.setScene(_scene);
         primaryStage.setTitle("Visualiser");
-        primaryStage.setMinWidth(1490);
-        primaryStage.setMinHeight(980);
+        primaryStage.setMinWidth(1400);
+        primaryStage.setMinHeight(860);
 
         _scene.getStylesheets().add("/Style/VisualiserStyle.css");
 
@@ -48,9 +55,14 @@ public class Visualiser extends Application {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                controller.showProcessorUsage(_processorUseCount);
+                // Display processor usage going back down to 1
+                if (_completed) {
+                    for (int i = 0; i < 2; i++) { controller.showProcessorUsage(1); }
+                } else {
+                    controller.showProcessorUsage(_processorUseCount);
+                }
             }
-        }, 0, 200);
+        }, 0, 100);
 
         // Start elapsed time count
         long startTime = System.nanoTime();
@@ -71,7 +83,9 @@ public class Visualiser extends Application {
             controller.incrementTimer(elapsedTime);
 
             // Stop elapsed time counter and processor usage timer when algorithm finishes
+            // Update GUI with final optimal state info
             if (_completed) {
+                controller.markNode(_state);
                 controller.showGanttChart(_state);
                 executor.shutdown();
                 timer.cancel();
@@ -94,15 +108,20 @@ public class Visualiser extends Application {
      * @param state The State object to update the task graph of the GUI with.
      */
     public static void update(State state) {
-        FXMLLoader loader = new FXMLLoader(Visualiser.class.getResource("/View/MainScene.fxml"));
-        try {
-            loader.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        _state = state;
+        _count++;
+        if (_count == _freq) {
+            FXMLLoader loader = new FXMLLoader(Visualiser.class.getResource("/View/MainScene.fxml"));
+            try {
+                loader.load();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-        MainController ctrl = loader.getController();
-        ctrl.markNode(state);
+            MainController ctrl = loader.getController();
+            ctrl.markNode(state);
+            _count = 0;
+        }
     }
 
     /**
@@ -131,7 +150,6 @@ public class Visualiser extends Application {
      * @param state The optimal state (schedule) to be rendered.
      */
     public static void displayStateChart(State state) {
-        _showGanttChart = true;
         _state = state;
     }
 }

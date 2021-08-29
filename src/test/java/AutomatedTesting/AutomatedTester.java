@@ -178,7 +178,7 @@ public class AutomatedTester {
 
         // Taking care of whether we are using A* or BnB to generate an outputState
         State outputState;
-        if (trueAmountOfNodes > 11 || (trueAmountOfNodes == 11 && _numOfThreads > 5)) {
+        if (trueAmountOfNodes > 10) {
             System.out.println("Running Branch and Bound ......");
             BranchAndBoundScheduler scheduler = new BranchAndBoundScheduler(graph, numProcTestCaseUse);
             outputState = scheduler.generateSchedule();

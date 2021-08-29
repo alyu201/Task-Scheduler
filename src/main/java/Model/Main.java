@@ -1,7 +1,5 @@
 package Model;
 
-import javafx.animation.AnimationTimer;
-import org.apache.commons.lang3.time.StopWatch;
 import org.graphstream.graph.Graph;
 
 import java.io.IOException;
@@ -62,12 +60,11 @@ public class Main {
             logger.info("Start scheduling...");
             long startScheduleTime = System.currentTimeMillis();
             Scheduler scheduler;
-//            if (graph.getNodeCount() > 11 || (graph.getNodeCount() == 11 && INPUTPROCNUM > 5)) {
-//                scheduler = new BranchAndBoundScheduler(graph, numberOfProcess);
-//            } else {
-//                scheduler = new AStarScheduler(graph, numberOfProcess);
-//            }
-            // Temporarily moved here
+            if (graph.getNodeCount() > 11 || (graph.getNodeCount() == 11 && INPUTPROCNUM > 5)) {
+                scheduler = new BranchAndBoundScheduler(graph, numberOfProcess);
+            } else {
+                scheduler = new AStarScheduler(graph, numberOfProcess);
+            }
             scheduler = new BranchAndBoundScheduler(graph, numberOfProcess);
             State state = scheduler.generateSchedule();
 

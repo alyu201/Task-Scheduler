@@ -5,8 +5,6 @@ import org.graphstream.graph.Node;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.RecursiveAction;
 
 /**
@@ -60,6 +58,11 @@ public class BranchAndBoundParallel extends RecursiveAction {
         _branchAndBoundScheduler.updateClosedList(_currentState);
     }
 
+    /**
+     * Allocate a thread to do a task if a thread is available
+     * @param states The state to be expanded in a task
+     * @return A list of child thread tasks which can be used for joining to main thread when finished
+     */
     private synchronized List<BranchAndBoundParallel> allocateThreadTask (PriorityQueue<State> states) {
         int availableThreads = BranchAndBoundScheduler.Pool.getParallelism() - BranchAndBoundScheduler.Pool.getPoolSize();
 

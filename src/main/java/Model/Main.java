@@ -13,9 +13,8 @@ import java.util.logging.Logger;
  * displaying and controlling functions of the visual representation of the
  * algorithm scene. It loads the appropriate the FXML file, and contains the
  * required action handlers.
- * 
- * @author Kelvin Shen
  *
+ * @author Kelvin Shen
  */
 
 public class Main {
@@ -60,7 +59,7 @@ public class Main {
             logger.info("Start scheduling...");
             long startScheduleTime = System.currentTimeMillis();
             Scheduler scheduler;
-            int nodeCount = graph.getNodeCount()-1;
+            int nodeCount = graph.getNodeCount() - 1;
             if (nodeCount > 10) {
                 scheduler = new BranchAndBoundScheduler(graph, numberOfProcess);
             } else {
@@ -72,7 +71,7 @@ public class Main {
             if (VISUALISATIONFLAG) {
                 Visualiser.stopElapsedTime();
                 Visualiser.displayStateChart(state);
-                VisualThread.VisualThread().join();
+                VisualThread.getVisualThreadInstance().join();
             }
 
             // Exit program procedure
@@ -135,7 +134,7 @@ public class Main {
      */
     public static void visualArgProcedure() throws IOException {
         if (VISUALISATIONFLAG) {
-            VisualThread visualThread = VisualThread.VisualThread();
+            VisualThread visualThread = VisualThread.getVisualThreadInstance();
             visualThread.start();
         }
     }

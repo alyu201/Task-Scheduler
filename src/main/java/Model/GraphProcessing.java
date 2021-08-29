@@ -18,8 +18,8 @@ import java.util.logging.Logger;
 
 /**
  * This class is a singleton class that is used for processing input dot file and output dot file.
- * @author Kelvin Shen and Megan Lim
  *
+ * @author Kelvin Shen and Megan Lim
  */
 
 public class GraphProcessing {
@@ -32,8 +32,8 @@ public class GraphProcessing {
 
 
     /**
-     *private constructor restricted to this class itself
-      */
+     * private constructor restricted to this class itself
+     */
     private GraphProcessing() {
         _graph = new DefaultGraph("graph");
     }
@@ -53,7 +53,7 @@ public class GraphProcessing {
     /**
      * This method returns a graph when invoked.
      */
-    public Graph getGraph(){
+    public Graph getGraph() {
         return _graph;
     }
 
@@ -65,7 +65,7 @@ public class GraphProcessing {
      * @throws IOException
      * @author Kelvin Shen and Megan Lim
      */
-    public void inputProcessing(String filePath) throws IOException{
+    public void inputProcessing(String filePath) throws IOException {
         // Set the graph style
         String graphStyle = "node {"
                 + "size: 25px;"
@@ -160,10 +160,7 @@ public class GraphProcessing {
             //Note that the dummyRoot's bottom level is
             // already calculated and set as an attribute in this method too
             int dummyRootBL = calBottomLevels(dummyRootNode);
-
             fileSource.removeSink(_graph);
-
-
         } catch (IOException e) {
             _logger.info("Ensure your dot file is in the same directory as the jar file!");
             System.exit(0);
@@ -173,8 +170,8 @@ public class GraphProcessing {
     /**
      * This method will write the graph that is currently in the system to a dot file.
      * This graph will have the dummyRoot and its edges removed.
-     * @author Kelvin Shen
      *
+     * @author Kelvin Shen
      */
     public void outputProcessing(String filePath, State state) throws IOException {
 
@@ -199,7 +196,7 @@ public class GraphProcessing {
                 String nodeWeight = node.getAttribute("Weight").toString();
                 out.write(node.toString() + " [" + "Weight=" + nodeWeight + ", Start=" + startingTime + ", Processor=" + process + "];");
                 out.newLine();
-                
+
                 //writing out going edges one by one to the file
                 node.leavingEdges().forEach(edge -> {
                     String edgeUnformatted = edge.toString();
@@ -218,7 +215,7 @@ public class GraphProcessing {
             out.write("}");
         } catch (IOException e) {
             _logger.info("Unsuccessful output the schedule.");
-        }catch(NullPointerException e1){
+        } catch (NullPointerException e1) {
             _logger.info("The program did not came up with an schedule!");
         }
 
@@ -226,6 +223,7 @@ public class GraphProcessing {
 
     /**
      * This method is a helper function that gets the starting time and processor of a task scheduled
+     *
      * @author kelvin
      */
     public String[] nodeDetail(HashMap<Integer, HashMap<Integer, Node>> schedule, Set<Integer> key, Node node) {
@@ -252,8 +250,8 @@ public class GraphProcessing {
      * calculate the bottom level of all the nodes of the graph.
      * Returns the bottom level of the dummyRootNode - even though by then the
      * dummyRootNode's bottom level would have already been set as an attribute.
-     * @author Megan Lim
      *
+     * @author Megan Lim
      */
     private int calBottomLevels(Node node) {
         int currentNodeWeight = (Double.valueOf(node.getAttribute("Weight").toString())).intValue();

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  * acyclic graph) into a number of processors using the Branch and Bound technique.
  * author: Sherman Chin and Kelvin Shen
  */
-public class BranchAndBoundScheduler extends Scheduler{
+public class BranchAndBoundScheduler extends Scheduler {
 
     private State _completeState = null;
     private AtomicInteger _upperBound = new AtomicInteger(Integer.MAX_VALUE);
@@ -53,7 +53,7 @@ public class BranchAndBoundScheduler extends Scheduler{
      * @param currentState The current state to expand and explore
      */
     public void exploreState(State currentState) {
-        if (Main.VISUALISATIONFLAG){
+        if (Main.VISUALISATIONFLAG) {
             Visualiser.update(currentState);
         }
 
@@ -71,18 +71,17 @@ public class BranchAndBoundScheduler extends Scheduler{
                 exploreState(i);
             }
         }
-
         updateClosedList(currentState);
     }
 
     /**
      * Update the upper bound if the lower bound (underestimate) of the state given is lower
      * than the current upper boud
+     *
      * @param state A complete state
      */
-    public synchronized void checkAndUpdateUpperBound (State state) {
+    public synchronized void checkAndUpdateUpperBound(State state) {
         // Update GUI when another best upperbound is found
-
         if (state.getUnderestimate() < _upperBound.get()) {
             _upperBound.set(state.getUnderestimate());
             _completeState = state;
@@ -190,9 +189,7 @@ public class BranchAndBoundScheduler extends Scheduler{
         } else {
             newIdleTime = nextStartTime;
         }
-
         return parentIdleTime + newIdleTime;
-
     }
 
 

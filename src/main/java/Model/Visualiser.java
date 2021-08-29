@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * This class handles the displaying and controlling functions of the
  * main scene. It loads the appropriate FXML file, and contains
  * the required action handlers.
+ *
  * @author Amy Lyu
  */
 
@@ -57,7 +58,9 @@ public class Visualiser extends Application {
             public void run() {
                 // Display processor usage going back down to 1
                 if (_completed) {
-                    for (int i = 0; i < 2; i++) { controller.showProcessorUsage(1); }
+                    for (int i = 0; i < 2; i++) {
+                        controller.showProcessorUsage(1);
+                    }
                 } else {
                     controller.showProcessorUsage(_processorUseCount);
                 }
@@ -78,7 +81,7 @@ public class Visualiser extends Application {
             String seconds = String.format(format, time % 60);
             String minutes = String.format(format, (time % 3600) / 60);
             // Formats elapsed time into mm:ss.sss
-            String elapsedTime =  minutes + ":" + seconds + "." + milliSeconds;
+            String elapsedTime = minutes + ":" + seconds + "." + milliSeconds;
             // Update GUI
             controller.incrementTimer(elapsedTime);
 
@@ -96,6 +99,7 @@ public class Visualiser extends Application {
 
     /**
      * This method is called to initiate the visualier application.
+     *
      * @throws IOException
      */
     public static void start() throws IOException {
@@ -105,6 +109,7 @@ public class Visualiser extends Application {
     /**
      * This updates the task graph of the GUI by rendering the tasks in the given state object with its corresponding
      * processor colour.
+     *
      * @param state The State object to update the task graph of the GUI with.
      */
     public static void update(State state) {
@@ -127,7 +132,7 @@ public class Visualiser extends Application {
     /**
      * Stops the elapsed time background thread.
      */
-    public static void stopElapsedTime () {
+    public static void stopElapsedTime() {
         _completed = true;
     }
 
@@ -147,6 +152,7 @@ public class Visualiser extends Application {
 
     /**
      * Called to display a gantt chart format of the optimal state (schedule) output.
+     *
      * @param state The optimal state (schedule) to be rendered.
      */
     public static void displayStateChart(State state) {

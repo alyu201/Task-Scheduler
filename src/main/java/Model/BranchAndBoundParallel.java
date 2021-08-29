@@ -28,7 +28,7 @@ public class BranchAndBoundParallel extends RecursiveAction {
      */
     @Override
     protected void compute() {
-        if (Main.VISUALISATIONFLAG){
+        if (Main.VISUALISATIONFLAG) {
             Visualiser.update(_currentState);
         }
         // only count number of processors/threads if parallelisation is required
@@ -50,7 +50,7 @@ public class BranchAndBoundParallel extends RecursiveAction {
 
             List<BranchAndBoundParallel> listActions = allocateThreadTask(childStates);
 
-            for (State i: childStates) {
+            for (State i : childStates) {
                 BranchAndBoundParallel childTask = new BranchAndBoundParallel(_branchAndBoundScheduler, i);
                 childTask.compute();
             }
@@ -64,10 +64,11 @@ public class BranchAndBoundParallel extends RecursiveAction {
 
     /**
      * Allocate a thread to do a task if a thread is available
+     *
      * @param states The state to be expanded in a task
      * @return A list of child thread tasks which can be used for joining to main thread when finished
      */
-    private synchronized List<BranchAndBoundParallel> allocateThreadTask (PriorityQueue<State> states) {
+    private synchronized List<BranchAndBoundParallel> allocateThreadTask(PriorityQueue<State> states) {
         int availableThreads = BranchAndBoundScheduler.Pool.getParallelism() - BranchAndBoundScheduler.Pool.getPoolSize();
 
         List<BranchAndBoundParallel> listActions = new ArrayList<>();

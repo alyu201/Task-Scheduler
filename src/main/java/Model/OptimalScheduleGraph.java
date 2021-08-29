@@ -16,6 +16,7 @@ import java.util.*;
 /**
  * This class is responsible for creating the gantt chart
  * displaying the optimal schedule of the output file using the XYChart
+ *
  * @author Tanya Li
  */
 
@@ -31,11 +32,11 @@ public class OptimalScheduleGraph {
 
     /**
      * Creates the gantt chart when the algorithm finishes
+     *
      * @param state The state of the final schedule
      */
-    public OptimalScheduleGraph(State state){
+    public OptimalScheduleGraph(State state) {
         optimalSchedule = state.getState();
-
         initialiseSchedule();
         populateSchedule();
     }
@@ -72,7 +73,7 @@ public class OptimalScheduleGraph {
 
         String[] processors = new String[numProcessors];
         for (int i = 0; i < numProcessors; i++) {
-            processors[i] = "" + (i+1);
+            processors[i] = "" + (i + 1);
         }
 
         // For each process, get all of its nodes and place them in the schedules chart
@@ -92,7 +93,7 @@ public class OptimalScheduleGraph {
             ganttChart.getData().add(series);
 
             HashMap<Integer, Node> schedule = optimalSchedule.get(proc);
-            Map<Integer,Node> ordered = new TreeMap<>(schedule);
+            Map<Integer, Node> ordered = new TreeMap<>(schedule);
 
             String currProcessor = processors[proc - 1];
             boolean firstNode = true;
@@ -102,13 +103,13 @@ public class OptimalScheduleGraph {
             // Looping through all tasks scheduled on the processor
             for (int startTime : ordered.keySet()) {
 
-                if(prevNode == null){
+                if (prevNode == null) {
                     prevNode = ordered.get(startTime);
                 }
-                double prevFinishTime = prevKey + (double)prevNode.getAttribute("Weight");
-                double duration = (double)ordered.get(startTime).getAttribute("Weight");
+                double prevFinishTime = prevKey + (double) prevNode.getAttribute("Weight");
+                double duration = (double) ordered.get(startTime).getAttribute("Weight");
 
-                if(startTime != 0 && firstNode){
+                if (startTime != 0 && firstNode) {
                     // Add idle time if the first task does not start at 0
                     idle = new XYChart.Data<>(currProcessor, startTime);
                     series.getData().add(idle);
@@ -118,9 +119,9 @@ public class OptimalScheduleGraph {
 
                     series.getData().add(data);
                     data.getNode().setStyle(" -fx-border-color: #f4f4f4; -fx-border-width: 2px;");
-                } else if (startTime != prevFinishTime && startTime != 0){ //finish time of prev task scheduled
+                } else if (startTime != prevFinishTime && startTime != 0) { //finish time of prev task scheduled
                     // Add idle time blocks between two scheduled tasks
-                    idle = new XYChart.Data<>(currProcessor, startTime-prevFinishTime);
+                    idle = new XYChart.Data<>(currProcessor, startTime - prevFinishTime);
                     series.getData().add(idle);
                 } else {
                     // Add actual task blocks
@@ -139,14 +140,15 @@ public class OptimalScheduleGraph {
     /**
      * This method creates a block for each scheduled task
      * with corresponding task id to be added to the gantt chart
+     *
      * @param currProcessor current scheduled task
-     * @param nodeId task id
-     * @param duration weight of the task
+     * @param nodeId        task id
+     * @param duration      weight of the task
      * @return
      */
     private XYChart.Data createData(String currProcessor, String nodeId, double duration) {
-        XYChart.Data data =  new XYChart.Data(currProcessor, duration);
-        
+        XYChart.Data data = new XYChart.Data(currProcessor, duration);
+
         StackPane node = new StackPane();
         Label label = new Label("Node: " + nodeId);
         Group group = new Group(label);
@@ -159,6 +161,7 @@ public class OptimalScheduleGraph {
 
     /**
      * Getter method for the gantt chart displaying the final optimal schedule solution
+     *
      * @return ganttChart
      */
     public StackedBarChart<String, Number> getStackedBarChart() {

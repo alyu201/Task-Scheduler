@@ -1,6 +1,5 @@
 package Model;
 
-// TODO: Should this class or visualisation classes implement Thread for concurrency
 
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
@@ -14,15 +13,14 @@ import java.util.logging.Logger;
  * acyclic graph) into a number of processors.
  * author: Sherman Chin and Kelvin Shen
  */
-public class AStarScheduler extends Scheduler{
+public class AStarScheduler extends Scheduler {
     private PriorityBlockingQueue<State> _openList;
     private ExecutorService _executorService;
     private Set<State> _closedList;
     private Logger _logger = Logger.getLogger(AStarScheduler.class.getName());
 
 
-    //TODO: Update with the actual classes
-    public AStarScheduler (Graph taskGraph, int numProcessors) {
+    public AStarScheduler(Graph taskGraph, int numProcessors) {
         super(taskGraph, numProcessors);
         _openList = new PriorityBlockingQueue<State>(200, new StateComparator());
         ConcurrentHashMap<State, Integer> map = new ConcurrentHashMap<State, Integer>();
@@ -32,10 +30,11 @@ public class AStarScheduler extends Scheduler{
 
     /**
      * Create an optimal schedule using A* algorithm
+     *
      * @return The state of the processors with schedules
      */
     @Override
-    public State generateSchedule(){
+    public State generateSchedule() {
 
         State emptyState = new State(_numProcessors);
         _openList.add(emptyState);
@@ -60,9 +59,7 @@ public class AStarScheduler extends Scheduler{
 
             try {
                 addChildStates(state, schedulableTasks);
-            } catch (ExecutionException e) {
-                _logger.info("Threading error in adding child states");
-            } catch (InterruptedException e) {
+            } catch (ExecutionException | InterruptedException e) {
                 _logger.info("Threading error in adding child states");
             }
             _closedList.add(state);
@@ -82,15 +79,16 @@ public class AStarScheduler extends Scheduler{
     /**
      * Create a set of child state from a parent state.
      * This method uses the ExecutorService to add the child state in parallel.
+     *
      * @param parentState The parent state
-     * @param tasks The list of tasks that are to be scheduled in tathe child states.
+     * @param tasks       The list of tasks that are to be scheduled in tathe child states.
      */
-    private void addChildStates (State parentState, List<Node> tasks) throws ExecutionException, InterruptedException {
-        List<Callable<Object>> taskList = new ArrayList<>() ;
+    private void addChildStates(State parentState, List<Node> tasks) throws ExecutionException, InterruptedException {
+        List<Callable<Object>> taskList = new ArrayList<>();
 
 
         //for each task, add it to the openlist on a different thread
-        for (Node task: tasks) {
+        for (Node task : tasks) {
             StateAdditionThread stateAdditionThread = new StateAdditionThread(parentState, task, _openList, _closedList);
             taskList.add(stateAdditionThread);
             // only count number of processors/threads if parallelisation is required
@@ -102,8 +100,8 @@ public class AStarScheduler extends Scheduler{
         List<Future<Object>> futures = _executorService.invokeAll(taskList);
 
         //Wait for all the child thread to return
-        for (Future future:futures){
-                future.get();
+        for (Future future : futures) {
+            future.get();
         }
     }
 

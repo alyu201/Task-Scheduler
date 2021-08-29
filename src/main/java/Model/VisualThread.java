@@ -21,7 +21,7 @@ public class VisualThread extends Thread{
     /**
      * static method to create instance of VisualThread class
      */
-    public static VisualThread VisualThread() {
+    public static VisualThread getVisualThreadInstance() {
         // To ensure only one instance is created
         if (_single_instance == null) {
             _single_instance = new VisualThread();

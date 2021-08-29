@@ -53,16 +53,15 @@ public class BranchAndBoundScheduler extends Scheduler{
      * @param currentState The current state to expand and explore
      */
     public void exploreState(State currentState) {
-        //todo update visualisation
-        if (Main.PARALLELISATIONFLAG) {
-            Visualiser.incrThreadCount();
+        if (Main.VISUALISATIONFLAG){
+            Visualiser.update(currentState);
         }
+
         if (_closedList.contains(currentState) || currentState.getUnderestimate() >= _upperBound.get()) {
             return;
         }
 
         if (goalStateReached(currentState)) {
-
             checkAndUpdateUpperBound(currentState);
         } else {
             List<Node> schedulableTasks = getNextTasks(currentState);
@@ -85,9 +84,6 @@ public class BranchAndBoundScheduler extends Scheduler{
         // Update GUI when another best upperbound is found
 
         if (state.getUnderestimate() < _upperBound.get()) {
-            if (Main.VISUALISATIONFLAG) {
-                Visualiser.update(state);
-            }
             _upperBound.set(state.getUnderestimate());
             _completeState = state;
         }

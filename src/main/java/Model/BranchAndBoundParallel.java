@@ -28,8 +28,12 @@ public class BranchAndBoundParallel extends RecursiveAction {
      */
     @Override
     protected void compute() {
+        if (Main.VISUALISATIONFLAG){
+            Visualiser.update(_currentState);
+        }
         // only count number of processors/threads if parallelisation is required
         if (Main.PARALLELISATIONFLAG) {
+
             Visualiser.incrThreadCount();
         }
 

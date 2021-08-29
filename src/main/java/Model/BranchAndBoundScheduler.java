@@ -4,7 +4,8 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 
 import java.util.*;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -12,12 +13,14 @@ import java.util.stream.Collectors;
  * acyclic graph) into a number of processors using the Branch and Bound technique.
  * author: Sherman Chin and Kelvin Shen
  */
-public class BranchAndBoundScheduler extends Scheduler {
+public class BranchAndBoundScheduler extends Scheduler{
 
     private State _completeState = null;
-    private int _upperBound = Integer.MAX_VALUE;
+    private AtomicInteger _upperBound = new AtomicInteger(Integer.MAX_VALUE);
     private Set<State> _closedList;
-    public static int CLOSED_LIST_MAX_SIZE = (int) Math.pow(2, 22);
+    private static int CLOSED_LIST_MAX_SIZE = (int) Math.pow(2, 22);
+
+    public static ForkJoinPool Pool;
 
     public BranchAndBoundScheduler(Graph taskGraph, int numProcessors) {
         super(taskGraph, numProcessors);
@@ -37,39 +40,11 @@ public class BranchAndBoundScheduler extends Scheduler {
         if (Main.NUMPROCESSORS == 1) {
             exploreState(emptyState);
         } else {
-            //Continue expanding states until there are enough number of initial states to use BnB in each thread
-            PriorityQueue<State> initialStatesForBnB = new PriorityQueue<State>(100, new StateComparator());
-            initialStatesForBnB.add(emptyState);
-            while (initialStatesForBnB.size() < Main.NUMPROCESSORS) {
-                expandState(initialStatesForBnB);
-            }
-            ForkJoinPool pool = new ForkJoinPool(Main.NUMPROCESSORS);
-
-            for (State state : initialStatesForBnB) {
-                BranchAndBoundParallel task = new BranchAndBoundParallel(this, state);
-                pool.invoke(task);
-            }
+            Pool = new ForkJoinPool(Main.NUMPROCESSORS);
+            BranchAndBoundParallel task = new BranchAndBoundParallel(this, emptyState);
+            Pool.invoke(task);
         }
         return _completeState;
-    }
-
-    /**
-     * Expand a state and add to closed list
-     *
-     * @param states List of states available to be expanded
-     */
-    private void expandState(PriorityQueue<State> states) {
-        State statesToExpand = states.poll();
-
-        if (goalStateReached(statesToExpand)) {
-            return;
-        }
-        List<Node> schedulableTasks = getNextTasks(statesToExpand);
-        fixTaskOrder(schedulableTasks, statesToExpand);
-        PriorityQueue<State> childStates = addChildStates(statesToExpand, schedulableTasks);
-        states.addAll(childStates);
-
-        _closedList.add(statesToExpand);
     }
 
     /**
@@ -82,17 +57,13 @@ public class BranchAndBoundScheduler extends Scheduler {
         if (Main.PARALLELISATIONFLAG) {
             Visualiser.incrThreadCount();
         }
-        if (_closedList.contains(currentState) || currentState.getUnderestimate() >= _upperBound) {
+        if (_closedList.contains(currentState) || currentState.getUnderestimate() >= _upperBound.get()) {
             return;
         }
 
         if (goalStateReached(currentState)) {
-            // Update GUI when another best upperbound is found
-            if (Main.VISUALISATIONFLAG) {
-                Visualiser.update(currentState);
-            }
-            _upperBound = currentState.getUnderestimate();
-            _completeState = currentState;
+
+            checkAndUpdateUpperBound(currentState);
         } else {
             List<Node> schedulableTasks = getNextTasks(currentState);
             fixTaskOrder(schedulableTasks, currentState);
@@ -102,12 +73,39 @@ public class BranchAndBoundScheduler extends Scheduler {
             }
         }
 
-        synchronized (_closedList) {
-            if (_closedList.size() > BranchAndBoundScheduler.CLOSED_LIST_MAX_SIZE) {
-                _closedList.remove(_closedList.iterator().next());
+        updateClosedList(currentState);
+    }
+
+    /**
+     * Update the upper bound if the lower bound (underestimate) of the state given is lower
+     * than the current upper boud
+     * @param state A complete state
+     */
+    public synchronized void checkAndUpdateUpperBound (State state) {
+        // Update GUI when another best upperbound is found
+
+        if (state.getUnderestimate() < _upperBound.get()) {
+            if (Main.VISUALISATIONFLAG) {
+                Visualiser.update(state);
             }
-            _closedList.add(currentState);
+            _upperBound.set(state.getUnderestimate());
+            _completeState = state;
         }
+    }
+
+    public synchronized void updateClosedList(State state) {
+        if (_closedList.size() > BranchAndBoundScheduler.CLOSED_LIST_MAX_SIZE) {
+            _closedList.remove(_closedList.iterator().next());
+        }
+        _closedList.add(state);
+    }
+
+    public int getUpperBound() {
+        return _upperBound.get();
+    }
+
+    public Set<State> getClosedList() {
+        return _closedList;
     }
 
     /**

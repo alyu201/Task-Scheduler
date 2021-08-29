@@ -1,16 +1,14 @@
 package Model;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.geometry.Bounds;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.Parent;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.text.Text;
+import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
 import org.graphstream.graph.Node;
 
 import java.util.*;
@@ -116,7 +114,8 @@ public class OptimalScheduleGraph {
                     series.getData().add(idle);
                     idle.getNode().setStyle("-fx-background-color: transparent;");
                     // Add the first task to the corresponding processor
-                    data = new XYChart.Data<>(currProcessor, duration);
+                    data = createData(currProcessor, ordered.get(startTime).getId(), duration);
+
                     series.getData().add(data);
                     data.getNode().setStyle(" -fx-border-color: #f4f4f4; -fx-border-width: 2px;");
                 } else if (startTime != prevFinishTime && startTime != 0){ //finish time of prev task scheduled
@@ -125,7 +124,8 @@ public class OptimalScheduleGraph {
                     series.getData().add(idle);
                 } else {
                     // Add actual task blocks
-                    data = new XYChart.Data<>(currProcessor, duration);
+                    data = createData(currProcessor, ordered.get(startTime).getId(), duration);
+//                    data = new XYChart.Data<>(currProcessor, duration);
                     series.getData().add(data);
                     data.getNode().setStyle(" -fx-border-color: #f4f4f4; -fx-border-width: 2px;");
                 }
@@ -134,6 +134,27 @@ public class OptimalScheduleGraph {
                 firstNode = false;
             }
         }
+    }
+
+    /**
+     * This method creates a block for each scheduled task
+     * with corresponding task id to be added to the gantt chart
+     * @param currProcessor current scheduled task
+     * @param nodeId task id
+     * @param duration weight of the task
+     * @return
+     */
+    private XYChart.Data createData(String currProcessor, String nodeId, double duration) {
+        XYChart.Data data =  new XYChart.Data(currProcessor, duration);
+        
+        StackPane node = new StackPane();
+        Label label = new Label("Node: " + nodeId);
+        Group group = new Group(label);
+        StackPane.setAlignment(group, Pos.CENTER);
+        node.getChildren().add(group);
+        data.setNode(node);
+
+        return data;
     }
 
     /**
